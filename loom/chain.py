@@ -60,7 +60,10 @@ class Chain:
         with lock:
             for attempt in range(retries):
                 nonce = max(self.w3.eth.get_transaction_count(acct.address, "pending"), self._nonces.get(acct.address, 0))
-                base = {"from": acct.address, "nonce": nonce, "value": value, "chainId": self.chain_id}
+                # Explicit fees: Lasna suggests a 0 tip but rejects anything below 1 wei.
+                fee = self.w3.eth.gas_price
+                base = {"from": acct.address, "nonce": nonce, "value": value, "chainId": self.chain_id,
+                        "maxFeePerGas": fee * 2, "maxPriorityFeePerGas": max(1, min(fee, Web3.to_wei(1, "gwei")))}
                 if gas:
                     base["gas"] = gas
                 try:
@@ -69,8 +72,6 @@ class Chain:
                     else:
                         tx = {**base, "to": Web3.to_checksum_address(to), "data": data}
                         tx.setdefault("gas", self.w3.eth.estimate_gas(tx))
-                        fee = self.w3.eth.gas_price
-                        tx.update({"maxFeePerGas": fee * 2, "maxPriorityFeePerGas": min(fee, Web3.to_wei(1, "gwei"))})
                     signed = acct.sign_transaction(tx)
                     h = self.w3.eth.send_raw_transaction(signed.raw_transaction)
                     self._nonces[acct.address] = nonce + 1
