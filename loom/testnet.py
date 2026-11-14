@@ -14,7 +14,7 @@ FAUCET_BASE_SEPOLIA = "0x2afaFD298b23b62760711756088F75B7409f5967"
 # Generous gas budgets for the deployer's own transactions (Base/Unichain
 # Sepolia gas is cheap; these are upper bounds, not estimates).
 # Lasna gas is ~100 gwei, so the referee deploy + 19 subscriptions need real lREACT.
-DEPLOY_GAS_ETH = {"base": 3 * ETH // 1000, "unichain": 3 * ETH // 1000, "lasna": ETH}
+DEPLOY_GAS_ETH = {"base": 2 * ETH // 1000, "unichain": 3 * ETH // 1000, "lasna": ETH}
 
 
 def requirements() -> dict[str, int]:
