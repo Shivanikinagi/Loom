@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LOOM</title>
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --ink: #1b1d22; --muted: #6b6f78; --line: #e4e2dc;
+  --base: #2459e0; --uni: #d6337a; --lasna: #0f9d76; --warn: #c27c0e; --bad: #d23b3b; --ok: #1f8a4c;
+  --chip: #f0eee8; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111215; --panel: #1a1c20; --ink: #ecebe7; --muted: #9a9ea8; --line: #2a2d33; --chip: #24272c;
+    --base: #6f97ff; --uni: #ff6fa8; --lasna: #3fd3a4; --warn: #f0b04a; --bad: #ff6b6b; --ok: #4fd08a;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111215; --panel: #1a1c20; --ink: #ecebe7; --muted: #9a9ea8; --line: #2a2d33; --chip: #24272c;
+  --base: #6f97ff; --uni: #ff6fa8; --lasna: #3fd3a4; --warn: #f0b04a; --bad: #ff6b6b; --ok: #4fd08a; --shadow: none;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: inherit; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 20px 16px 48px; }
+header { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.logo { font-weight: 800; letter-spacing: .18em; font-size: 20px; }
+.tag { color: var(--muted); }
+.spacer { flex: 1; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: var(--chip); font-size: 12px; white-space: nowrap; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.dot.base { background: var(--base); } .dot.unichain { background: var(--uni); } .dot.lasna { background: var(--lasna); }
+.live { animation: pulse 1.6s infinite; } @keyframes pulse { 50% { opacity: .35; } }
+.chains { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; box-shadow: var(--shadow); min-width: 0; }
+.chain h3 { margin: 0 0 4px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+.chain .role { color: var(--muted); font-size: 12px; }
+.mono { font-family: var(--mono); font-size: 12px; }
+.trunc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; align-items: start; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+.jobs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+.jobtab { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 6px 10px; cursor: pointer; font: inherit; display: inline-flex; gap: 6px; align-items: center; }
+.jobtab.on { border-color: var(--ink); }
+button.primary { background: var(--ink); color: var(--bg); border: 0; border-radius: 8px; padding: 7px 14px; font: inherit; font-weight: 600; cursor: pointer; }
+button.primary:disabled { opacity: .5; cursor: default; }
+.st { font-size: 11px; padding: 1px 7px; border-radius: 999px; background: var(--chip); }
+.st.Settled { color: var(--ok); } .st.Disputed { color: var(--bad); } .st.Proposed { color: var(--warn); } .st.Running { color: var(--base); } .st.Refunded { color: var(--muted); }
+.pipe { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 4px 0 8px; }
+.node { min-width: 150px; flex: 1; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px; background: var(--panel); position: relative; }
+.node.io { flex: 0 0 auto; min-width: 96px; background: var(--chip); border-style: dashed; }
+.node .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.node .who { font-weight: 600; margin: 2px 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.node.committed { border-color: var(--ok); }
+.node.active { border-color: var(--base); }
+.node.disputed { border-color: var(--bad); box-shadow: 0 0 0 3px color-mix(in srgb, var(--bad) 18%, transparent); }
+.struck { text-decoration: line-through; color: var(--bad); font-weight: 500; font-size: 12px; }
+.arrow { align-self: center; color: var(--muted); padding: 0 6px; flex: none; }
+.banner { margin: 10px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--chip); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.banner.bad { background: color-mix(in srgb, var(--bad) 12%, var(--panel)); }
+.banner.ok { background: color-mix(in srgb, var(--ok) 12%, var(--panel)); }
+.labels { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.label { font-size: 12px; padding: 2px 8px; border-radius: 6px; background: var(--chip); }
+.label.positive { color: var(--ok); } .label.negative { color: var(--bad); }
+.tl { list-style: none; margin: 0; padding: 0; }
+.tl li { display: grid; grid-template-columns: 44px 14px minmax(0, 1fr) auto; gap: 8px; padding: 7px 0; border-top: 1px solid var(--line); align-items: baseline; }
+.tl li:first-child { border-top: 0; }
+.tl .t { color: var(--muted); font-family: var(--mono); font-size: 12px; text-align: right; }
+.tl .what b { font-weight: 600; }
+.tl .chainname { color: var(--muted); font-size: 11px; margin-left: 6px; }
+.tl a { color: var(--muted); font-family: var(--mono); font-size: 11px; text-decoration: none; }
+.tl a:hover { color: var(--ink); text-decoration: underline; }
+table { width: 100%; border-collapse: collapse; }
+td, th { text-align: left; padding: 7px 4px; border-top: 1px solid var(--line); font-size: 13px; vertical-align: middle; }
+th { color: var(--muted); font-weight: 500; font-size: 12px; border-top: 0; }
+select { font: inherit; font-size: 12px; background: var(--chip); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 2px 4px; }
+.bad { color: var(--bad); } .ok { color: var(--ok); } .warn { color: var(--warn); } .muted { color: var(--muted); }
+.feed { list-style: none; margin: 0; padding: 0; max-height: 320px; overflow: auto; }
+.feed li { padding: 6px 0; border-top: 1px solid var(--line); font-size: 13px; }
+.feed li:first-child { border-top: 0; }
+.stack > * + * { margin-top: 16px; }
+.empty { color: var(--muted); padding: 24px 0; text-align: center; }
+.themebtn { background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 8px; padding: 4px 8px; cursor: pointer; font: inherit; font-size: 12px; }
+@media (max-width: 980px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 640px) {
+  .chains { grid-template-columns: minmax(0, 1fr); }
+  .pipe { flex-direction: column; }
+  .arrow { transform: rotate(90deg); padding: 2px 0; }
+  .node, .node.io { min-width: 0; }
+  .tl li { grid-template-columns: 36px 12px minmax(0, 1fr); }
+  .tl li a { grid-column: 3; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="logo">LOOM</span>
+    <span class="tag">trustless pooled-GPU inference, refereed by Reactive</span>
+    <span class="spacer"></span>
+    <span class="pill" id="network">…</span>
+    <span class="pill" id="clock"><span class="dot lasna"></span>Reactive clock</span>
+    <button class="themebtn" id="theme" title="Toggle theme">◐</button>
+  </header>
+
+  <section class="chains" id="chains"></section>
+
+  <section class="grid">
+    <div class="stack">
+      <div class="card">
+        <div class="jobs" id="jobs"></div>
+        <div id="pipeline"><div class="empty">No jobs yet.</div></div>
+      </div>
+      <div class="card">
+        <h2>What happened, across three chains</h2>
+        <ul class="tl" id="timeline"></ul>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card">
+        <h2>GPU providers <span class="muted" style="text-transform:none;letter-spacing:0">· bonded on Unichain</span></h2>
+        <table><thead><tr><th>GPU</th><th>bond</th><th>jobs</th><th>faults</th><th id="modeh"></th></tr></thead><tbody id="providers"></tbody></table>
+      </div>
+      <div class="card">
+        <h2>Agents</h2>
+        <ul class="feed" id="agents"></ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const CHAIN_NAME = { base: "Base Sepolia", unichain: "Unichain Sepolia", lasna: "Reactive Lasna" };
+const CHAIN_ROLE = { base: ["LoomEscrow", "escrow"], unichain: ["LoomBonds", "bonds"], lasna: ["LoomReferee", "referee"] };
+const PHASES = ["None", "Assigning", "Running", "Proposed", "Disputed", "Resolving", "Done"];
+
+let S = null, selected = null, firstLoad = true;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const short = (a) => (a && a.length > 12 ? a.slice(0, 6) + "…" + a.slice(-4) : a || "–");
+const eth = (w) => { const v = Number(BigInt(w || 0)) / 1e18; return (v >= 0.01 ? v.toFixed(3) : v.toPrecision(2)).replace(/\.?0+$/, "") + " ETH"; };
+function who(addr) {
+  if (!addr) return "–";
+  const n = S && S.names[addr.toLowerCase()];
+  return n ? `<span title="${esc(addr)}">${esc(n.name)}</span>` : `<span class="mono" title="${esc(addr)}">${esc(short(addr))}</span>`;
+}
+function txLink(chain, tx) {
+  if (!tx) return "";
+  const h = tx.startsWith("0x") ? tx : "0x" + tx;
+  const ex = S.chains[chain] && S.chains[chain].explorer;
+  return ex ? `<a href="${ex}/tx/${h}" target="_blank" rel="noopener">${h.slice(0, 10)}…</a>` : `<a title="${h}">${h.slice(0, 10)}…</a>`;
+}
+
+function sentence(e) {
+  const a = e.args;
+  switch (e.event) {
+    case "JobCreated": return `<b>Buyer posted job ${a.jobId}</b> · ${eth(a.payment)} escrowed, ${a.nStages} stages`;
+    case "ProvidersSelected": return `<b>Referee scheduled</b> ${a.providers.map(who).join(", ")} <span class="muted">(ranked by Unichain reputation)</span>`;
+    case "NoProviders": return `<b>Referee found no capacity</b> · refunding`;
+    case "CallbackSent": return `Referee → ${a.chainId == S.chains.base.chainId ? "Base" : "Unichain"}: <span class="mono">${(S.selectors[(a.selector || "").replace(/^0x/, "")] || a.selector).split(".").pop()}()</span>`;
+    case "ProvidersAssigned": return `Escrow confirmed the pipeline`;
+    case "StageCommitted": return `${who(a.provider)} <b>committed stage ${a.stage}</b> <span class="mono muted">${short(a.outHash)}</span>`;
+    case "ResultProposed": return `<b>Result proposed</b> · challenge window open`;
+    case "Challenged": return `<b class="bad">${who(a.challenger)} challenged stage ${a.stage}</b> · accused ${who(a.accused)}`;
+    case "VerdictVote": return `${who(a.verifier)} re-ran the stage: <b class="${a.faulty ? "bad" : "ok"}">${a.faulty ? "faulty" : "honest"}</b>`;
+    case "VoteCounted": return `Referee counted ${a.votesFaulty} faulty / ${a.votesHonest} honest`;
+    case "QuorumReached": return a.faulty
+      ? `<b class="bad">Quorum: ${who(a.accused)} cheated</b> → reroute to ${who(a.replacement)}`
+      : `<b class="ok">Quorum: ${who(a.accused)} was honest</b> → challenge rejected`;
+    case "FaultResolved": return `Escrow wiped stage ${a.stage}+ and returned the challenger's bond`;
+    case "StageReassigned": return `<b>Stage ${a.stage} rerouted</b> ${who(a.oldProvider)} → ${who(a.newProvider)}`;
+    case "ProviderSlashed": return `<b class="bad">${who(a.provider)} slashed ${eth(a.amount)}</b> · ${eth(a.bounty)} bounty to ${who(a.challenger)}, ${eth(a.compensation)} to ${who(a.buyer)}`;
+    case "TimerFired": return `Referee's clock: <b>${PHASES[a.phase]}</b> deadline passed`;
+    case "StageTimedOut": return `<b class="warn">${who(a.provider)} missed its deadline</b> on stage ${a.stage}`;
+    case "ProviderTimedOut": return `${who(a.provider)} charged ${eth(a.penalty)} for the timeout <span class="muted">(not a slash)</span>`;
+    case "ChallengeRejected": return `Challenge rejected · bond paid to ${who(a.accused)}`;
+    case "ChallengeVoided": return `No quorum · challenge voided`;
+    case "JobSettled": return `<b class="ok">Settled</b> · ${a.providers.map((p, i) => `${who(p)} ${eth(a.amounts[i])}`).join(", ")}`;
+    case "JobRefunded": return `<b>Refunded</b> ${eth(a.amount)} to ${who(a.buyer)}`;
+    case "ReputationUpdated": return `${who(a.provider)} reputation: ${a.jobsDone} jobs, ${a.faults} faults`;
+    case "ProviderBonded": return `${who(a.provider)} bonded ${eth(a.bond)}`;
+    case "CronToggled": return a.on ? `Referee subscribed to the clock` : `Referee unsubscribed from the clock (nothing live)`;
+    case "CallbackIgnored": return `<span class="muted">Escrow ignored a stale instruction (${esc(a.reason)})</span>`;
+    default: return esc(e.event);
+  }
+}
+
+function renderChains() {
+  $("chains").innerHTML = ["base", "unichain", "lasna"].map((k) => {
+    const [name, key] = CHAIN_ROLE[k];
+    const addr = S.contracts[key];
+    const ex = S.chains[k].explorer;
+    const link = ex ? `<a href="${ex}/address/${addr}" target="_blank" rel="noopener">${addr}</a>` : addr;
+    const what = { base: "buyers pay, GPUs commit, verifiers vote", unichain: "GPU bonds, slashing, reputation", lasna: "decides everything: scheduling, quorum, timers" }[k];
+    return `<div class="card chain"><h3><span class="dot ${k}"></span>${CHAIN_NAME[k]} <span class="muted mono">${S.chains[k].chainId}</span></h3>
+      <div class="role"><b>${name}</b> · ${what}</div><div class="mono trunc muted">${link}</div></div>`;
+  }).join("");
+}
+
+function renderJobs() {
+  const jobs = S.jobs;
+  if (!selected && jobs.length) selected = jobs[0].id;
+  const tabs = jobs.slice(0, 12).map((j) => `<button class="jobtab ${j.id === selected ? "on" : ""}" data-job="${j.id}">#${j.id} <span class="st ${j.status}">${j.status}</span></button>`).join("");
+  const post = S.interactive ? `<span class="spacer"></span><button class="primary" id="post">Post a job</button>` : "";
+  $("jobs").innerHTML = `<h2 style="margin:0 8px 0 0">Jobs</h2>${tabs}${post}`;
+  document.querySelectorAll(".jobtab").forEach((b) => b.onclick = () => { selected = Number(b.dataset.job); render(); });
+  if (S.interactive) $("post").onclick = async (ev) => {
+    ev.target.disabled = true; ev.target.textContent = "Posting…";
+    await fetch("/api/jobs", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
+    selected = null; setTimeout(() => { ev.target.disabled = false; ev.target.textContent = "Post a job"; }, 2500);
+  };
+}
+
+function renderPipeline() {
+  const j = S.jobs.find((x) => x.id === selected);
+  if (!j) { $("pipeline").innerHTML = `<div class="empty">No jobs yet${S.interactive ? " — post one." : "."}</div>`; return; }
+  const evs = S.timeline.filter((e) => e.args.jobId == j.id);
+  const replaced = {};
+  evs.filter((e) => e.event === "StageReassigned").forEach((e) => (replaced[e.args.stage] = [...(replaced[e.args.stage] || []), e.args.oldProvider]));
+  const nodes = [`<div class="node io"><div class="k">input</div><div class="who">${(j.labels || []).length || 6} reviews</div><div class="muted" style="font-size:12px">sentiment job</div></div>`];
+  for (let s = 0; s < j.nStages; s++) {
+    const c = j.commits[String(s)];
+    const st = S.stages[s];
+    const layers = st ? `blocks ${st.first}–${st.last}` : `stage ${s}`;
+    let cls = "", status = `<span class="muted">waiting</span>`;
+    if (c) { cls = "committed"; status = `<span class="ok">committed</span> <span class="mono muted">${short(c.outHash)}</span>`; }
+    else if (j.status === "Running" && j.nextStage === s) { cls = "active"; status = `<span class="live" style="color:var(--base)">computing…</span>`; }
+    if (j.status === "Disputed" && j.disputedStage === s) { cls = "disputed"; status = `<span class="bad">under dispute</span>`; }
+    const gone = (replaced[s] || []).map((p) => `<span class="struck">${who(p)}</span>`).join(" ");
+    nodes.push(`<div class="arrow">→</div><div class="node ${cls}"><div class="k">GPU stage ${s} · ${layers}</div>
+      <div class="who">${gone} ${who(j.providers[s])}</div><div style="font-size:12px">${status}</div></div>`);
+  }
+  nodes.push(`<div class="arrow">→</div><div class="node io"><div class="k">result</div><div class="who">${j.status === "Settled" ? "paid out" : j.status}</div></div>`);
+  let banner = "";
+  const slash = S.timeline.find((e) => e.event === "ProviderSlashed" && e.args.jobId == j.id);
+  const quorum = evs.find((e) => e.event === "QuorumReached");
+  const counted = evs.filter((e) => e.event === "VoteCounted").pop();
+  if (j.status === "Disputed") banner = `<div class="banner bad"><b>Dispute on stage ${j.disputedStage}</b> · verifiers are re-running it · ${counted ? `${counted.args.votesFaulty} faulty / ${counted.args.votesHonest} honest, quorum 2` : "waiting for votes"}</div>`;
+  else if (quorum && quorum.args.faulty) banner = `<div class="banner bad">Caught: ${who(quorum.args.accused)} faked stage ${j.faulty.length ? j.disputedStage : ""} · ${slash ? `slashed ${eth(slash.args.amount)} on Unichain` : "slash pending on Unichain"} · rerouted to ${who(quorum.args.replacement)}</div>`;
+  if (j.status === "Settled") banner += `<div class="banner ok"><b>Settled</b> · ${Object.entries(j.payouts).map(([p, v]) => `${who(p)} ${eth(v)}`).join(" · ")}</div>`;
+  const labels = (j.labels || []).length ? `<div class="labels">${j.labels.map((l) => `<span class="label ${l}">${l}</span>`).join("")}</div>` : "";
+  $("pipeline").innerHTML = `<div class="pipe">${nodes.join("")}</div>${banner}${labels}`;
+}
+
+function renderTimeline() {
+  const j = S.jobs.find((x) => x.id === selected);
+  let evs = S.timeline;
+  if (j) {
+    const settled = S.timeline.find((x) => x.event === "JobSettled" && x.args.jobId == j.id);
+    evs = S.timeline.filter((e) => e.args.jobId == j.id
+      || (settled && e.event === "ReputationUpdated" && j.providers.includes(e.args.provider) && e.time >= settled.time && e.time - settled.time < 30));
+  }
+  if (!evs.length) { $("timeline").innerHTML = `<li class="empty" style="display:block">Waiting for events…</li>`; return; }
+  const t0 = evs[0].time;
+  $("timeline").innerHTML = evs.slice().sort((a, b) => a.time - b.time || a.seq - b.seq).map((e) =>
+    `<li><span class="t">+${e.time - t0}s</span><span class="dot ${e.chain}" title="${CHAIN_NAME[e.chain]}"></span>
+     <span class="what">${sentence(e)}<span class="chainname">${CHAIN_NAME[e.chain]}</span></span>${txLink(e.chain, e.tx)}</li>`).join("");
+}
+
+function renderProviders() {
+  $("modeh").textContent = S.interactive ? "behaviour" : "status";
+  const rows = S.providers.map((p) => {
+    const n = S.names[p.address.toLowerCase()] || {};
+    const barred = p.faults > 0 && BigInt(p.bond) === 0n;
+    let last;
+    if (S.interactive && n.mode !== undefined && !barred) {
+      const cur = n.mode.split(" ")[0];
+      last = `<select data-addr="${p.address}">${["honest", "skip", "noise", "offline"].map((m) => `<option ${m === cur ? "selected" : ""} value="${m}">${{ honest: "honest", skip: "cheat: skip layers", noise: "cheat: noise", offline: "offline" }[m]}</option>`).join("")}</select>`;
+    } else last = barred ? `<span class="bad">slashed</span>` : p.exiting ? `<span class="muted">exiting</span>` : `<span class="ok">active</span>`;
+    return `<tr><td>${who(p.address)}</td><td>${eth(p.bond)}</td><td>${p.jobsDone}</td><td class="${p.faults ? "bad" : ""}">${p.faults}${p.timeouts ? ` <span class="warn" title="timeouts">+${p.timeouts}t</span>` : ""}</td><td>${last}</td></tr>`;
+  });
+  $("providers").innerHTML = rows.join("") || `<tr><td colspan="5" class="muted">No providers bonded yet.</td></tr>`;
+  document.querySelectorAll("#providers select").forEach((sel) => sel.onchange = () =>
+    fetch(`/api/providers/${sel.dataset.addr}/mode`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: sel.value }) }));
+}
+
+function renderAgents() {
+  const items = (S.reports || []).slice().reverse().filter((r) => r.role === "watcher" || r.role.startsWith("verifier") || r.cheat || r.action === "went offline").slice(0, 30);
+  $("agents").innerHTML = items.map((r) => {
+    let txt;
+    if (r.role === "watcher") txt = r.action === "challenge" ? `<b class="bad">challenged job ${r.job} at stage ${r.stage}</b> · max |Δ| ${Number(r.divergence).toPrecision(3)}` : `${esc(r.action)} on job ${r.job}`;
+    else if (r.role.startsWith("verifier")) txt = `job ${r.job} stage ${r.stage}: <b class="${r.faulty ? "bad" : "ok"}">${r.faulty ? "faulty" : "honest"}</b> <span class="muted">${esc(r.detail || "")}</span>`;
+    else txt = r.action === "went offline" ? `<span class="warn">went offline on job ${r.job}</span>` : `<span class="bad">cheated (${esc(r.cheat)}) on job ${r.job} stage ${r.stage}</span>`;
+    return `<li><b>${esc(r.role)}</b> ${txt}</li>`;
+  }).join("") || `<li class="muted">${S.interactive ? "The watcher audits every proposed result." : "Agent reports appear when the dashboard runs next to the actors."}</li>`;
+}
+
+function render() {
+  if (!S) return;
+  $("network").innerHTML = `<span class="dot ${S.network === "local" ? "lasna" : "base"}"></span>${S.network === "local" ? "local chains" : "testnet"}`;
+  const live = S.timeline.filter((e) => e.event === "CronToggled").pop();
+  $("clock").innerHTML = `<span class="dot lasna ${live && live.args.on ? "live" : ""}"></span>Reactive clock ${live && live.args.on ? "on" : "idle"}`;
+  if (firstLoad) { renderChains(); firstLoad = false; }
+  renderJobs(); renderPipeline(); renderTimeline(); renderProviders(); renderAgents();
+}
+
+async function tick() {
+  try {
+    const r = await fetch("/api/state");
+    if (r.ok) {
+      const focus = document.activeElement && document.activeElement.tagName === "SELECT";
+      S = await r.json();
+      if (!focus) render();
+    }
+  } catch (e) { /* server restarting */ }
+  setTimeout(tick, 1500);
+}
+
+(function theme() {
+  let t = null;
+  try { t = localStorage.getItem("loom-theme"); } catch (e) {}
+  if (t) document.documentElement.dataset.theme = t;
+  $("theme").onclick = () => {
+    const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    const next = dark ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("loom-theme", next); } catch (e) {}
+  };
+})();
+tick();
+</script>
+</body>
+</html>

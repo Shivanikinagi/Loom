@@ -50,6 +50,17 @@ def cmd_local(args) -> int:
         register_providers(net, blobd.url)
         relay = LocalReactive(net, cron_every=args.cron_every).start()
         pipe = load_pipeline(args.tiny)
+        if args.interactive:
+            from .dashboard import serve
+
+            actors = start_actors(net, pipe)  # everyone honest; flip behaviours from the dashboard
+            serve("local", args.port, net=net, idx=actors.idx, actors=actors, block=False)
+            print(f"LOOM is running locally. Open http://127.0.0.1:{args.port}  (Ctrl+C to stop)", flush=True)
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                return 0
         actors = start_actors(net, pipe, BEHAVIOURS)
         time.sleep(2)  # let the referee learn the bonded providers
 
@@ -107,6 +118,11 @@ def cmd_run(args) -> int:
     actors = start_actors(net, pipe, BEHAVIOURS if args.scenarios else None)
     for name in ("base", "unichain", "lasna"):
         actors.idx.sync_once(name)
+    if args.dashboard:
+        from .dashboard import serve
+
+        serve(args.network, args.port, net=net, idx=actors.idx, actors=actors, block=False)
+        print(f"dashboard: http://127.0.0.1:{args.port}")
     try:
         if args.scenarios:
             results = run(actors, args.scenarios.split(","), payment=args.payment, timeout_s=args.timeout)
@@ -164,6 +180,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--cron-every", type=float, default=2.0)
     p.add_argument("--blob-port", type=int, default=8700)
     p.add_argument("--keep", action="store_true")
+    p.add_argument("--interactive", action="store_true", help="no scripted scenarios: open the dashboard and drive it")
+    p.add_argument("--port", type=int, default=8080)
     p.set_defaults(fn=cmd_local)
 
     for name, fn in (("deploy", cmd_deploy), ("fund", cmd_fund), ("register", cmd_register),
@@ -181,6 +199,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--tiny", action="store_true")
     p.add_argument("--serve-blobs", action="store_true", default=True)
     p.add_argument("--blob-port", type=int, default=8700)
+    p.add_argument("--dashboard", action="store_true")
+    p.add_argument("--port", type=int, default=8080)
     p.set_defaults(fn=cmd_run)
 
     p = sub.add_parser("preflight", help="check RPCs and balances before a testnet deploy")
