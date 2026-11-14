@@ -1,0 +1,36 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: foundry-rs/foundry-toolchain@v1
+      - name: forge test
+        working-directory: contracts
+        run: forge test -vv
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: foundry-rs/foundry-toolchain@v1
+      - run: pip install -r requirements.txt
+      - name: build contracts (ABIs for the actors)
+        working-directory: contracts
+        run: forge build
+      - name: unit tests (tiny GPT-2, no download)
+        run: python -m pytest -m "not e2e" -q
+      - name: end-to-end on local anvil chains
+        run: python -m pytest -m e2e -q
