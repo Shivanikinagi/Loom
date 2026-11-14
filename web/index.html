@@ -9,11 +9,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --black: #000; --night: #040807; --glass: rgba(255,255,255,.05); --glass-line: rgba(255,255,255,.12);
-  --teal: #2fe0a7; --teal-2: #1fa57b;
+  --black: #000; --glass: rgba(255,255,255,.05); --glass-line: rgba(255,255,255,.12);
+  --teal: #2fe0a7;
   --ink: #0a3d31; --ink-2: #4f6f64; --ink-3: #7f998f;
   --mint: #3fe596; --mint-text: #13a560; --mint-bg: #ddf8ea; --mint-line: #bfeed4;
-  --band: #02473a; --band-2: #035b4a;
+  --band: #02473a;
   --paper: #ffffff; --paper-2: #f4f8f6; --line: #dfeae4;
   --base: #4f7dff; --uni: #e5408c; --lasna: #12b886;
   --ok: #12a35f; --bad: #e0453a; --warn: #c9851a;
@@ -22,9 +22,9 @@
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--black); color: var(--ink); font: 15px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
 a { color: inherit; }
+[hidden] { display: none !important; }
 .mono { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
 .ok { color: var(--ok); } .bad { color: var(--bad); } .warn { color: var(--warn); } .muted { color: var(--ink-2); } .faint { color: var(--ink-3); }
 .trunc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -40,26 +40,28 @@ a { color: inherit; }
 .btn.white:hover { background: #eafff4; }
 .btn.ghost { background: transparent; color: #fff; border-color: var(--glass-line); }
 .btn.ghost:hover { background: var(--glass); }
-.btn.cta { background: #fff; color: #08110e; padding: 5px 16px 5px 5px; border-radius: 10px; box-shadow: 0 0 0 1px rgba(255,255,255,.2), 0 8px 30px rgba(47,224,167,.18); }
-.btn.cta .ic { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, #3fe5a0, #138a63); }
+.btn.cta { background: #fff; color: #08110e; padding: 5px 16px 5px 5px; box-shadow: 0 0 0 1px rgba(255,255,255,.2), 0 8px 30px rgba(47,224,167,.18); }
 .btn.cta:hover { transform: translateY(-1px); }
+.btn .ic { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, #3fe5a0, #138a63); }
 .btn.dark { background: var(--ink); color: #fff; padding: 5px 16px 5px 5px; }
-.btn.dark .ic { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; background: linear-gradient(135deg, #3fe5a0, #138a63); }
 
-/* ---------- hero ---------- */
-.hero { position: relative; overflow: hidden; background: var(--black); color: #fff; isolation: isolate; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; padding-bottom: 120px; }
+/* ---------- dark top (hero on home, page header elsewhere) ---------- */
+.top { position: relative; overflow: hidden; background: var(--black); color: #fff; isolation: isolate; }
 .arcs { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
-nav { width: 100%; display: flex; align-items: center; gap: 16px; padding: 22px 32px; }
-.logo { display: flex; align-items: center; gap: 10px; font: 600 18px/1 var(--display); letter-spacing: .14em; text-decoration: none; }
+nav { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; padding: 22px 32px; }
+.logo { justify-self: start; display: flex; align-items: center; gap: 10px; font: 600 18px/1 var(--display); letter-spacing: .14em; text-decoration: none; color: #fff; }
 .logo .mark { width: 22px; height: 22px; display: grid; grid-template-rows: repeat(3, 1fr); gap: 2px; }
 .logo .mark i { display: block; border-radius: 2px; background: linear-gradient(90deg, #3fe5a0, #fff); }
 .logo .mark i:nth-child(2) { margin: 0 3px; } .logo .mark i:nth-child(3) { margin: 0 6px; }
-.menu { margin: 0 auto; display: flex; gap: 4px; padding: 4px; border-radius: 12px; border: 1px solid var(--glass-line); background: rgba(255,255,255,.03); backdrop-filter: blur(10px); }
-.menu a { padding: 7px 14px; border-radius: 8px; font-size: 14px; text-decoration: none; color: #dfe9e4; }
+.menu { display: flex; gap: 4px; padding: 4px; border-radius: 12px; border: 1px solid var(--glass-line); background: rgba(255,255,255,.03); backdrop-filter: blur(10px); }
+.menu a { padding: 7px 14px; border-radius: 8px; font-size: 14px; text-decoration: none; color: #cfdcd6; }
 .menu a:hover { background: var(--glass); color: #fff; }
-.navr { display: flex; gap: 8px; align-items: center; }
-.netchip { display: inline-flex; gap: 8px; align-items: center; font-size: 12.5px; color: #b9c9c2; padding: 7px 11px; border-radius: 10px; border: 1px solid var(--glass-line); white-space: nowrap; }
-.chipart { width: min(920px, 100%); height: auto; margin-top: 4px; display: block; }
+.menu a.on { background: rgba(255,255,255,.1); color: #fff; }
+.navr { justify-self: end; display: flex; gap: 8px; align-items: center; }
+
+/* home hero */
+.hero { min-height: calc(100vh - 82px); min-height: calc(100svh - 82px); display: flex; flex-direction: column; align-items: center; padding-bottom: 120px; }
+.chipart { width: min(920px, 100%); height: auto; display: block; }
 .hero-copy { text-align: center; padding: 0 16px; margin-top: -10px; }
 h1 { font: 600 clamp(44px, 7.4vw, 92px)/1 var(--display); letter-spacing: -.035em; margin: 0 0 18px;
   background: linear-gradient(180deg, #ffffff 30%, #9fb3ab); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -71,9 +73,7 @@ h1 { font: 600 clamp(44px, 7.4vw, 92px)/1 var(--display); letter-spacing: -.035e
 .tile:hover { border-color: rgba(63,229,150,.5); }
 .tile .ic { width: 28px; height: 28px; margin: 0 auto 8px; border-radius: 8px; display: grid; place-items: center; border: 1px solid var(--glass-line); background: rgba(255,255,255,.04); }
 .tile .addr { display: block; margin-top: 4px; color: #8fa49b; font: 10.5px var(--mono); }
-
-/* steps row (still dark) */
-.steps { background: var(--black); color: #fff; padding: 10px 16px 120px; display: flex; justify-content: center; align-items: flex-start; gap: 0; }
+.steps { display: flex; justify-content: center; align-items: flex-start; padding: 0 16px 130px; }
 .step { width: 200px; text-align: center; }
 .step .ico { width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 16px; display: grid; place-items: center; color: var(--teal);
   border: 1px solid rgba(47,224,167,.35); background: radial-gradient(circle at 50% 30%, rgba(47,224,167,.25), rgba(4,8,7,.9) 70%); box-shadow: 0 0 40px rgba(47,224,167,.15); }
@@ -83,19 +83,36 @@ h1 { font: 600 clamp(44px, 7.4vw, 92px)/1 var(--display); letter-spacing: -.035e
 .link::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: linear-gradient(90deg, transparent, rgba(47,224,167,.45), transparent); }
 .link i { width: 9px; height: 9px; transform: rotate(45deg); border: 1px solid rgba(47,224,167,.7); background: var(--black); position: relative; }
 
+/* inner page header */
+.pagehead { text-align: center; padding: 36px 16px 110px; max-width: 760px; margin: 0 auto; }
+.pagehead .tag { border-color: rgba(255,255,255,.5); color: #e8f5ef; }
+.pagehead h1 { font-size: clamp(36px, 5.4vw, 64px); margin: 16px 0 14px; }
+.pagehead h1 .accent { display: block; background: linear-gradient(180deg, #7ff5bb, #2fd189); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.pagehead p { color: #c3d3cc; margin: 0 auto; max-width: 560px; }
+
 /* ---------- light sheet ---------- */
-.sheet { background: var(--paper); border-radius: 32px 32px 0 0; margin-top: -48px; position: relative; z-index: 2; overflow: hidden; }
+.sheet { background: var(--paper); border-radius: 32px 32px 0 0; margin-top: -48px; position: relative; z-index: 2; overflow: hidden; min-height: 50vh; }
 .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
-section.block { padding: 88px 0 0; }
+.view { padding: 64px 0 96px; }
 .shead { text-align: center; max-width: 720px; margin: 0 auto 40px; }
 .tag { display: inline-block; border: 1px solid var(--ink); color: var(--ink); border-radius: 999px; padding: 3px 11px; font-size: 12.5px; font-weight: 500; }
 h2 { font: 600 clamp(32px, 4.4vw, 50px)/1.08 var(--display); letter-spacing: -.025em; margin: 14px 0 14px; color: var(--ink); }
 h2 .accent { color: var(--mint-text); display: block; }
 .shead p { color: var(--ink-2); margin: 0 auto; max-width: 560px; }
 
+/* home: page cards */
+.pages { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.pagecard { display: flex; flex-direction: column; gap: 10px; padding: 22px; border-radius: 20px; border: 1px solid var(--line); text-decoration: none; background: #fff; min-height: 220px; transition: border-color .2s, box-shadow .2s, transform .2s; }
+.pagecard:hover { border-color: var(--mint-line); box-shadow: 0 12px 34px rgba(10,61,49,.08); transform: translateY(-2px); }
+.pagecard .n { font: 600 44px/1 var(--display); letter-spacing: -.03em; color: var(--ink); }
+.pagecard .l { color: var(--ink-2); font-size: 13.5px; }
+.pagecard h3 { margin: auto 0 0; font: 600 20px/1.2 var(--display); color: var(--ink); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pagecard h3 .arr { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--mint-bg); color: var(--ink); flex: none; }
+.pagecard p { margin: 0; color: var(--ink-2); font-size: 13.5px; }
+
 /* stats */
-.stats { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: -12px 0 28px; }
-.stat { min-width: 150px; padding: 12px 16px; border-radius: 14px; background: var(--paper-2); border: 1px solid var(--line); text-align: left; }
+.stats { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 0 0 28px; }
+.stat { min-width: 150px; padding: 12px 16px; border-radius: 14px; background: var(--paper-2); border: 1px solid var(--line); }
 .stat .n { font: 600 26px/1 var(--display); color: var(--ink); letter-spacing: -.02em; }
 .stat .l { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
 
@@ -115,15 +132,15 @@ select { width: 100%; font: 500 13px/1 var(--sans); color: var(--ink); backgroun
   background-image: linear-gradient(45deg, transparent 50%, var(--ink-2) 50%), linear-gradient(135deg, var(--ink-2) 50%, transparent 50%);
   background-position: calc(100% - 17px) 50%, calc(100% - 12px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
 
-/* job split card */
-.jobbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; margin: -16px 0 22px; }
+/* jobs */
+.jobbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; margin: 0 0 22px; }
 .tabs { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
 .tab { font: 500 13px/1 var(--sans); padding: 9px 13px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink-2); cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
 .tab.on { border-color: var(--ink); color: var(--ink); }
 .st { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
 .st.Settled { background: var(--ok); } .st.Disputed { background: var(--bad); } .st.Proposed { background: var(--warn); } .st.Running { background: var(--lasna); }
 .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); border-radius: 24px; overflow: hidden; min-height: 420px; }
-.glowpanel { position: relative; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 28px; isolation: isolate;
+.glowpanel { position: relative; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 28px;
   background:
     radial-gradient(ellipse 22% 14% at 30% 0%, rgba(255,255,255,.75), transparent),
     radial-gradient(ellipse 22% 14% at 70% 0%, rgba(255,255,255,.75), transparent),
@@ -151,33 +168,30 @@ select { width: 100%; font: 500 13px/1 var(--sans); color: var(--ink); backgroun
 .answer.positive { color: var(--ok); } .answer.negative { color: var(--bad); }
 .empty { color: var(--ink-2); padding: 40px 0; text-align: center; }
 
-/* ledger band */
-.band { background: var(--band); color: #eafff4; margin-top: 88px; position: relative; }
-.band .wrap { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 40px; padding-top: 72px; padding-bottom: 72px; }
-.bandhead { position: sticky; top: 40px; align-self: start; }
-.bandhead .tag { border-color: rgba(234,255,244,.6); color: #eafff4; }
-.bandhead h2 { color: #fff; }
-.bandhead h2 .accent { color: var(--mint); }
-.bandhead p { color: #a9d3c3; max-width: 360px; }
+/* ledger */
+.band { background: var(--band); color: #eafff4; border-radius: 24px; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 40px; padding: 48px; }
+.bandhead { position: sticky; top: 24px; align-self: start; }
+.bandhead h3 { font: 600 26px/1.15 var(--display); margin: 0 0 10px; color: #fff; letter-spacing: -.015em; }
+.bandhead p { color: #a9d3c3; margin: 0; max-width: 340px; font-size: 14px; }
 .word { display: flex; align-items: center; gap: 18px; margin-top: 28px; font: 600 clamp(36px, 4vw, 48px)/1 var(--display); color: var(--mint); letter-spacing: -.02em; }
 .word .big { width: 22px; height: 22px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 30px rgba(63,229,150,.7); }
-.tl { list-style: none; margin: 0; padding: 0 0 0 26px; position: relative; max-height: 640px; overflow: auto; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 22px; font-size: 12.5px; color: #cfe9de; }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.tl { list-style: none; margin: 0; padding: 0 0 0 26px; position: relative; }
 .tl::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 1px; background: rgba(234,255,244,.18); }
-.tl li { position: relative; padding: 10px 0 12px 14px; border-left: 2px solid transparent; }
+.tl li { position: relative; padding: 10px 0 12px 14px; }
 .tl li .d { position: absolute; left: -24px; top: 16px; width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--band); }
-.tl li .d.base { background: #8fb0ff; } .tl li .d.unichain { background: #ff8fc0; } .tl li .d.lasna { background: var(--mint); }
+.tl li .d.base, .legend .base { background: #8fb0ff; } .tl li .d.unichain, .legend .unichain { background: #ff8fc0; } .tl li .d.lasna, .legend .lasna { background: var(--mint); }
 .tl .what { color: #f2fff8; font-size: 15px; }
 .tl .what b { font-weight: 600; }
 .tl .what .bad { color: #ff9c92; } .tl .what .ok { color: var(--mint); } .tl .what .warn { color: #ffd08a; } .tl .what .muted { color: #a9d3c3; } .tl .what .faint { color: #7fb4a2; }
 .tl .meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 3px; font: 11.5px var(--mono); color: #86bba8; }
 .tl .meta a { color: #b8e6d4; text-decoration: none; } .tl .meta a:hover { text-decoration: underline; }
-.tl::-webkit-scrollbar { width: 6px; } .tl::-webkit-scrollbar-thumb { background: rgba(234,255,244,.2); border-radius: 3px; }
 
-/* agents dot field */
-.field { position: relative; padding: 110px 0 96px; }
-.field svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
-.field .wrap { position: relative; z-index: 1; }
-.feed { list-style: none; margin: 0 auto; padding: 8px 20px; max-width: 760px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.92); backdrop-filter: blur(4px); }
+/* agents */
+.field { position: relative; }
+.field svg { position: absolute; left: 0; right: 0; top: -40px; height: 260px; width: 100%; z-index: 0; }
+.feed { position: relative; z-index: 1; list-style: none; margin: 120px auto 0; padding: 8px 20px; max-width: 760px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.95); }
 .feed li { padding: 12px 0; border-top: 1px solid var(--line); font-size: 14px; }
 .feed li:first-child { border-top: 0; }
 .feed .role { display: inline-block; min-width: 82px; font-size: 12px; font-weight: 600; color: var(--mint-text); }
@@ -187,29 +201,33 @@ footer .in { max-width: 1200px; margin: 0 auto; padding: 28px 32px; display: fle
 footer .spacer { flex: 1; }
 
 @media (max-width: 980px) {
-  .menu { display: none; }
+  nav { grid-template-columns: auto minmax(0, 1fr); }
+  .menu { grid-row: 2; grid-column: 1 / -1; justify-self: center; overflow-x: auto; max-width: 100%; }
+  .pages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .split { grid-template-columns: minmax(0, 1fr); }
   .glowpanel { min-height: 320px; }
-  .band .wrap { grid-template-columns: minmax(0, 1fr); }
+  .band { grid-template-columns: minmax(0, 1fr); padding: 32px 24px; }
   .bandhead { position: static; }
 }
 @media (max-width: 640px) {
-  nav { padding: 16px; } .navr .btn.ghost { display: none; }
+  nav { padding: 16px; gap: 12px; } .navr .btn.ghost { display: none; }
+  .menu a { padding: 7px 10px; font-size: 13px; }
   .wrap { padding: 0 16px; } footer .in { padding: 22px 16px; }
   .lede { font-size: 15.5px; }
-  .steps { flex-direction: column; align-items: center; gap: 0; padding-bottom: 96px; }
+  .steps { flex-direction: column; align-items: center; padding-bottom: 96px; }
   .link { flex: 0 0 36px; height: 36px; width: 64px; } .link::before { left: 50%; right: auto; top: 0; bottom: 0; width: 1px; height: auto; background: linear-gradient(180deg, transparent, rgba(47,224,167,.45), transparent); }
+  .pages { grid-template-columns: minmax(0, 1fr); } .pagecard { min-height: 0; }
   .mintpanel { padding: 28px 22px; }
   .stat { min-width: 0; flex: 1 1 40%; }
   .market { grid-template-columns: minmax(0, 1fr); }
-  section.block { padding-top: 64px; }
   .tile { width: calc(33.3% - 6px); min-width: 0; padding: 10px 6px; } .tile .addr { display: none; }
+  .view { padding: 48px 0 72px; }
 }
-@media (prefers-reduced-motion: reduce) { .live, .orb, .pulse-path { animation: none !important; } html { scroll-behavior: auto; } }
+@media (prefers-reduced-motion: reduce) { .live, .orb { animation: none !important; } .pulse-path { display: none; } }
 </style>
 </head>
 <body>
-<header class="hero" id="top">
+<header class="top">
   <svg class="arcs" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
       <linearGradient id="arc" x1="0" y1="0" x2="1" y2="0">
@@ -235,93 +253,90 @@ footer .spacer { flex: 1; }
   </svg>
 
   <nav>
-    <a class="logo" href="#top"><span class="mark"><i></i><i></i><i></i></span>LOOM</a>
-    <div class="menu"><a href="#market">Marketplace</a><a href="#job">Live job</a><a href="#ledger">Ledger</a><a href="#agents">Agents</a></div>
-    <div class="navr"><span class="netchip" id="network">…</span><a class="btn ghost" href="https://github.com/Shivanikinagi/Loom" target="_blank" rel="noopener">GitHub</a><button class="btn white" id="navPost">Post a job</button></div>
+    <a class="logo" href="/" data-link><span class="mark"><i></i><i></i><i></i></span>LOOM</a>
+    <div class="menu" id="menu"><a href="/marketplace" data-link>Marketplace</a><a href="/jobs" data-link>Jobs</a><a href="/ledger" data-link>Ledger</a><a href="/agents" data-link>Agents</a></div>
+    <div class="navr"><a class="btn ghost" href="https://github.com/Shivanikinagi/Loom" target="_blank" rel="noopener">GitHub</a><button class="btn white" id="navPost">Post a job</button></div>
   </nav>
 
-  <svg class="chipart" viewBox="0 0 920 230" aria-hidden="true">
-    <defs>
-      <linearGradient id="chipEdge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4af0b4"/><stop offset="1" stop-color="#0f6b4f"/></linearGradient>
-      <radialGradient id="chipGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#2fe0a7" stop-opacity=".45"/><stop offset="1" stop-color="#2fe0a7" stop-opacity="0"/></radialGradient>
-    </defs>
-    <g fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1.2" id="traces">
-      <path d="M404 112 H300 L268 80 H120"/><path d="M404 132 H320 L282 170 H70"/>
-      <path d="M516 112 H620 L652 80 H800"/><path d="M516 132 H600 L638 170 H850"/>
-      <path d="M448 64 V0"/><path d="M460 64 V0"/><path d="M472 64 V0"/>
-    </g>
-    <g fill="none" stroke="#3fe5a0" stroke-width="1.6" stroke-linecap="round" id="pulses"></g>
-    <circle cx="460" cy="122" r="120" fill="url(#chipGlow)"/>
-    <rect x="404" y="64" width="112" height="116" rx="18" fill="#06130f" stroke="url(#chipEdge)" stroke-width="1.5"/>
-    <rect x="416" y="76" width="88" height="92" rx="10" fill="#0a1d17" stroke="rgba(74,240,180,.25)"/>
-    <g id="pins" fill="rgba(255,255,255,.12)"></g>
-    <text x="460" y="128" text-anchor="middle" fill="#e9fff5" font-family="Inter Tight, Inter, sans-serif" font-weight="600" font-size="17" letter-spacing="2">LOOM</text>
-    <g id="nodes"></g>
-  </svg>
-
-  <div class="hero-copy">
-    <h1>Inference you can verify</h1>
-    <p class="lede">One model, split across community GPUs. A Reactive contract checks every layer and slashes any GPU that cheats.</p>
-    <button class="btn cta" id="heroPost"><span class="ic" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M5 3l4 4-4 4" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Post a job</button>
+  <!-- home hero -->
+  <div class="hero" id="hero">
+    <svg class="chipart" viewBox="0 0 920 230" aria-hidden="true">
+      <defs>
+        <linearGradient id="chipEdge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4af0b4"/><stop offset="1" stop-color="#0f6b4f"/></linearGradient>
+        <radialGradient id="chipGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#2fe0a7" stop-opacity=".45"/><stop offset="1" stop-color="#2fe0a7" stop-opacity="0"/></radialGradient>
+      </defs>
+      <g fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1.2" id="traces">
+        <path d="M404 112 H300 L268 80 H136"/><path d="M404 132 H320 L282 170 H86"/>
+        <path d="M516 112 H620 L652 80 H784"/><path d="M516 132 H600 L638 170 H834"/>
+        <path d="M448 64 V0"/><path d="M460 64 V0"/><path d="M472 64 V0"/>
+      </g>
+      <g fill="none" stroke="#3fe5a0" stroke-width="1.6" stroke-linecap="round" id="pulses"></g>
+      <circle cx="460" cy="122" r="120" fill="url(#chipGlow)"/>
+      <rect x="404" y="64" width="112" height="116" rx="18" fill="#06130f" stroke="url(#chipEdge)" stroke-width="1.5"/>
+      <rect x="416" y="76" width="88" height="92" rx="10" fill="#0a1d17" stroke="rgba(74,240,180,.25)"/>
+      <g id="pins" fill="rgba(255,255,255,.12)"></g>
+      <text x="460" y="128" text-anchor="middle" fill="#e9fff5" font-family="Inter Tight, Inter, sans-serif" font-weight="600" font-size="17" letter-spacing="2">LOOM</text>
+      <g id="nodes"></g>
+    </svg>
+    <div class="hero-copy">
+      <h1>Inference you can verify</h1>
+      <p class="lede">One model, split across community GPUs. A Reactive contract checks every layer and slashes any GPU that cheats.</p>
+      <button class="btn cta" id="heroPost"><span class="ic" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M5 3l4 4-4 4" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Post a job</button>
+    </div>
+    <div class="tiles-label" id="tilesLabel">Live on three chains</div>
+    <div class="tiles" id="chains"></div>
   </div>
-  <div class="tiles-label" id="tilesLabel">Live on three chains</div>
-  <div class="tiles" id="chains"></div>
-</header>
+  <div class="steps" id="steps" aria-label="How LOOM verifies">
+    <div class="step"><div class="ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="3" width="18" height="5" rx="1.5"/><rect x="4" y="10.5" width="18" height="5" rx="1.5"/><rect x="4" y="18" width="18" height="5" rx="1.5"/></svg></div><p><b>Split</b>GPT-2 runs as three stages on three GPUs</p></div>
+    <div class="link"><i></i></div>
+    <div class="step"><div class="ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 4L7 22M19 4l-2 18M4 9.5h18M3 16.5h18"/></svg></div><p><b>Commit</b>Each GPU posts the hash of its output</p></div>
+    <div class="link"><i></i></div>
+    <div class="step"><div class="ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 3l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V6l8-3z"/><path d="M9 13l3 3 5-6"/></svg></div><p><b>Referee</b>Reactive finds the cheater and slashes its bond</p></div>
+  </div>
 
-<div class="steps" aria-label="How LOOM verifies">
-  <div class="step"><div class="ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="3" width="18" height="5" rx="1.5"/><rect x="4" y="10.5" width="18" height="5" rx="1.5"/><rect x="4" y="18" width="18" height="5" rx="1.5"/></svg></div><p><b>Split</b>GPT-2 runs as three stages on three GPUs</p></div>
-  <div class="link"><i></i></div>
-  <div class="step"><div class="ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 4L7 22M19 4l-2 18M4 9.5h18M3 16.5h18"/></svg></div><p><b>Commit</b>Each GPU posts the hash of its output</p></div>
-  <div class="link"><i></i></div>
-  <div class="step"><div class="ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 3l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V6l8-3z"/><path d="M9 13l3 3 5-6"/></svg></div><p><b>Referee</b>Reactive finds the cheater and slashes its bond</p></div>
-</div>
+  <!-- inner page header -->
+  <div class="pagehead" id="pagehead" hidden><span class="tag" id="phTag"></span><h1 id="phTitle"></h1><p id="phText"></p></div>
+</header>
 
 <div class="sheet">
   <div class="wrap">
-    <section class="block" id="market">
+    <section class="view" data-view="home">
       <div class="shead">
-        <span class="tag">Marketplace</span>
-        <h2>Rent GPUs <span class="accent">backed by bonds</span></h2>
-        <p>Every GPU locks a bond on Unichain. The referee schedules the ones with the best record and takes the bond of any that cheat.</p>
+        <span class="tag">Explore</span>
+        <h2>Everything on chain, <span class="accent">one click away</span></h2>
+        <p>Rent GPUs, watch a job run across three of them, and follow every transaction the referee caused.</p>
       </div>
+      <div class="pages" id="pagecards"></div>
+    </section>
+
+    <section class="view" data-view="marketplace" hidden>
       <div class="stats" id="stats"></div>
       <div class="market" id="providers"></div>
     </section>
 
-    <section class="block" id="job">
-      <div class="shead">
-        <span class="tag">Live job</span>
-        <h2>One model, <span class="accent">three GPUs</span></h2>
-        <p>Each GPU only sees the activations handed to it. If one fakes its layers, the next answer gives it away.</p>
-      </div>
-      <div class="jobbar"><div class="tabs" id="jobs"></div><span id="postslot"></span></div>
+    <section class="view" data-view="jobs" hidden>
+      <div class="jobbar"><div class="tabs jobtabs"></div><span id="postslot"></span></div>
       <div id="pipeline"><div class="empty">No jobs yet.</div></div>
     </section>
-  </div>
 
-  <div class="band" id="ledger">
-    <div class="wrap">
-      <div class="bandhead">
-        <span class="tag">Ledger</span>
-        <h2>Every step, <span class="accent">on three chains</span></h2>
-        <p>Base holds the money, Unichain holds the bonds, and the referee on Reactive Lasna decides. Each line links to its transaction.</p>
-        <div class="word">Refereed <span class="big"></span></div>
+    <section class="view" data-view="ledger" hidden>
+      <div class="jobbar"><div class="tabs jobtabs"></div></div>
+      <div class="band">
+        <div class="bandhead">
+          <h3 id="ledgerTitle">Job timeline</h3>
+          <p>Base holds the money, Unichain holds the bonds, and the referee on Reactive Lasna decides. Each line links to its transaction.</p>
+          <div class="word">Refereed <span class="big"></span></div>
+          <div class="legend"><span><i class="dot lasna"></i>Reactive Lasna</span><span><i class="dot base"></i>Base Sepolia</span><span><i class="dot unichain"></i>Unichain Sepolia</span></div>
+        </div>
+        <ul class="tl" id="timeline"></ul>
       </div>
-      <ul class="tl" id="timeline"></ul>
-    </div>
-  </div>
+    </section>
 
-  <section class="field" id="agents">
-    <svg id="dots" aria-hidden="true"></svg>
-    <div class="wrap">
-      <div class="shead">
-        <span class="tag">Agents</span>
-        <h2>Who checked <span class="accent">the work</span></h2>
-        <p>A watcher re-runs every answer. Three verifiers re-run only the stage in dispute and vote.</p>
-      </div>
+    <section class="view field" data-view="agents" hidden>
+      <svg id="dots" aria-hidden="true"></svg>
       <ul class="feed" id="agentfeed"></ul>
-    </div>
-  </section>
+    </section>
+  </div>
 </div>
 <footer><div class="in"><span>LOOM · trustless pooled-GPU inference</span><span class="spacer"></span><span>GPT-2 · 3 stages · 12 blocks</span><span>Reactive Lasna · Base Sepolia · Unichain Sepolia</span></div></footer>
 
@@ -345,21 +360,54 @@ const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag)
   });
 })();
 
-/* ---------- dot field ---------- */
+/* ---------- dot field (agents page) ---------- */
 (function dots() {
   const svg = document.getElementById("dots"); let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  svg.setAttribute("viewBox", "0 0 1440 720"); svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
-  for (let i = 0; i < 46; i++) { const top = i % 2, x = 40 + rnd() * 1360, y = top ? 30 + rnd() * 150 : 560 + rnd() * 150, r = [2, 4, 6, 8][Math.floor(rnd() * 4)];
-    if (x > 380 && x < 1060 && r > 4) continue;
+  svg.setAttribute("viewBox", "0 0 1200 260"); svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
+  for (let i = 0; i < 34; i++) { const x = 20 + rnd() * 1160, y = 20 + rnd() * 200, r = [2, 4, 6, 8][Math.floor(rnd() * 4)];
     el("circle", { cx: x, cy: y, r, fill: rnd() > .5 ? "#3fe596" : "#a9c8bd", opacity: r > 4 ? .9 : .7 }, svg); }
 })();
+
+/* ---------- pages ---------- */
+const PAGES = {
+  "/": { view: "home", title: "LOOM" },
+  "/marketplace": { view: "marketplace", title: "Marketplace · LOOM", tag: "Marketplace", h: "Rent GPUs", a: "backed by bonds",
+    p: "Every GPU locks a bond on Unichain. The referee schedules the ones with the best record and takes the bond of any that cheat." },
+  "/jobs": { view: "jobs", title: "Jobs · LOOM", tag: "Jobs", h: "One model,", a: "three GPUs",
+    p: "Each GPU only sees the activations handed to it. If one fakes its layers, the next answer gives it away." },
+  "/ledger": { view: "ledger", title: "Ledger · LOOM", tag: "Ledger", h: "Every step,", a: "on three chains",
+    p: "Every event the referee read and every callback it sent, in order, with a link to the transaction." },
+  "/agents": { view: "agents", title: "Agents · LOOM", tag: "Agents", h: "Who checked", a: "the work",
+    p: "A watcher re-runs every answer. Three verifiers re-run only the stage in dispute and vote." },
+};
+let page = "/";
+function go(path, push = true) {
+  if (!PAGES[path]) path = "/";
+  page = path;
+  const P = PAGES[path], home = path === "/";
+  if (push && location.pathname !== path) history.pushState({}, "", path);
+  document.title = P.title;
+  $("hero").hidden = $("steps").hidden = !home;
+  $("pagehead").hidden = home;
+  if (!home) { $("phTag").textContent = P.tag; $("phTitle").innerHTML = `${P.h}<span class="accent">${P.a}</span>`; $("phText").textContent = P.p; }
+  document.querySelectorAll("[data-view]").forEach((v) => (v.hidden = v.dataset.view !== P.view));
+  document.querySelectorAll("#menu a").forEach((a) => a.classList.toggle("on", a.getAttribute("href") === path));
+  window.scrollTo(0, 0);
+  render();
+}
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-link]");
+  if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+  e.preventDefault(); go(a.getAttribute("href"));
+});
+window.addEventListener("popstate", () => go(location.pathname, false));
 
 /* ---------- data ---------- */
 const CHAIN_NAME = { base: "Base Sepolia", unichain: "Unichain Sepolia", lasna: "Reactive Lasna" };
 const CHAIN_ROLE = { base: ["LoomEscrow", "escrow"], unichain: ["LoomBonds", "bonds"], lasna: ["LoomReferee", "referee"] };
 const PHASES = ["None", "Assigning", "Running", "Proposed", "Disputed", "Resolving", "Done"];
-let S = null, selected = null, firstLoad = true;
-const $ = (id) => document.getElementById(id);
+let S = null, selected = null, chainsDrawn = false;
+function $(id) { return document.getElementById(id); }
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const short = (a) => (a && a.length > 12 ? a.slice(0, 6) + "…" + a.slice(-4) : a || "–");
 const eth = (w) => { const v = Number(BigInt(w || 0)) / 1e18; return (v >= 0.01 ? v.toFixed(3) : v.toPrecision(2)).replace(/\.?0+$/, "") + " ETH"; };
@@ -405,33 +453,53 @@ function sentence(e) {
   }
 }
 const extIcon = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2h4v4M12 2L6.5 7.5M10.5 8.5V12h-8.5V3.5H5.5"/></svg>`;
+const arrIcon = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"/></svg>`;
+
+function stats() {
+  const settled = S.jobs.filter((j) => j.status === "Settled").length, bonded = S.providers.filter((p) => BigInt(p.bond) > 0n).length;
+  const slashed = S.timeline.filter((e) => e.event === "ProviderSlashed").length;
+  const times = S.jobs.map((j) => { const c = S.timeline.find((e) => e.event === "JobCreated" && e.args.jobId == j.id), d = S.timeline.find((e) => e.event === "JobSettled" && e.args.jobId == j.id); return c && d ? d.time - c.time : null; })
+    .filter((x) => x !== null).sort((a, b) => a - b);
+  const reactive = S.timeline.filter((e) => e.chain === "lasna").length;
+  return { settled, bonded, slashed, median: times.length ? times[Math.floor(times.length / 2)] + "s" : "–", events: S.timeline.length, reactive, jobs: S.jobs.length,
+    checks: (S.reports || []).filter((r) => r.role === "watcher" || r.role.startsWith("verifier")).length };
+}
 function renderChains() {
-  const testnet = S.network !== "local";
-  $("tilesLabel").textContent = testnet ? "Live on three testnets" : "Running on three local chains";
+  $("tilesLabel").textContent = S.network !== "local" ? "Live on three testnets" : "Running on three local chains";
   $("chains").innerHTML = ["lasna", "base", "unichain"].map((k) => {
     const [name, key] = CHAIN_ROLE[k], addr = S.contracts[key], ex = S.chains[k].explorer, label = CHAIN_NAME[k].replace(" ", "<br>");
     const inner = `<span class="ic">${extIcon}</span>${label}<span class="addr">${name}</span>`;
     return ex ? `<a class="tile" href="${ex}/address/${addr}" target="_blank" rel="noopener" title="${name} ${addr}">${inner}</a>` : `<div class="tile" title="${name} ${addr}">${inner}</div>`;
   }).join("");
+  chainsDrawn = true;
+}
+function renderHome() {
+  const s = stats();
+  const cards = [
+    ["/marketplace", s.bonded, "GPUs bonded", "Marketplace", "Bonds, reputation and the cheat switch for each GPU."],
+    ["/jobs", s.jobs, `jobs · ${s.settled} settled`, "Jobs", "Watch three GPUs run GPT-2 and see who got paid."],
+    ["/ledger", s.events, `events · ${s.reactive} on Reactive`, "Ledger", "Every event and callback across the three chains."],
+    ["/agents", s.slashed, s.slashed === 1 ? "cheater caught" : "cheaters caught", "Agents", "What the watcher and verifiers found."],
+  ];
+  $("pagecards").innerHTML = cards.map(([href, n, l, h, p]) =>
+    `<a class="pagecard" href="${href}" data-link><div class="n">${n}</div><div class="l">${l}</div><h3>${h}<span class="arr">${arrIcon}</span></h3><p>${p}</p></a>`).join("");
 }
 function renderStats() {
-  const settled = S.jobs.filter((j) => j.status === "Settled").length, bonded = S.providers.filter((p) => BigInt(p.bond) > 0n).length;
-  const slashed = S.timeline.filter((e) => e.event === "ProviderSlashed").length;
-  const times = S.jobs.map((j) => { const c = S.timeline.find((e) => e.event === "JobCreated" && e.args.jobId == j.id), d = S.timeline.find((e) => e.event === "JobSettled" && e.args.jobId == j.id); return c && d ? d.time - c.time : null; })
-    .filter((x) => x !== null).sort((a, b) => a - b);
-  $("stats").innerHTML = [[settled, "jobs settled"], [bonded, "GPUs bonded"], [slashed, "cheaters slashed"], [times.length ? times[Math.floor(times.length / 2)] + "s" : "–", "median time to settle"]]
+  const s = stats();
+  $("stats").innerHTML = [[s.settled, "jobs settled"], [s.bonded, "GPUs bonded"], [s.slashed, "cheaters slashed"], [s.median, "median time to settle"]]
     .map(([n, l]) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join("");
 }
 async function postJob(btn) {
-  if (!S || !S.interactive) { $("job").scrollIntoView(); return; }
+  if (!S || !S.interactive) { go("/jobs"); return; }
   const old = btn.innerHTML; btn.disabled = true; btn.textContent = "Posting…";
   await fetch("/api/jobs", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
-  selected = null; $("job").scrollIntoView();
+  selected = null; if (page !== "/jobs") go("/jobs");
   setTimeout(() => { btn.disabled = false; btn.innerHTML = old; }, 2500);
 }
-function renderJobs() {
+function renderTabs() {
   if (!selected && S.jobs.length) selected = S.jobs[0].id;
-  $("jobs").innerHTML = S.jobs.slice(0, 12).map((j) => `<button class="tab ${j.id === selected ? "on" : ""}" data-job="${j.id}"><span class="st ${j.status}"></span>Job ${j.id} · ${j.status}</button>`).join("");
+  const html = S.jobs.slice(0, 12).map((j) => `<button class="tab ${j.id === selected ? "on" : ""}" data-job="${j.id}"><span class="st ${j.status}"></span>Job ${j.id} · ${j.status}</button>`).join("");
+  document.querySelectorAll(".jobtabs").forEach((t) => (t.innerHTML = html));
   document.querySelectorAll(".tab").forEach((b) => b.onclick = () => { selected = Number(b.dataset.job); render(); });
   if (!$("post") && S.interactive) {
     $("postslot").innerHTML = `<button class="btn dark" id="post"><span class="ic" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 3v8M3 7h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></span>Post a job</button>`;
@@ -467,6 +535,7 @@ function renderPipeline() {
 }
 function renderTimeline() {
   const j = S.jobs.find((x) => x.id === selected);
+  $("ledgerTitle").textContent = j ? `Job ${j.id} · ${j.status}` : "All events";
   let evs = S.timeline;
   if (j) { const settled = S.timeline.find((x) => x.event === "JobSettled" && x.args.jobId == j.id);
     evs = S.timeline.filter((e) => e.args.jobId == j.id || (settled && e.event === "ReputationUpdated" && j.providers.includes(e.args.provider) && e.time >= settled.time && e.time - settled.time < 30)); }
@@ -491,7 +560,7 @@ function renderProviders() {
     fetch(`/api/providers/${sel.dataset.addr}/mode`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: sel.value }) }));
 }
 function renderAgents() {
-  const items = (S.reports || []).slice().reverse().filter((r) => r.role === "watcher" || r.role.startsWith("verifier") || r.cheat || r.action === "went offline").slice(0, 30);
+  const items = (S.reports || []).slice().reverse().filter((r) => r.role === "watcher" || r.role.startsWith("verifier") || r.cheat || r.action === "went offline").slice(0, 40);
   $("agentfeed").innerHTML = items.map((r) => {
     let txt;
     if (r.role === "watcher") txt = r.action === "challenge" ? `<b class="bad">challenged job ${r.job} at stage ${r.stage}</b> · max |Δ| ${Number(r.divergence).toPrecision(3)}` : `${esc(r.action)} on job ${r.job}`;
@@ -502,10 +571,13 @@ function renderAgents() {
 }
 function render() {
   if (!S) return;
-  const live = S.timeline.filter((e) => e.event === "CronToggled").pop(), on = live && live.args.on;
-  $("network").innerHTML = `<span class="dot lasna ${on ? "live" : ""}"></span>${S.network === "local" ? "Local" : "Testnet"} · clock ${on ? "on" : "idle"}`;
-  if (firstLoad) { renderChains(); firstLoad = false; }
-  renderStats(); renderJobs(); renderPipeline(); renderTimeline(); renderProviders(); renderAgents();
+  if (!chainsDrawn) renderChains();
+  const v = PAGES[page].view;
+  if (v === "home") renderHome();
+  if (v === "marketplace") { renderStats(); renderProviders(); }
+  if (v === "jobs") { renderTabs(); renderPipeline(); }
+  if (v === "ledger") { renderTabs(); renderTimeline(); }
+  if (v === "agents") renderAgents();
 }
 async function tick() {
   try { const r = await fetch("/api/state"); if (r.ok) { const focus = document.activeElement && document.activeElement.tagName === "SELECT"; S = await r.json(); if (!focus) render(); } } catch (e) { /* server restarting */ }
@@ -513,6 +585,7 @@ async function tick() {
 }
 $("heroPost").onclick = (ev) => postJob(ev.currentTarget);
 $("navPost").onclick = (ev) => postJob(ev.currentTarget);
+go(location.pathname, false);
 tick();
 </script>
 </body>

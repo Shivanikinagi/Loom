@@ -15,17 +15,24 @@ The visual direction follows a dark-to-light "verifiable AI" landing style:
 
 We use the layout and mood only. The name, logo, copy and data are LOOM's own.
 
-## Story, top to bottom
+## Pages
 
-| Section | Background | What it says | Data |
+The landing page is separate from the four working pages. Every page has
+its own URL. The dashboard server returns the same `index.html` for each
+path, and the page renders itself from the URL, so links, refresh and the
+back button all work.
+
+| Path | Dark top | White sheet | Data |
 |---|---|---|---|
-| Hero | black, teal arcs | "Inference you can verify". A chip labelled LOOM (the referee) is wired to nodes B (Base), U (Unichain), R (Reactive) and G (GPUs); light pulses travel along the traces. | network, Reactive clock state |
-| Chain tiles | glass on black | The three contracts, each tile linking to its explorer | contract addresses |
-| Steps | black | Split → Commit → Referee, three glowing icons joined by diamonds | none |
-| Marketplace | white sheet | "Rent GPUs / backed by bonds". Stat chips, then one card per GPU | providers, stats |
-| Live job | white | "One model / three GPUs". Job tabs and a split card: glowing panel (job, status, escrow) plus mint panel (stages, verdicts, answers) | selected job |
-| Ledger | deep green band | "Every step / on three chains" and the word *Refereed*. A vertical timeline with one dot per event, coloured by chain | timeline, tx links |
-| Agents | white with dot field | "Who checked / the work". The watcher and verifier feed | agent reports |
+| `/` | Full hero: "Inference you can verify". A chip labelled LOOM (the referee) is wired to nodes B (Base), U (Unichain), R (Reactive) and G (GPUs), with light pulses on the traces. Then the CTA, the three chain tiles (linked to explorers) and the Split → Commit → Referee steps | "Everything on chain / one click away": four page cards, each with a live number | contracts, counts |
+| `/marketplace` | Page header: "Rent GPUs / backed by bonds" | Stat chips, then one card per GPU with the behaviour selector | providers, stats |
+| `/jobs` | "One model / three GPUs" | Job tabs, Post a job, and the split card: glowing panel (job, status, escrow) plus mint panel (stages, verdicts, answers) | selected job |
+| `/ledger` | "Every step / on three chains" | Job tabs and a deep-green card: the word *Refereed*, a chain legend and a vertical timeline with one dot per event, coloured by chain | timeline, tx links |
+| `/agents` | "Who checked / the work" | The watcher and verifier feed below a dot field | agent reports |
+
+The nav is a three-column grid (logo, menu, actions) with the menu in the
+middle column, so it sits on the page's centre line, directly above the chip
+and its traces. The current page is highlighted in the menu.
 
 ## Tokens
 

@@ -56,7 +56,12 @@ def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
     if actors is not None:
         pipe_stages = [{"stage": s.index, "first": s.first_block, "last": s.last_block - 1} for s in actors.pipe.stages]
 
+    # One page app: every page path returns the same file, which renders the page from the URL.
     @app.get("/")
+    @app.get("/marketplace")
+    @app.get("/jobs")
+    @app.get("/ledger")
+    @app.get("/agents")
     def index():
         return FileResponse(WEB / "index.html")
 
