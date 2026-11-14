@@ -1,0 +1,21 @@
+[project]
+name = "loom"
+version = "0.1.0"
+description = "Trustless pooled-GPU inference refereed by Reactive Network"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26",
+  "tiktoken>=0.7",
+  "web3>=7.0",
+  "requests>=2.31",
+  "fastapi>=0.110",
+  "uvicorn>=0.29",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_default_fixture_loop_scope = "function"
+markers = ["e2e: spins up local anvil chains (slow)"]
+
+[tool.ruff]
+line-length = 120
