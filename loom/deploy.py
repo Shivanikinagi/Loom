@@ -25,8 +25,9 @@ PARAMS = {
         "minChallengeBond": ETH // 2000,
         "quorum": 2,
         "refereeFunding": 2 * ETH,  # lREACT for reactive transactions
-        "escrowFeeFunding": ETH // 100,  # destination-chain ETH for callback fees
-        "bondsFeeFunding": ETH // 100,
+        "escrowFeeFunding": ETH // 200,  # destination-chain ETH for callback fees
+        "bondsFeeFunding": 3 * ETH // 1000,
+        "jobPayment": ETH // 1000,
         "stageTimeout": 180,
         "challengeWindow": 90,
     },
@@ -38,6 +39,7 @@ PARAMS = {
         "refereeFunding": ETH,
         "escrowFeeFunding": ETH // 10,
         "bondsFeeFunding": ETH // 10,
+        "jobPayment": 3 * ETH // 10,
         "stageTimeout": 30,
         "challengeWindow": 12,
     },
@@ -114,9 +116,10 @@ def fund_roles(network: str, base_eth: dict[str, int], uni_eth: dict[str, int]) 
 
 def default_funding(network: str) -> tuple[dict[str, int], dict[str, int]]:
     p = PARAMS[network]
-    gas = ETH // 200 if network == "testnet" else ETH
+    # Base/Unichain Sepolia gas is ~0.001-0.01 gwei, so 0.001 ETH covers hundreds of txs.
+    gas = ETH // 1000 if network == "testnet" else ETH
     base = {r: gas for r in ROLES}
-    base["buyer"] = gas + (ETH // 50 if network == "testnet" else 5 * ETH)
+    base["buyer"] = gas + 8 * p["jobPayment"]  # three scenarios plus a few dashboard jobs
     base["challenger"] = gas + 4 * p["minChallengeBond"]
     uni = {f"gpu{i}": p["minBond"] + gas for i in range(5)}
     return base, uni

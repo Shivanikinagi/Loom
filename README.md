@@ -141,7 +141,7 @@ Reactive Lasna drives the same contracts.
 ```bash
 cp .env.example .env            # LOOM_PRIVATE_KEY = a fresh testnet-only key
 python -m loom preflight        # checks RPCs, proxies and balances; prints what's missing
-python -m loom faucet --eth 0.03   # Base Sepolia ETH -> lREACT on Lasna
+python -m loom faucet --eth 0.033  # Base Sepolia ETH -> lREACT on Lasna
 python -m loom deploy  --network testnet
 python -m loom fund    --network testnet   # tops up the derived role keys
 python -m loom register --network testnet  # 5 GPUs bond on Unichain
@@ -150,8 +150,15 @@ python -m loom evidence --network testnet  # evidence/testnet.md with explorer l
 ```
 
 One funded key runs everything: buyer, challenger, five GPUs and three
-verifiers use keys derived from it. Preflight needs roughly 0.12 Base Sepolia
-ETH (including the faucet swap) and 0.05 Unichain Sepolia ETH.
+verifiers use keys derived from it. In total it needs about 0.06 Base Sepolia
+ETH (half of it is swapped for lREACT) and 0.016 Unichain Sepolia ETH. Gas on
+both is a fraction of a gwei, so role wallets get 0.001 ETH each and jobs pay
+0.001 ETH.
+
+No mainnet balance? The [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia)
+and [QuickNode's Base faucet](https://faucet.quicknode.com/base/sepolia) work for
+a fresh wallet. Ethereum Sepolia ETH can be bridged to either chain through
+its standard bridge.
 
 ## Tests
 

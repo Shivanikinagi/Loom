@@ -121,7 +121,7 @@ def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
         p = net.params
         def go():
             try:
-                actors.buyer.submit(body.texts or TEXTS, p.get("demoPayment", 3 * 10**17 if net.name == "local" else 10**16),
+                actors.buyer.submit(body.texts or TEXTS, p["jobPayment"],
                                     p["stageTimeout"], p["challengeWindow"])
             except Exception:
                 log.exception("job submit failed")

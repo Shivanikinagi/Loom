@@ -64,7 +64,7 @@ def cmd_local(args) -> int:
         actors = start_actors(net, pipe, BEHAVIOURS)
         time.sleep(2)  # let the referee learn the bonded providers
 
-        results = run(actors, args.scenarios.split(","), payment=3 * ETH // 10, timeout_s=args.timeout)
+        results = run(actors, args.scenarios.split(","), payment=net.params["jobPayment"], timeout_s=args.timeout)
         time.sleep(3)  # trailing reputation callbacks
         for name in ("base", "unichain", "lasna"):
             actors.idx.sync_once(name)
@@ -125,7 +125,8 @@ def cmd_run(args) -> int:
         print(f"dashboard: http://127.0.0.1:{args.port}")
     try:
         if args.scenarios:
-            results = run(actors, args.scenarios.split(","), payment=args.payment, timeout_s=args.timeout)
+            payment = args.payment or net.params["jobPayment"]
+            results = run(actors, args.scenarios.split(","), payment=payment, timeout_s=args.timeout)
             time.sleep(20)
             path = write_report(actors, results, label=args.network)
             print(f"report: {path}")
@@ -194,7 +195,7 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("run", help="run providers, verifiers and the watcher against a deployment")
     p.add_argument("--network", default="testnet", choices=["testnet", "local"])
     p.add_argument("--scenarios", default="")
-    p.add_argument("--payment", type=int, default=ETH // 100)
+    p.add_argument("--payment", type=int, default=None, help="wei per job (default: the network's jobPayment)")
     p.add_argument("--timeout", type=float, default=600)
     p.add_argument("--tiny", action="store_true")
     p.add_argument("--serve-blobs", action="store_true", default=True)
