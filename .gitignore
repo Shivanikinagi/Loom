@@ -1,0 +1,29 @@
+# secrets
+.env
+.env.*
+!.env.example
+keys/
+
+# foundry
+contracts/out/
+contracts/cache/
+contracts/broadcast/*/31337/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# model weights + runtime data (downloaded / generated)
+models/
+.loom/
+blobs/
+
+# node
+node_modules/
+web/dist/
+
+# os
+.DS_Store
+Thumbs.db
