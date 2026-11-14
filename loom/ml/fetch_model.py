@@ -41,7 +41,7 @@ def fetch(url: str, dest: Path, retries: int = 50) -> int:
                 with open(part, "ab" if have else "wb") as out:
                     for chunk in r.iter_content(1 << 20):
                         out.write(chunk)
-        except (requests.ConnectionError, requests.Timeout) as e:
+        except requests.RequestException as e:  # connection drops, timeouts, truncated chunks
             print(f"  retry {attempt + 1}: {type(e).__name__} at {have / 1e6:.1f} MB", flush=True)
             time.sleep(2)
     if part.stat().st_size != size:
