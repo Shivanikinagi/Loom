@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="460" viewBox="0 0 1280 460" role="img" aria-label="GPT-2 split into three stages on three GPUs, each committing input and output hashes that form an unbroken chain on LoomEscrow">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker>
+  </defs>
+  <style>
+    .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; }
+    .tag { font-size: 11px; font-weight: 700; letter-spacing: 1.6px; }
+    .title { font-size: 19px; font-weight: 700; fill: #F1F5F9; }
+    .sub { font-size: 13px; fill: #94A3B8; }
+    .hash { font-size: 13px; fill: #FCD34D; }
+    .blk { font-size: 10px; fill: #94A3B8; }
+  </style>
+
+  <rect width="1280" height="460" rx="18" fill="#0B1220"/>
+
+  <!-- input -->
+  <rect x="40" y="96" width="150" height="150" rx="12" fill="#141C2E" stroke="#334155"/>
+  <text x="115" y="126" text-anchor="middle" class="sans tag" fill="#94A3B8">INPUT</text>
+  <g fill="#334155">
+    <rect x="70" y="142" width="90" height="8" rx="3"/><rect x="70" y="158" width="72" height="8" rx="3"/><rect x="70" y="174" width="84" height="8" rx="3"/><rect x="70" y="190" width="60" height="8" rx="3"/>
+  </g>
+  <text x="115" y="226" text-anchor="middle" class="sans sub">Prompt batch</text>
+
+  <!-- arrows + hashes -->
+  <g stroke="#64748B" stroke-width="2" marker-end="url(#a)">
+    <line x1="190" y1="171" x2="244" y2="171"/>
+    <line x1="470" y1="171" x2="524" y2="171"/>
+    <line x1="750" y1="171" x2="804" y2="171"/>
+    <line x1="1030" y1="171" x2="1084" y2="171"/>
+  </g>
+  <g class="mono hash" text-anchor="middle">
+    <text x="217" y="160">h0</text>
+    <text x="497" y="160">h1</text>
+    <text x="777" y="160">h2</text>
+    <text x="1057" y="160">h3</text>
+  </g>
+
+  <!-- stage 0 -->
+  <rect x="250" y="76" width="220" height="190" rx="12" fill="#2A2410" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="270" y="104" class="sans tag" fill="#FBBF24">STAGE 0 · GPU A</text>
+  <text x="270" y="132" class="sans title">Blocks 0 – 3</text>
+  <text x="270" y="152" class="sans sub">+ token embedding</text>
+  <g fill="#F59E0B" opacity="0.8">
+    <rect x="270" y="176" width="38" height="56" rx="5"/><rect x="316" y="176" width="38" height="56" rx="5"/><rect x="362" y="176" width="38" height="56" rx="5"/><rect x="408" y="176" width="38" height="56" rx="5"/>
+  </g>
+  <g class="mono blk" text-anchor="middle"><text x="289" y="250">0</text><text x="335" y="250">1</text><text x="381" y="250">2</text><text x="427" y="250">3</text></g>
+
+  <!-- stage 1 -->
+  <rect x="530" y="76" width="220" height="190" rx="12" fill="#2A2410" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="550" y="104" class="sans tag" fill="#FBBF24">STAGE 1 · GPU B</text>
+  <text x="550" y="132" class="sans title">Blocks 4 – 7</text>
+  <text x="550" y="152" class="sans sub">activations in, activations out</text>
+  <g fill="#F59E0B" opacity="0.8">
+    <rect x="550" y="176" width="38" height="56" rx="5"/><rect x="596" y="176" width="38" height="56" rx="5"/><rect x="642" y="176" width="38" height="56" rx="5"/><rect x="688" y="176" width="38" height="56" rx="5"/>
+  </g>
+  <g class="mono blk" text-anchor="middle"><text x="569" y="250">4</text><text x="615" y="250">5</text><text x="661" y="250">6</text><text x="707" y="250">7</text></g>
+
+  <!-- stage 2 -->
+  <rect x="810" y="76" width="220" height="190" rx="12" fill="#2A2410" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="830" y="104" class="sans tag" fill="#FBBF24">STAGE 2 · GPU C</text>
+  <text x="830" y="132" class="sans title">Blocks 8 – 11</text>
+  <text x="830" y="152" class="sans sub">+ final norm and LM head</text>
+  <g fill="#F59E0B" opacity="0.8">
+    <rect x="830" y="176" width="38" height="56" rx="5"/><rect x="876" y="176" width="38" height="56" rx="5"/><rect x="922" y="176" width="38" height="56" rx="5"/><rect x="968" y="176" width="38" height="56" rx="5"/>
+  </g>
+  <g class="mono blk" text-anchor="middle"><text x="849" y="250">8</text><text x="895" y="250">9</text><text x="941" y="250">10</text><text x="987" y="250">11</text></g>
+
+  <!-- output -->
+  <rect x="1090" y="96" width="150" height="150" rx="12" fill="#141C2E" stroke="#334155"/>
+  <text x="1165" y="126" text-anchor="middle" class="sans tag" fill="#94A3B8">RESULT</text>
+  <g>
+    <rect x="1115" y="146" width="100" height="14" rx="4" fill="#1E293B"/><rect x="1115" y="146" width="82" height="14" rx="4" fill="#34D399"/>
+    <rect x="1115" y="168" width="100" height="14" rx="4" fill="#1E293B"/><rect x="1115" y="168" width="18" height="14" rx="4" fill="#475569"/>
+  </g>
+  <text x="1165" y="226" text-anchor="middle" class="sans sub">Calibrated label</text>
+
+  <!-- commitment connectors -->
+  <g stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="4 4">
+    <line x1="360" y1="266" x2="360" y2="326"/>
+    <line x1="640" y1="266" x2="640" y2="326"/>
+    <line x1="920" y1="266" x2="920" y2="326"/>
+  </g>
+
+  <!-- escrow band -->
+  <rect x="250" y="300" width="780" height="110" rx="12" fill="#0D1F3C" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="270" y="322" class="sans tag" fill="#60A5FA">ON-CHAIN COMMITMENTS · LOOMESCROW (BASE)</text>
+
+  <g class="mono" font-size="13">
+    <rect x="270" y="338" width="180" height="40" rx="8" fill="#0B1220" stroke="#1D4ED8"/>
+    <text x="360" y="363" text-anchor="middle" fill="#CBD5E1">in <tspan fill="#FCD34D">h0</tspan>  →  out <tspan fill="#FCD34D">h1</tspan></text>
+    <rect x="550" y="338" width="180" height="40" rx="8" fill="#0B1220" stroke="#1D4ED8"/>
+    <text x="640" y="363" text-anchor="middle" fill="#CBD5E1">in <tspan fill="#FCD34D">h1</tspan>  →  out <tspan fill="#FCD34D">h2</tspan></text>
+    <rect x="830" y="338" width="180" height="40" rx="8" fill="#0B1220" stroke="#1D4ED8"/>
+    <text x="920" y="363" text-anchor="middle" fill="#CBD5E1">in <tspan fill="#FCD34D">h2</tspan>  →  out <tspan fill="#FCD34D">h3</tspan></text>
+  </g>
+  <!-- chain links -->
+  <g fill="none" stroke="#FCD34D" stroke-width="1.5">
+    <path d="M450 358 H 550"/>
+    <path d="M730 358 H 830"/>
+  </g>
+  <g class="sans" font-size="11" fill="#FCD34D" text-anchor="middle">
+    <text x="500" y="350">must match</text>
+    <text x="780" y="350">must match</text>
+  </g>
+  <text x="640" y="398" text-anchor="middle" class="sans" font-size="12" fill="#94A3B8">keccak256 of each stage's output · stage i's input must equal stage i−1's committed output</text>
+
+  <text x="640" y="440" text-anchor="middle" class="sans" font-size="13" fill="#64748B">Each GPU sees only the activations handed to it. Any stage can later be re-run in isolation from its agreed input.</text>
+</svg>

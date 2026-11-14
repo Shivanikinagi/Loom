@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="656" viewBox="0 0 1280 656" role="img" aria-label="LOOM dispute resolution: commit, challenge, locate the first divergent stage, verify that stage only, resolve by quorum, then slash, reject or settle">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker>
+  </defs>
+  <style>
+    .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; }
+    .tag { font-size: 11px; font-weight: 700; letter-spacing: 1.6px; }
+    .stitle { font-size: 17px; font-weight: 700; fill: #F1F5F9; }
+    .body { font-size: 13px; fill: #94A3B8; }
+    .num { font-size: 14px; font-weight: 700; fill: #0B1220; }
+    .otitle { font-size: 16px; font-weight: 700; }
+    .obody { font-size: 13px; fill: #CBD5E1; }
+  </style>
+
+  <rect width="1280" height="656" rx="18" fill="#0B1220"/>
+
+  <!-- ============ steps ============ -->
+  <g class="sans">
+    <!-- 1 -->
+    <rect x="40" y="40" width="220" height="150" rx="12" fill="#141C2E" stroke="#334155"/>
+    <circle cx="68" cy="70" r="14" fill="#F59E0B"/><text x="68" y="75" text-anchor="middle" class="num">1</text>
+    <text x="92" y="76" class="stitle">Commit</text>
+    <text x="60" y="110" class="body">GPUs commit output</text>
+    <text x="60" y="128" class="body">hashes. The result is</text>
+    <text x="60" y="146" class="body">proposed and a challenge</text>
+    <text x="60" y="164" class="body">window opens.</text>
+
+    <!-- 2 -->
+    <rect x="285" y="40" width="220" height="150" rx="12" fill="#141C2E" stroke="#334155"/>
+    <circle cx="313" cy="70" r="14" fill="#60A5FA"/><text x="313" y="75" text-anchor="middle" class="num">2</text>
+    <text x="337" y="76" class="stitle">Challenge</text>
+    <text x="305" y="110" class="body">The watcher agent re-runs</text>
+    <text x="305" y="128" class="body">the pipeline and posts its</text>
+    <text x="305" y="146" class="body">own trace with a bond.</text>
+
+    <!-- 3 -->
+    <rect x="530" y="40" width="220" height="150" rx="12" fill="#141C2E" stroke="#334155"/>
+    <circle cx="558" cy="70" r="14" fill="#60A5FA"/><text x="558" y="75" text-anchor="middle" class="num">3</text>
+    <text x="582" y="76" class="stitle">Locate</text>
+    <text x="550" y="110" class="body">The escrow finds the first</text>
+    <text x="550" y="128" class="body">stage where the traces</text>
+    <text x="550" y="146" class="body">diverge. Only that stage</text>
+    <text x="550" y="164" class="body">is disputed.</text>
+
+    <!-- 4 -->
+    <rect x="775" y="40" width="220" height="150" rx="12" fill="#141C2E" stroke="#334155"/>
+    <circle cx="803" cy="70" r="14" fill="#60A5FA"/><text x="803" y="75" text-anchor="middle" class="num">4</text>
+    <text x="827" y="76" class="stitle">Verify</text>
+    <text x="795" y="110" class="body">Verifiers re-run just the</text>
+    <text x="795" y="128" class="body">disputed stage from its</text>
+    <text x="795" y="146" class="body">agreed input and vote.</text>
+
+    <!-- 5 -->
+    <rect x="1020" y="40" width="220" height="150" rx="12" fill="#16143A" stroke="#7C6CF2" stroke-width="1.5"/>
+    <circle cx="1048" cy="70" r="14" fill="#A79BFF"/><text x="1048" y="75" text-anchor="middle" class="num">5</text>
+    <text x="1072" y="76" class="stitle">Resolve</text>
+    <text x="1040" y="110" class="body">LoomReferee counts the</text>
+    <text x="1040" y="128" class="body">votes on Reactive and, at</text>
+    <text x="1040" y="146" class="body">2-of-3 quorum, issues the</text>
+    <text x="1040" y="164" class="body">cross-chain callbacks.</text>
+  </g>
+  <g stroke="#64748B" stroke-width="2" marker-end="url(#a)">
+    <line x1="262" y1="115" x2="282" y2="115"/>
+    <line x1="507" y1="115" x2="527" y2="115"/>
+    <line x1="752" y1="115" x2="772" y2="115"/>
+    <line x1="997" y1="115" x2="1017" y2="115"/>
+  </g>
+
+  <!-- ============ divergence detail ============ -->
+  <rect x="40" y="220" width="1200" height="186" rx="12" fill="#0F172A" stroke="#1E293B"/>
+  <text x="64" y="248" class="sans tag" fill="#64748B">EXAMPLE · A LAZY GPU SKIPS HALF OF STAGE 1</text>
+
+  <g transform="translate(0 16)">
+  <g class="sans" font-size="13" fill="#94A3B8">
+    <text x="64" y="292">Committed by GPUs</text>
+    <text x="64" y="342">Watcher's trace</text>
+  </g>
+  <g class="sans tag" fill="#64748B" text-anchor="middle">
+    <text x="320" y="262">STAGE 0</text>
+    <text x="500" y="262">STAGE 1</text>
+    <text x="680" y="262">STAGE 2</text>
+  </g>
+  <g class="mono" font-size="13" text-anchor="middle">
+    <rect x="250" y="272" width="140" height="30" rx="7" fill="#0B1220" stroke="#334155"/><text x="320" y="292" fill="#CBD5E1">a3f1 … 9e02</text>
+    <rect x="430" y="272" width="140" height="30" rx="7" fill="#3A1420" stroke="#F87171"/><text x="500" y="292" fill="#FCA5A5">7c09 … 41bd</text>
+    <rect x="610" y="272" width="140" height="30" rx="7" fill="#0B1220" stroke="#334155"/><text x="680" y="292" fill="#64748B">e44b … 0a7c</text>
+
+    <rect x="250" y="322" width="140" height="30" rx="7" fill="#0B1220" stroke="#334155"/><text x="320" y="342" fill="#CBD5E1">a3f1 … 9e02</text>
+    <rect x="430" y="322" width="140" height="30" rx="7" fill="#0E2E26" stroke="#34D399"/><text x="500" y="342" fill="#6EE7B7">19d2 … c3e8</text>
+    <rect x="610" y="322" width="140" height="30" rx="7" fill="#0B1220" stroke="#334155"/><text x="680" y="342" fill="#64748B">b07e … 5f19</text>
+  </g>
+  <g class="sans" font-size="12" text-anchor="middle">
+    <text x="320" y="374" fill="#34D399">agree</text>
+    <text x="500" y="374" fill="#F87171" font-weight="600">first divergence → disputed</text>
+    <text x="680" y="374" fill="#64748B">recomputed later</text>
+  </g>
+
+  <!-- verifier readout -->
+  <line x1="800" y1="262" x2="800" y2="362" stroke="#1E293B" stroke-width="1.5"/>
+  <text x="830" y="276" class="sans tag" fill="#64748B">VERIFIERS RE-RUN STAGE 1</text>
+  <g class="sans" font-size="13" fill="#CBD5E1">
+    <text x="830" y="304">Max deviation from honest output</text>
+    <text x="1210" y="304" text-anchor="end" class="mono" fill="#FCA5A5">≈ 92</text>
+    <text x="830" y="328">Tolerance</text>
+    <text x="1210" y="328" text-anchor="end" class="mono" fill="#CBD5E1">0.01</text>
+    <text x="830" y="356">Votes</text>
+  </g>
+  <g>
+    <rect x="1078" y="341" width="40" height="22" rx="5" fill="#3A1420" stroke="#F87171"/>
+    <rect x="1124" y="341" width="40" height="22" rx="5" fill="#3A1420" stroke="#F87171"/>
+    <rect x="1170" y="341" width="40" height="22" rx="5" fill="#3A1420" stroke="#F87171"/>
+    <g class="mono" font-size="11" fill="#FCA5A5" text-anchor="middle"><text x="1098" y="356">fault</text><text x="1144" y="356">fault</text><text x="1190" y="356">fault</text></g>
+  </g>
+
+  </g>
+
+  <!-- ============ outcomes ============ -->
+  <g transform="translate(0 16)">
+  <text x="40" y="430" class="sans tag" fill="#64748B">OUTCOMES</text>
+  <g class="sans">
+    <rect x="40" y="446" width="390" height="160" rx="12" fill="#1F0F16" stroke="#F87171" stroke-width="1.5"/>
+    <text x="64" y="478" class="otitle" fill="#FCA5A5">Fault confirmed</text>
+    <text x="64" y="506" class="obody">Cheater's bond slashed on Unichain; GPU barred</text>
+    <text x="64" y="530" class="obody">50% bounty to the watcher, 50% to the buyer</text>
+    <text x="64" y="554" class="obody">Stage rerouted to the best standby GPU</text>
+    <text x="64" y="578" class="obody">Downstream stages recomputed</text>
+
+    <rect x="445" y="446" width="390" height="160" rx="12" fill="#221A0B" stroke="#F59E0B" stroke-width="1.5"/>
+    <text x="469" y="478" class="otitle" fill="#FCD34D">Challenge rejected</text>
+    <text x="469" y="506" class="obody">Quorum finds the GPU honest</text>
+    <text x="469" y="530" class="obody">Challenger's bond paid to the accused GPU</text>
+    <text x="469" y="554" class="obody">Committed result stands</text>
+
+    <rect x="850" y="446" width="390" height="160" rx="12" fill="#0B231D" stroke="#34D399" stroke-width="1.5"/>
+    <text x="874" y="478" class="otitle" fill="#6EE7B7">No challenge</text>
+    <text x="874" y="506" class="obody">Reactive CRON closes the window</text>
+    <text x="874" y="530" class="obody">Escrow pays each GPU by layers served</text>
+    <text x="874" y="554" class="obody">Reputation recorded on Unichain</text>
+  </g>
+  </g>
+</svg>

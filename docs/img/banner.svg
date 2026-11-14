@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-label="LOOM: trustless pooled-GPU inference, refereed on-chain">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#151E3A"/>
+    </linearGradient>
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#1E2A4A"/>
+    </pattern>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7C6CF2" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#7C6CF2" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <style>
+    .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; }
+  </style>
+
+  <rect width="1280" height="320" rx="18" fill="url(#bg)"/>
+  <rect width="1280" height="320" rx="18" fill="url(#dots)"/>
+  <circle cx="1010" cy="150" r="230" fill="url(#glow)"/>
+
+  <!-- wordmark -->
+  <text x="72" y="92" class="sans" font-size="13" font-weight="600" letter-spacing="3" fill="#A79BFF">VERIFIABLE DECENTRALIZED INFERENCE</text>
+  <text x="68" y="182" class="sans" font-size="92" font-weight="800" letter-spacing="8" fill="#F1F5F9">LOOM</text>
+  <text x="72" y="228" class="sans" font-size="24" font-weight="500" fill="#E2E8F0">Trustless pooled-GPU inference, refereed on-chain.</text>
+  <text x="72" y="262" class="sans" font-size="15" fill="#94A3B8">Layer-sharded GPT-2  ·  optimistic fraud proofs  ·  cross-chain slashing on Reactive Network</text>
+
+  <!-- referee -->
+  <g transform="translate(1010 78)">
+    <polygon points="0,-38 33,-19 33,19 0,38 -33,19 -33,-19" fill="#1B1840" stroke="#A79BFF" stroke-width="2"/>
+    <circle r="11" fill="none" stroke="#A79BFF" stroke-width="2"/>
+    <circle r="4" fill="#A79BFF"/>
+  </g>
+  <g stroke="#A79BFF" stroke-width="1.5" stroke-dasharray="4 5" opacity="0.7" fill="none">
+    <path d="M985 108 L880 178"/>
+    <path d="M1010 116 L1010 178"/>
+    <path d="M1035 108 L1140 178"/>
+  </g>
+
+  <!-- pipeline links -->
+  <g stroke="#475569" stroke-width="2.5">
+    <line x1="908" y1="206" x2="982" y2="206"/>
+    <line x1="1038" y1="206" x2="1112" y2="206"/>
+  </g>
+
+  <!-- GPU nodes -->
+  <g>
+    <rect x="852" y="178" width="56" height="56" rx="10" fill="#0F2440" stroke="#3B82F6" stroke-width="2"/>
+    <g fill="#3B82F6" opacity="0.85"><rect x="864" y="190" width="32" height="5" rx="2"/><rect x="864" y="200" width="32" height="5" rx="2"/><rect x="864" y="210" width="32" height="5" rx="2"/><rect x="864" y="220" width="32" height="5" rx="2"/></g>
+
+    <rect x="982" y="178" width="56" height="56" rx="10" fill="#3A1420" stroke="#F87171" stroke-width="2"/>
+    <g fill="#F87171" opacity="0.85"><rect x="994" y="190" width="32" height="5" rx="2"/><rect x="994" y="200" width="14" height="5" rx="2"/><rect x="994" y="210" width="32" height="5" rx="2"/><rect x="994" y="220" width="9" height="5" rx="2"/></g>
+
+    <rect x="1112" y="178" width="56" height="56" rx="10" fill="#0F2440" stroke="#3B82F6" stroke-width="2"/>
+    <g fill="#3B82F6" opacity="0.85"><rect x="1124" y="190" width="32" height="5" rx="2"/><rect x="1124" y="200" width="32" height="5" rx="2"/><rect x="1124" y="210" width="32" height="5" rx="2"/><rect x="1124" y="220" width="32" height="5" rx="2"/></g>
+  </g>
+
+  <!-- slashed badge + standby reroute -->
+  <rect x="975" y="248" width="70" height="22" rx="11" fill="#3A1420" stroke="#F87171"/>
+  <text x="1010" y="263" text-anchor="middle" class="mono" font-size="11" fill="#FCA5A5">slashed</text>
+  <path d="M1045 259 C 1080 259, 1090 280, 1112 280" fill="none" stroke="#34D399" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <rect x="1112" y="268" width="80" height="24" rx="12" fill="#0E2E26" stroke="#34D399"/>
+  <text x="1152" y="284" text-anchor="middle" class="mono" font-size="11" fill="#6EE7B7">standby</text>
+</svg>

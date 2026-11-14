@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-label="LOOM system architecture: LoomReferee on Reactive Lasna subscribes to events from LoomEscrow on Base Sepolia and LoomBonds on Unichain Sepolia and sends callbacks to both">
+  <defs>
+    <marker id="aBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#60A5FA"/></marker>
+    <marker id="aPink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#F472B6"/></marker>
+    <marker id="aViolet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#A79BFF"/></marker>
+    <marker id="aGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#94A3B8"/></marker>
+  </defs>
+  <style>
+    .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; }
+    .tag { font-size: 11px; font-weight: 700; letter-spacing: 1.6px; }
+    .title { font-size: 23px; font-weight: 700; fill: #F1F5F9; }
+    .sub { font-size: 13px; fill: #94A3B8; }
+    .item { font-size: 13.5px; fill: #CBD5E1; }
+    .ev { font-size: 12px; }
+    .actor { font-size: 15px; font-weight: 600; fill: #F1F5F9; }
+    .call { font-size: 12px; fill: #94A3B8; }
+  </style>
+
+  <rect width="1280" height="760" rx="18" fill="#0B1220"/>
+
+  <!-- ============ Reactive Lasna ============ -->
+  <rect x="450" y="40" width="380" height="200" rx="14" fill="#16143A" stroke="#7C6CF2" stroke-width="1.5"/>
+  <text x="474" y="70" class="sans tag" fill="#A79BFF">REACTIVE LASNA · 5318007</text>
+  <text x="474" y="102" class="sans title">LoomReferee</text>
+  <text x="474" y="124" class="sans sub">Reactive contract · holds state, decides</text>
+  <g class="sans item">
+    <circle cx="480" cy="152" r="3" fill="#A79BFF"/><text x="492" y="157">Reputation-based scheduling</text>
+    <circle cx="480" cy="176" r="3" fill="#A79BFF"/><text x="492" y="181">2-of-3 verifier quorum</text>
+    <circle cx="480" cy="200" r="3" fill="#A79BFF"/><text x="492" y="205">Deadline and window timers</text>
+    <circle cx="480" cy="224" r="3" fill="#A79BFF"/><text x="492" y="229" font-size="13.5">Idempotent retries</text>
+  </g>
+  <!-- CRON badge -->
+  <g transform="translate(762 82)">
+    <rect x="-46" y="-18" width="92" height="36" rx="18" fill="#221E52" stroke="#7C6CF2"/>
+    <circle cx="-22" cy="0" r="8.5" fill="none" stroke="#A79BFF" stroke-width="2"/>
+    <path d="M-22,-5 V0 H-18" fill="none" stroke="#A79BFF" stroke-width="2" stroke-linecap="round"/>
+    <text x="-6" y="5" class="mono" font-size="12" fill="#C4BCFF">CRON</text>
+  </g>
+
+  <!-- ============ Base Sepolia ============ -->
+  <rect x="40" y="340" width="430" height="150" rx="14" fill="#0D1F3C" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="64" y="370" class="sans tag" fill="#60A5FA">BASE SEPOLIA · 84532</text>
+  <text x="64" y="402" class="sans title">LoomEscrow</text>
+  <text x="64" y="424" class="sans sub">Buyer chain · callback recipient</text>
+  <text x="64" y="452" class="sans item">Escrowed payments · stage commitments</text>
+  <text x="64" y="474" class="sans item">Challenges and votes · payouts</text>
+
+  <!-- ============ Unichain Sepolia ============ -->
+  <rect x="810" y="340" width="430" height="150" rx="14" fill="#2E1029" stroke="#EC4899" stroke-width="1.5"/>
+  <text x="834" y="370" class="sans tag" fill="#F472B6">UNICHAIN SEPOLIA · 1301</text>
+  <text x="834" y="402" class="sans title">LoomBonds</text>
+  <text x="834" y="424" class="sans sub">Provider chain · callback recipient</text>
+  <text x="834" y="452" class="sans item">Provider bonds · slashing</text>
+  <text x="834" y="474" class="sans item">Reputation · timeout penalties</text>
+
+  <!-- ============ Base <-> Referee ============ -->
+  <path d="M120 340 V 95 H 446" fill="none" stroke="#60A5FA" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#aBlue)"/>
+  <path d="M450 190 H 290 V 336" fill="none" stroke="#A79BFF" stroke-width="2.5" marker-end="url(#aViolet)"/>
+  <text x="140" y="84" class="sans tag" fill="#60A5FA">13 EVENT SUBSCRIPTIONS</text>
+  <g class="mono ev" fill="#93C5FD">
+    <text x="134" y="132">JobCreated</text>
+    <text x="134" y="150">StageCommitted</text>
+    <text x="134" y="168">ResultProposed</text>
+    <text x="134" y="186">Challenged</text>
+    <text x="134" y="204">VerdictVote</text>
+    <text x="134" y="222">FaultResolved</text>
+    <text x="134" y="240">JobSettled</text>
+    <text x="134" y="258" fill="#64748B">…</text>
+  </g>
+  <text x="304" y="222" class="sans tag" fill="#A79BFF">CALLBACKS</text>
+  <g class="mono ev" fill="#C4BCFF">
+    <text x="304" y="244">assignProviders</text>
+    <text x="304" y="262">resolveFault</text>
+    <text x="304" y="280">rejectChallenge</text>
+    <text x="304" y="298">timeoutStage</text>
+    <text x="304" y="316">settle · refund</text>
+  </g>
+
+  <!-- ============ Unichain <-> Referee ============ -->
+  <path d="M1160 340 V 95 H 834" fill="none" stroke="#F472B6" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#aPink)"/>
+  <path d="M830 190 H 990 V 336" fill="none" stroke="#A79BFF" stroke-width="2.5" marker-end="url(#aViolet)"/>
+  <text x="1140" y="84" text-anchor="end" class="sans tag" fill="#F472B6">6 EVENT SUBSCRIPTIONS</text>
+  <g class="mono ev" fill="#F9A8D4" text-anchor="end">
+    <text x="1146" y="132">ProviderBonded</text>
+    <text x="1146" y="150">ProviderExiting</text>
+    <text x="1146" y="168">ProviderWithdrawn</text>
+    <text x="1146" y="186">ProviderSlashed</text>
+    <text x="1146" y="204">ProviderTimedOut</text>
+    <text x="1146" y="222">ReputationUpdated</text>
+  </g>
+  <text x="976" y="222" text-anchor="end" class="sans tag" fill="#A79BFF">CALLBACKS</text>
+  <g class="mono ev" fill="#C4BCFF" text-anchor="end">
+    <text x="976" y="244">slash</text>
+    <text x="976" y="262">recordSuccess</text>
+    <text x="976" y="280">recordTimeout</text>
+  </g>
+
+  <!-- ============ Off-chain ============ -->
+  <line x1="40" y1="548" x2="1240" y2="548" stroke="#1E293B" stroke-width="1.5" stroke-dasharray="3 6"/>
+  <rect x="40" y="537" width="96" height="22" rx="4" fill="#0B1220"/>
+  <text x="44" y="553" class="sans tag" fill="#64748B">OFF-CHAIN</text>
+
+  <!-- actor arrows to Base -->
+  <g stroke="#94A3B8" stroke-width="1.8" fill="none" marker-end="url(#aGray)">
+    <path d="M107 590 V 494"/>
+    <path d="M257 590 V 494"/>
+    <path d="M405 590 V 494"/>
+    <path d="M610 590 V 525 H 450 V 494"/>
+    <path d="M700 590 V 525 H 880 V 494"/>
+  </g>
+  <text x="472" y="517" class="mono call">commitStage</text>
+  <text x="722" y="517" class="mono call">bond · exit</text>
+
+  <g class="sans">
+    <rect x="40" y="590" width="135" height="70" rx="10" fill="#141C2E" stroke="#334155"/>
+    <text x="107" y="620" text-anchor="middle" class="actor">Buyer</text>
+    <text x="107" y="642" text-anchor="middle" class="mono call">createJob</text>
+
+    <rect x="190" y="590" width="135" height="70" rx="10" fill="#141C2E" stroke="#334155"/>
+    <text x="257" y="620" text-anchor="middle" class="actor">Watcher agent</text>
+    <text x="257" y="642" text-anchor="middle" class="mono call">challenge</text>
+
+    <rect x="340" y="590" width="130" height="70" rx="10" fill="#141C2E" stroke="#334155"/>
+    <text x="405" y="620" text-anchor="middle" class="actor">Verifiers</text>
+    <text x="405" y="642" text-anchor="middle" class="mono call">vote · 2 of 3</text>
+
+    <rect x="560" y="590" width="190" height="70" rx="10" fill="#2A2410" stroke="#F59E0B"/>
+    <text x="655" y="620" text-anchor="middle" class="actor">GPU providers</text>
+    <text x="655" y="642" text-anchor="middle" class="sans call">GPT-2 stages · standbys</text>
+
+    <rect x="900" y="590" width="340" height="70" rx="10" fill="#141C2E" stroke="#334155" stroke-dasharray="5 4"/>
+    <text x="1070" y="620" text-anchor="middle" class="actor">Content-addressed blob store</text>
+    <text x="1070" y="642" text-anchor="middle" class="sans call">activations · re-hashed against on-chain commitments</text>
+  </g>
+  <path d="M750 625 H 896" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="4 4" marker-start="url(#aGray)" marker-end="url(#aGray)"/>
+  <text x="823" y="615" text-anchor="middle" class="mono call">blobs</text>
+
+  <!-- ============ Legend ============ -->
+  <g class="sans" font-size="12.5" fill="#94A3B8">
+    <line x1="40" y1="712" x2="80" y2="712" stroke="#60A5FA" stroke-width="2" stroke-dasharray="6 5"/>
+    <text x="90" y="716">Event subscription (origin → Reactive)</text>
+    <line x1="370" y1="712" x2="410" y2="712" stroke="#A79BFF" stroke-width="2.5"/>
+    <text x="420" y="716">Reactive callback (Reactive → destination)</text>
+    <line x1="720" y1="712" x2="760" y2="712" stroke="#94A3B8" stroke-width="1.8"/>
+    <text x="770" y="716">Participant transaction</text>
+    <rect x="960" y="702" width="20" height="20" rx="4" fill="#2A2410" stroke="#F59E0B"/>
+    <text x="990" y="716">Untrusted compute</text>
+  </g>
+</svg>
