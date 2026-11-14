@@ -138,13 +138,26 @@ def _canonical(inp: dict) -> str:
     return t
 
 
+_LOG_STEP: dict[int, int] = {}  # chain id -> largest block range its RPC accepts
+
+
 def get_logs(chain: Chain, addresses: Iterable[str], start: int, end: int, step: int = 2000) -> list[LogReceipt]:
+    """Fetch logs in windows, shrinking the window when an RPC caps the range
+    (sepolia.base.org allows 200 blocks per eth_getLogs)."""
     out: list[LogReceipt] = []
     addrs = [Web3.to_checksum_address(a) for a in addresses]
+    step = _LOG_STEP.get(chain.chain_id, step)
     s = start
     while s <= end:
         e = min(end, s + step - 1)
-        out.extend(chain.w3.eth.get_logs({"address": addrs, "fromBlock": s, "toBlock": e}))
+        try:
+            out.extend(chain.w3.eth.get_logs({"address": addrs, "fromBlock": s, "toBlock": e}))
+        except Exception as exc:
+            if step <= 100 or not any(k in str(exc).lower() for k in ("range", "413", "too large", "limit")):
+                raise
+            step = 200 if step > 200 else 100
+            _LOG_STEP[chain.chain_id] = step
+            continue
         s = e + 1
     out.sort(key=lambda l: (l["blockNumber"], l["logIndex"]))
     return out
