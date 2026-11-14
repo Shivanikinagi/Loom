@@ -1,6 +1,8 @@
 """LOOM command line.
 
   python -m loom local      [--tiny] [--scenarios fraud,honest,timeout]
+  python -m loom preflight
+  python -m loom faucet     --eth 0.05
   python -m loom deploy     --network testnet
   python -m loom fund       --network testnet
   python -m loom register   --network testnet
@@ -130,6 +132,19 @@ def cmd_evidence(args) -> int:
     return 0
 
 
+def cmd_preflight(args) -> int:
+    from .testnet import preflight
+
+    return 0 if preflight() else 1
+
+
+def cmd_faucet(args) -> int:
+    from .testnet import faucet
+
+    faucet(args.eth)
+    return 0
+
+
 def cmd_dashboard(args) -> int:
     from .dashboard import serve
 
@@ -167,6 +182,13 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--serve-blobs", action="store_true", default=True)
     p.add_argument("--blob-port", type=int, default=8700)
     p.set_defaults(fn=cmd_run)
+
+    p = sub.add_parser("preflight", help="check RPCs and balances before a testnet deploy")
+    p.set_defaults(fn=cmd_preflight)
+
+    p = sub.add_parser("faucet", help="swap Base Sepolia ETH for Lasna lREACT")
+    p.add_argument("--eth", type=float, default=0.05)
+    p.set_defaults(fn=cmd_faucet)
 
     p = sub.add_parser("dashboard")
     p.add_argument("--network", default="testnet", choices=["testnet", "local"])
