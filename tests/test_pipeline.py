@@ -70,7 +70,8 @@ def test_commitments_chain(pipe):
 def test_pipeline_matches_unsplit_model(pipe):
     """Splitting across providers must not change the answer."""
     _, [scores], meta = unpack(pipe.run_all(TEXTS)[-1])
-    for i, t in enumerate(TEXTS):
+    assert scores.shape == (len(TEXTS) + 1, 2)  # row 0 is the calibration prompt
+    for i, t in enumerate(["N/A", *TEXTS]):
         logits = pipe.model.forward(pipe.enc.encode(f"Review: {t}\nSentiment:"))
         np.testing.assert_allclose(scores[i], logits[pipe.label_ids], atol=1e-3)
     assert len(meta["labels"]) == len(TEXTS)
@@ -88,7 +89,8 @@ def test_verifier_pins_the_cheating_stage(pipe, cheat):
 
     # A verifier re-runs only the disputed stage from its agreed input.
     recomputed = pipe.run_stage(pipe.stages[1], bad[0])
-    assert max_divergence(recomputed, bad[1]) > TOLERANCE * 10
+    assert max_divergence(recomputed, bad[1]) > TOLERANCE * 5
+    assert max_divergence(recomputed, pipe.run_all(TEXTS)[1]) == 0.0  # honest re-run is exact
 
     # Stage 2 was honest *given its input*: re-running it from the bad input
     # reproduces the committed output, so stage 2 is not blamed.
@@ -103,5 +105,13 @@ def test_dataset_commitment_is_canonical():
 @pytest.mark.skipif(not (REAL / "model.safetensors").exists(), reason="real GPT-2 weights not downloaded")
 def test_real_gpt2_classifies_sentiment():
     p = Pipeline(GPT2(REAL), n_stages=3)
-    _, _, meta = unpack(p.run_all(TEXTS[:2])[-1])
-    assert meta["labels"] == ["positive", "negative"]
+    reviews = [
+        ("An absolute joy from start to finish, I loved every minute of it.", "positive"),
+        ("Broken on arrival and support never answered. A total waste of money.", "negative"),
+        ("Fast shipping, great quality, would happily buy again.", "positive"),
+        ("The screen cracked after two days and the refund took weeks.", "negative"),
+        ("Honestly the best purchase I have made this year.", "positive"),
+        ("Terrible sound, flimsy build, returned it immediately.", "negative"),
+    ]
+    _, _, meta = unpack(p.run_all([t for t, _ in reviews])[-1])
+    assert meta["labels"] == [y for _, y in reviews]

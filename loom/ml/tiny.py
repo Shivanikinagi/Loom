@@ -31,9 +31,14 @@ def write_safetensors(path: Path, tensors: dict[str, np.ndarray]) -> None:
             f.write(b)
 
 
+# Bump when the initialisation changes so cached tiny models are regenerated.
+TINY_VERSION = 2
+
+
 def make_tiny_gpt2(out_dir: Path, n_layer: int = 6, n_embd: int = 64, n_head: int = 4, seed: int = 0) -> Path:
     out_dir = Path(out_dir)
-    if (out_dir / "model.safetensors").exists():
+    cfg = out_dir / "config.json"
+    if (out_dir / "model.safetensors").exists() and cfg.exists() and json.loads(cfg.read_text()).get("tiny") == TINY_VERSION:
         return out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
     vocab, n_ctx = 50257, 256
@@ -42,7 +47,9 @@ def make_tiny_gpt2(out_dir: Path, n_layer: int = 6, n_embd: int = 64, n_head: in
     def w(*shape, scale=0.02):
         return (rng.standard_normal(shape) * scale).astype(np.float32)
 
-    t: dict[str, np.ndarray] = {"wte.weight": w(vocab, n_embd), "wpe.weight": w(n_ctx, n_embd, scale=0.01)}
+    # Embeddings at GPT-2-like scale (hidden states around 1), so rounding
+    # activations between stages is as harmless here as in the real model.
+    t: dict[str, np.ndarray] = {"wte.weight": w(vocab, n_embd, scale=0.5), "wpe.weight": w(n_ctx, n_embd, scale=0.1)}
     for i in range(n_layer):
         p = f"h.{i}."
         t[p + "ln_1.weight"] = np.ones(n_embd, np.float32)
@@ -62,6 +69,7 @@ def make_tiny_gpt2(out_dir: Path, n_layer: int = 6, n_embd: int = 64, n_head: in
 
     write_safetensors(out_dir / "model.safetensors", t)
     (out_dir / "config.json").write_text(
-        json.dumps({"n_layer": n_layer, "n_head": n_head, "n_embd": n_embd, "n_ctx": n_ctx, "vocab_size": vocab})
+        json.dumps({"n_layer": n_layer, "n_head": n_head, "n_embd": n_embd, "n_ctx": n_ctx, "vocab_size": vocab,
+                    "tiny": TINY_VERSION})
     )
     return out_dir
