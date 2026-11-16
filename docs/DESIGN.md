@@ -22,13 +22,23 @@ its own URL. The dashboard server returns the same `index.html` for each
 path, and the page renders itself from the URL, so links, refresh and the
 back button all work.
 
-| Path | Dark top | White sheet | Data |
+The inner pages follow the console patterns of KINETIC: a compact header
+(breadcrumb, title, one line, and the page's main action on the right),
+KPI cards, filter chips with counts, a sort menu, and cards or rows below.
+
+| Path | Header action | White sheet | Data |
 |---|---|---|---|
-| `/` | Full hero: "Inference you can verify". A chip labelled LOOM (the referee) is wired to nodes B (Base), U (Unichain), R (Reactive) and G (GPUs), with light pulses on the traces. Then the CTA, the three chain tiles (linked to explorers) and the Split → Commit → Referee steps | "Everything on chain / one click away": four page cards, each with a live number | contracts, counts |
-| `/marketplace` | Page header: "Rent GPUs / backed by bonds" | Stat chips, then one card per GPU with the behaviour selector | providers, stats |
-| `/jobs` | "One model / three GPUs" | Job tabs, Post a job, and the split card: glowing panel (job, status, escrow) plus mint panel (stages, verdicts, answers) | selected job |
-| `/ledger` | "Every step / on three chains" | Job tabs and a deep-green card: the word *Refereed*, a chain legend and a vertical timeline with one dot per event, coloured by chain | timeline, tx links |
-| `/agents` | "Who checked / the work" | The watcher and verifier feed below a dot field | agent reports |
+| `/` | (full hero) | Small chip animation (520px) wired to B/U/R/G nodes, the CTA, chain tiles linked to explorers, the Split → Commit → Referee steps, then four page cards with live numbers | contracts, counts |
+| `/post` | GPUs online | A two-column form, like KINETIC's Run page. Left: Model (GPT-2 listing with its three stage chips), Task (sentiment), Data (sample reviews, or paste up to 12 of your own), Rules (payment, deadlines, quorum, from the escrow), and a collapsed "Test the referee" demo control. Right: Estimate (payment split per stage by layers, typical time, Post job) and Your jobs | params, stages, jobs |
+| `/marketplace` | Rent out a GPU | KPIs (available, total bonded, paid to GPUs, bonds slashed), filters (All / Available / Busy / Slashed), sort (reputation, earned, bond, jobs). Each GPU card shows earnings, a status pill, bond, reputation, jobs served, what it is doing right now, a passed/failed bar and expandable details. Below: "Rent out a GPU" with the CLI and rules, plus "How a GPU earns" | providers, settlements |
+| `/jobs` | Post a job | Job tabs and the split card: glowing panel (job, status, escrow) plus mint panel (stages, verdicts, answers) | selected job |
+| `/ledger` | Post a job | Job tabs and a deep-green card: the word *Refereed*, a chain legend and a vertical timeline with one dot per event, coloured by chain | timeline, tx links |
+| `/agents` | agents online | KPIs (audits, challenges, votes, cheaters caught, agreement with quorum). Roster cards for the watcher and three verifiers (role, address, metrics, last action). An activity log with filters (Audits / Challenges / Votes / Faults) and tx links. Side cards: "How a check works" and "Audit policy" | agent reports, timeline, policy |
+
+The marketplace has no behaviour switches. The only way to make a GPU
+misbehave is the "Test the referee" control on `/post`, which affects one GPU
+for one job (stage 1 or 2), so the catch can be shown in a demo without
+changing the GPU's normal behaviour.
 
 The nav is a three-column grid (logo, menu, actions) with the menu in the
 middle column, so it sits on the page's centre line, directly above the chip

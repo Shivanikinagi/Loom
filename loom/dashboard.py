@@ -1,14 +1,16 @@
-"""Live LOOM dashboard: one page over the cross-chain indexer.
+"""Live LOOM dashboard over the cross-chain indexer.
 
 Read-only against any deployment (`python -m loom dashboard`), or interactive
 when started next to running actors (`python -m loom local --interactive`),
-where it can post jobs and switch any GPU into cheating or offline mode.
+where the Post a job page can submit jobs (sample or pasted texts) and, for
+demos, make one stage's GPU misbehave on that single job.
 """
 
 from __future__ import annotations
 
 import logging
 import threading
+import time
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
@@ -47,6 +49,9 @@ class ModeIn(BaseModel):
 
 class JobIn(BaseModel):
     texts: list[str] | None = None
+    # Demo only: make the GPU on this stage misbehave on this one job, to watch the referee catch it.
+    faultStage: int | None = None
+    faultMode: str | None = None
 
 
 def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
@@ -58,6 +63,7 @@ def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
 
     # One page app: every page path returns the same file, which renders the page from the URL.
     @app.get("/")
+    @app.get("/post")
     @app.get("/marketplace")
     @app.get("/jobs")
     @app.get("/ledger")
@@ -103,6 +109,12 @@ def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
                 names[v.acct.address.lower()] = {"name": v.name}
             names[actors.watcher.acct.address.lower()] = {"name": "watcher"}
             names[actors.buyer.acct.address.lower()] = {"name": "buyer"}
+        from .ml.pipeline import TOLERANCE
+        from .scenarios import TEXTS
+
+        policy = {"tolerance": TOLERANCE}
+        if actors is not None and actors.watcher is not None:
+            policy["trustedAfter"] = actors.watcher.policy.trusted_after
         return {
             "network": net.name,
             "interactive": actors is not None,
@@ -113,8 +125,11 @@ def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
             "providers": providers,
             "timeline": timeline,
             "names": names,
-            "reports": _jsonable(actors.reports()[-60:]) if actors is not None else [],
+            "reports": _jsonable(actors.reports()[-200:]) if actors is not None else [],
             "selectors": SELECTORS,
+            "params": _jsonable({k: (str(v) if isinstance(v, int) and v > 2**31 else v) for k, v in net.params.items()}),
+            "policy": policy,
+            "sampleTexts": TEXTS,
         }
 
     @app.post("/api/jobs")
@@ -124,12 +139,33 @@ def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
         from .scenarios import TEXTS
 
         p = net.params
+        texts = [t.strip() for t in (body.texts or []) if t.strip()][:12] or TEXTS
+        fault = None
+        if body.faultStage is not None and body.faultMode:
+            if body.faultMode not in ("skip", "noise", "offline") or not 1 <= body.faultStage <= 2:
+                raise HTTPException(400, "faultStage must be 1 or 2 and faultMode skip, noise or offline")
+            fault = (body.faultStage, body.faultMode)
+
         def go():
             try:
-                actors.buyer.submit(body.texts or TEXTS, p["jobPayment"],
-                                    p["stageTimeout"], p["challengeWindow"])
+                job_id, _ = actors.buyer.submit(texts, p["jobPayment"], p["stageTimeout"], p["challengeWindow"])
+                if fault:
+                    _inject(job_id, *fault)
             except Exception:
                 log.exception("job submit failed")
+
+        def _inject(job_id: int, stage: int, mode: str) -> None:
+            # Wait for the referee to assign the pipeline, then make that stage's GPU misbehave on this job only.
+            # Stage 1+ only starts after stage 0 commits, so this lands before the GPU computes.
+            for _ in range(240):
+                j = idx.jobs.get(job_id)
+                if j is not None and len(j.providers) > stage:
+                    for prov in actors.providers:
+                        if prov.address.lower() == j.providers[stage].lower() and prov.mode == "honest":
+                            prov.mode, prov.cheat_jobs = mode, {job_id}
+                            log.info("demo: %s will %s on job %s stage %s", prov.name, mode, job_id, stage)
+                    return
+                time.sleep(0.25)
         threading.Thread(target=go, daemon=True).start()
         return {"ok": True}
 

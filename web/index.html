@@ -25,8 +25,10 @@
 body { margin: 0; background: var(--black); color: var(--ink); font: 15px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
 a { color: inherit; }
 [hidden] { display: none !important; }
+button { font: inherit; }
 .mono { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
 .ok { color: var(--ok); } .bad { color: var(--bad); } .warn { color: var(--warn); } .muted { color: var(--ink-2); } .faint { color: var(--ink-3); }
+.small { font-size: 13px; }
 .trunc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; background: var(--ink-3); }
 .dot.base { background: var(--base); } .dot.unichain { background: var(--uni); } .dot.lasna { background: var(--lasna); }
@@ -34,7 +36,7 @@ a { color: inherit; }
 :focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
 
 /* ---------- buttons ---------- */
-.btn { display: inline-flex; align-items: center; gap: 10px; border-radius: 10px; padding: 9px 14px; font: 500 14px/1 var(--sans); cursor: pointer; text-decoration: none; border: 1px solid transparent; transition: transform .2s, background .2s; white-space: nowrap; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 10px; padding: 9px 14px; font: 500 14px/1 var(--sans); cursor: pointer; text-decoration: none; border: 1px solid transparent; transition: transform .2s, background .2s; white-space: nowrap; }
 .btn:disabled { opacity: .55; cursor: default; }
 .btn.white { background: #fff; color: #08110e; }
 .btn.white:hover { background: #eafff4; }
@@ -43,30 +45,35 @@ a { color: inherit; }
 .btn.cta { background: #fff; color: #08110e; padding: 5px 16px 5px 5px; box-shadow: 0 0 0 1px rgba(255,255,255,.2), 0 8px 30px rgba(47,224,167,.18); }
 .btn.cta:hover { transform: translateY(-1px); }
 .btn .ic { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, #3fe5a0, #138a63); }
-.btn.dark { background: var(--ink); color: #fff; padding: 5px 16px 5px 5px; }
+.btn.dark { background: var(--ink); color: #fff; }
+.btn.dark:hover { background: #0d4d3e; }
+.btn.line { background: #fff; color: var(--ink); border-color: var(--line); }
+.btn.line:hover { border-color: var(--ink-3); }
+.btn.sm { padding: 7px 11px; font-size: 13px; border-radius: 8px; }
+.btn.block { width: 100%; padding: 13px 16px; font-size: 15px; }
 
-/* ---------- dark top (hero on home, page header elsewhere) ---------- */
+/* ---------- dark top ---------- */
 .top { position: relative; overflow: hidden; background: var(--black); color: #fff; isolation: isolate; }
 .arcs { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
-nav { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; padding: 22px 32px; }
-.logo { justify-self: start; display: flex; align-items: center; gap: 10px; font: 600 18px/1 var(--display); letter-spacing: .14em; text-decoration: none; color: #fff; }
-.logo .mark { width: 22px; height: 22px; display: grid; grid-template-rows: repeat(3, 1fr); gap: 2px; }
-.logo .mark i { display: block; border-radius: 2px; background: linear-gradient(90deg, #3fe5a0, #fff); }
-.logo .mark i:nth-child(2) { margin: 0 3px; } .logo .mark i:nth-child(3) { margin: 0 6px; }
+nav { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; padding: 18px 32px; }
+.logo { justify-self: start; display: flex; align-items: center; gap: 8px; font: 600 15px/1 var(--display); letter-spacing: .14em; text-decoration: none; color: #fff; }
+.logo .mark { width: 16px; height: 16px; display: grid; grid-template-rows: repeat(3, 1fr); gap: 2px; }
+.logo .mark i { display: block; border-radius: 1.5px; background: linear-gradient(90deg, #3fe5a0, #fff); }
+.logo .mark i:nth-child(2) { margin: 0 2px; } .logo .mark i:nth-child(3) { margin: 0 4px; }
 .menu { display: flex; gap: 4px; padding: 4px; border-radius: 12px; border: 1px solid var(--glass-line); background: rgba(255,255,255,.03); backdrop-filter: blur(10px); }
-.menu a { padding: 7px 14px; border-radius: 8px; font-size: 14px; text-decoration: none; color: #cfdcd6; }
+.menu a { padding: 7px 14px; border-radius: 8px; font-size: 14px; text-decoration: none; color: #cfdcd6; white-space: nowrap; }
 .menu a:hover { background: var(--glass); color: #fff; }
 .menu a.on { background: rgba(255,255,255,.1); color: #fff; }
 .navr { justify-self: end; display: flex; gap: 8px; align-items: center; }
 
 /* home hero */
-.hero { min-height: calc(100vh - 82px); min-height: calc(100svh - 82px); display: flex; flex-direction: column; align-items: center; padding-bottom: 120px; }
-.chipart { width: min(920px, 100%); height: auto; display: block; }
-.hero-copy { text-align: center; padding: 0 16px; margin-top: -10px; }
-h1 { font: 600 clamp(44px, 7.4vw, 92px)/1 var(--display); letter-spacing: -.035em; margin: 0 0 18px;
+.hero { display: flex; flex-direction: column; align-items: center; padding: 8px 0 100px; }
+.chipart { width: min(520px, 92%); height: auto; display: block; margin-top: 10px; }
+.hero-copy { text-align: center; padding: 0 16px; margin-top: 18px; }
+h1 { font: 600 clamp(42px, 6.6vw, 84px)/1 var(--display); letter-spacing: -.035em; margin: 0 0 18px;
   background: linear-gradient(180deg, #ffffff 30%, #9fb3ab); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .lede { color: #d3dfda; font-size: 17px; max-width: 470px; margin: 0 auto 26px; }
-.tiles-label { margin: 56px 0 14px; font-size: 13px; color: #cfdcd6; text-align: center; }
+.tiles-label { margin: 48px 0 14px; font-size: 13px; color: #cfdcd6; text-align: center; }
 .tiles { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; padding: 0 16px; }
 .tile { width: 128px; padding: 12px 10px; border-radius: 14px; border: 1px solid var(--glass-line); background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
   text-align: center; text-decoration: none; color: #e9f2ee; font-size: 13px; line-height: 1.25; backdrop-filter: blur(8px); transition: border-color .2s; }
@@ -75,32 +82,45 @@ h1 { font: 600 clamp(44px, 7.4vw, 92px)/1 var(--display); letter-spacing: -.035e
 .tile .addr { display: block; margin-top: 4px; color: #8fa49b; font: 10.5px var(--mono); }
 .steps { display: flex; justify-content: center; align-items: flex-start; padding: 0 16px 130px; }
 .step { width: 200px; text-align: center; }
-.step .ico { width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 16px; display: grid; place-items: center; color: var(--teal);
+.step .ico { width: 56px; height: 56px; margin: 0 auto 12px; border-radius: 14px; display: grid; place-items: center; color: var(--teal);
   border: 1px solid rgba(47,224,167,.35); background: radial-gradient(circle at 50% 30%, rgba(47,224,167,.25), rgba(4,8,7,.9) 70%); box-shadow: 0 0 40px rgba(47,224,167,.15); }
 .step p { margin: 0; font-size: 13px; color: #b6c6bf; line-height: 1.4; }
 .step p b { display: block; color: #fff; font-weight: 500; margin-bottom: 2px; }
-.link { flex: 0 0 80px; height: 64px; display: flex; align-items: center; justify-content: center; position: relative; }
+.link { flex: 0 0 80px; height: 56px; display: flex; align-items: center; justify-content: center; position: relative; }
 .link::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: linear-gradient(90deg, transparent, rgba(47,224,167,.45), transparent); }
 .link i { width: 9px; height: 9px; transform: rotate(45deg); border: 1px solid rgba(47,224,167,.7); background: var(--black); position: relative; }
 
-/* inner page header */
-.pagehead { text-align: center; padding: 36px 16px 110px; max-width: 760px; margin: 0 auto; }
-.pagehead .tag { border-color: rgba(255,255,255,.5); color: #e8f5ef; }
-.pagehead h1 { font-size: clamp(36px, 5.4vw, 64px); margin: 16px 0 14px; }
-.pagehead h1 .accent { display: block; background: linear-gradient(180deg, #7ff5bb, #2fd189); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.pagehead p { color: #c3d3cc; margin: 0 auto; max-width: 560px; }
+/* compact page header (inner pages) */
+.pagehead { max-width: 1200px; margin: 0 auto; padding: 22px 32px 84px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.pagehead h1 { font-size: clamp(32px, 4vw, 44px); margin: 0 0 8px; }
+.pagehead p { color: #b9cbc3; margin: 0; max-width: 560px; }
+.pagehead .crumb { font-size: 13px; color: #8fb3a4; margin-bottom: 10px; display: block; }
+.pagehead .act { display: flex; gap: 8px; align-items: center; }
+.pagehead .meta { color: #b9cbc3; font-size: 13px; }
 
 /* ---------- light sheet ---------- */
-.sheet { background: var(--paper); border-radius: 32px 32px 0 0; margin-top: -48px; position: relative; z-index: 2; overflow: hidden; min-height: 50vh; }
+.sheet { background: var(--paper); border-radius: 28px 28px 0 0; margin-top: -48px; position: relative; z-index: 2; overflow: hidden; min-height: 50vh; }
 .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
-.view { padding: 64px 0 96px; }
+.view { padding: 40px 0 96px; }
+.view[data-view="home"] { padding-top: 72px; }
 .shead { text-align: center; max-width: 720px; margin: 0 auto 40px; }
 .tag { display: inline-block; border: 1px solid var(--ink); color: var(--ink); border-radius: 999px; padding: 3px 11px; font-size: 12.5px; font-weight: 500; }
 h2 { font: 600 clamp(32px, 4.4vw, 50px)/1.08 var(--display); letter-spacing: -.025em; margin: 14px 0 14px; color: var(--ink); }
 h2 .accent { color: var(--mint-text); display: block; }
 .shead p { color: var(--ink-2); margin: 0 auto; max-width: 560px; }
+.card { border: 1px solid var(--line); border-radius: 16px; background: #fff; min-width: 0; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); background: #fff; white-space: nowrap; }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ink-3); }
+.pill.ok::before { background: var(--ok); } .pill.bad::before { background: var(--bad); } .pill.warn::before { background: var(--warn); } .pill.run::before { background: var(--lasna); animation: pulse 1.6s infinite; }
+.pill.ok { color: #0d7a46; } .pill.bad { color: #b8352b; } .pill.warn { color: #9a6513; } .pill.run { color: #0b7a5b; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
+.kpis.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.kpi { padding: 18px 20px; }
+.kpi .l { font-size: 13px; color: var(--ink-2); }
+.kpi .n { font: 600 28px/1.1 var(--display); letter-spacing: -.02em; margin-top: 8px; }
+.empty { color: var(--ink-2); padding: 40px 0; text-align: center; }
 
-/* home: page cards */
+/* home cards */
 .pages { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .pagecard { display: flex; flex-direction: column; gap: 10px; padding: 22px; border-radius: 20px; border: 1px solid var(--line); text-decoration: none; background: #fff; min-height: 220px; transition: border-color .2s, box-shadow .2s, transform .2s; }
 .pagecard:hover { border-color: var(--mint-line); box-shadow: 0 12px 34px rgba(10,61,49,.08); transform: translateY(-2px); }
@@ -110,29 +130,101 @@ h2 .accent { color: var(--mint-text); display: block; }
 .pagecard h3 .arr { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--mint-bg); color: var(--ink); flex: none; }
 .pagecard p { margin: 0; color: var(--ink-2); font-size: 13.5px; }
 
-/* stats */
-.stats { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 0 0 28px; }
-.stat { min-width: 150px; padding: 12px 16px; border-radius: 14px; background: var(--paper-2); border: 1px solid var(--line); }
-.stat .n { font: 600 26px/1 var(--display); color: var(--ink); letter-spacing: -.02em; }
-.stat .l { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
-
-/* marketplace */
-.market { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
-.gpu { position: relative; border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: #fff; display: flex; flex-direction: column; gap: 14px; transition: border-color .2s, box-shadow .2s; }
-.gpu:hover { border-color: var(--mint-line); box-shadow: 0 10px 30px rgba(10,61,49,.06); }
-.gpu .nm { font: 600 22px/1 var(--display); letter-spacing: -.01em; display: flex; align-items: center; gap: 8px; }
-.gpu .addr { color: var(--ink-3); margin-top: 4px; }
-.gpu dl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0; padding: 12px; border-radius: 12px; background: var(--paper-2); }
-.gpu dt { font-size: 11.5px; color: var(--ink-3); }
-.gpu dd { margin: 2px 0 0; font: 500 14px/1.2 var(--mono); color: var(--ink); }
-.badge { position: absolute; top: 16px; right: 16px; font-size: 11.5px; font-weight: 500; padding: 3px 9px; border-radius: 999px; }
-.badge.ok { background: var(--mint-bg); color: #0d7a46; } .badge.bad { background: #fde7e5; color: #b8352b; } .badge.muted { background: var(--paper-2); color: var(--ink-2); }
-.gpu.slashed { background: #fffafa; border-color: #f6d3cf; }
-select { width: 100%; font: 500 13px/1 var(--sans); color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; appearance: none; cursor: pointer;
+/* ---------- post a job ---------- */
+.mlayout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+.fsec { padding: 22px 24px; border-top: 1px solid var(--line); }
+.fsec:first-child { border-top: 0; }
+.fsec-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.fsec-head h3 { margin: 0; font: 600 16px/1.2 var(--display); }
+.seg { display: inline-flex; padding: 3px; border-radius: 10px; border: 1px solid var(--line); background: var(--paper-2); }
+.seg button { border: 0; background: transparent; padding: 7px 12px; border-radius: 8px; font-size: 13.5px; color: var(--ink-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(10,61,49,.12); font-weight: 500; }
+.model { display: flex; gap: 14px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; }
+.model .av { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--ink); color: var(--mint); font: 600 14px var(--display); flex: none; }
+.model b { font-weight: 600; }
+.model .meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); margin: 2px 0 8px; }
+.model .meta .v { color: var(--ok); font-weight: 500; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: var(--paper-2); border: 1px solid var(--line); color: var(--ink-2); }
+.samples { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.samples li { font-size: 14px; padding: 9px 12px; border-radius: 10px; background: var(--paper-2); display: flex; gap: 10px; }
+.samples li .i { color: var(--ink-3); font: 12px var(--mono); padding-top: 2px; }
+textarea, input[type=text], select { width: 100%; font: 14px/1.5 var(--sans); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fff; }
+textarea { min-height: 150px; resize: vertical; }
+select { appearance: none; cursor: pointer; padding-right: 32px;
   background-image: linear-gradient(45deg, transparent 50%, var(--ink-2) 50%), linear-gradient(135deg, var(--ink-2) 50%, transparent 50%);
   background-position: calc(100% - 17px) 50%, calc(100% - 12px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
+.hint { font-size: 13px; color: var(--ink-2); margin-top: 8px; }
+.rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.rule { padding: 12px 14px; border-radius: 12px; background: var(--paper-2); }
+.rule .l { font-size: 12.5px; color: var(--ink-2); }
+.rule .v { font-weight: 600; margin-top: 2px; }
+details.adv summary { cursor: pointer; font-weight: 600; font-size: 15px; list-style: none; display: flex; align-items: center; gap: 8px; }
+details.adv summary::before { content: "›"; font-size: 18px; transition: transform .2s; }
+details.adv[open] summary::before { transform: rotate(90deg); }
+details.adv .body { margin-top: 14px; }
+.side { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 20px; }
+.side .card { padding: 22px; }
+.side h4 { margin: 0 0 12px; font: 600 16px/1.2 var(--display); }
+.est .big { font: 600 34px/1 var(--display); letter-spacing: -.02em; }
+.est .sub { font-size: 13px; color: var(--ink-2); margin: 6px 0 16px; }
+.rows { display: grid; gap: 9px; margin-bottom: 18px; font-size: 14px; }
+.rows div { display: flex; justify-content: space-between; gap: 12px; }
+.rows div span:first-child { color: var(--ink-2); }
+.rows div span:last-child { font-family: var(--mono); font-size: 13px; }
+.note { font-size: 12.5px; color: var(--ink-2); margin-top: 12px; text-align: center; }
+.myjobs { list-style: none; margin: 0; padding: 0; }
+.myjobs li { padding: 12px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.myjobs li:first-child { border-top: 0; padding-top: 0; }
+.myjobs .r1 { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.myjobs .r2 { font-size: 13px; color: var(--ink-2); margin-top: 3px; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 16px; border-radius: 12px; font-size: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.25); z-index: 50; max-width: calc(100% - 32px); }
 
-/* jobs */
+/* ---------- marketplace ---------- */
+.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters button { border: 1px solid var(--line); background: #fff; color: var(--ink-2); border-radius: 999px; padding: 6px 12px; font-size: 13.5px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.filters button .c { color: var(--ink-3); font-size: 12.5px; }
+.filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.filters button[aria-pressed="true"] .c { color: #a9d3c3; }
+.sortsel { width: auto; min-width: 170px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.gcard { padding: 20px; display: flex; flex-direction: column; gap: 16px; transition: border-color .2s, box-shadow .2s; }
+.gcard:hover { border-color: var(--mint-line); box-shadow: 0 10px 30px rgba(10,61,49,.06); }
+.gcard .hd { display: flex; gap: 12px; align-items: center; }
+.gcard .icon { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); display: grid; place-items: center; color: var(--ink); flex: none; background: var(--paper-2); }
+.gcard .nm { font: 600 16px/1.2 var(--display); }
+.gcard .sub { color: var(--ink-3); font: 12px var(--mono); margin-top: 2px; }
+.gcard .fig { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
+.gcard .fig b { font: 600 28px/1 var(--display); letter-spacing: -.02em; }
+.gcard .fig .l { font-size: 13px; color: var(--ink-2); margin-top: 4px; }
+.gcard dl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0; padding-top: 14px; border-top: 1px solid var(--line); }
+.gcard dt { font-size: 12.5px; color: var(--ink-2); }
+.gcard dd { margin: 3px 0 0; font-weight: 500; font-size: 14px; }
+.bar { display: flex; align-items: center; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-2); }
+.bar .track { flex: 1; height: 5px; border-radius: 3px; background: var(--paper-2); overflow: hidden; }
+.bar .fill { height: 100%; background: var(--mint); border-radius: 3px; }
+.bar b { color: var(--ink); font-weight: 600; }
+.gcard.slashed { background: #fffbfa; border-color: #f4d6d2; }
+.gcard.slashed .fig b { color: var(--ink-3); }
+.gcard .foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.gdetail { border-top: 1px solid var(--line); padding-top: 12px; font-size: 13px; display: grid; gap: 6px; }
+.gdetail div { display: flex; justify-content: space-between; gap: 8px; }
+.provide { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+.provide .card { padding: 24px; }
+.provide h3 { margin: 0 0 6px; font: 600 20px/1.2 var(--display); }
+pre.cmd { margin: 14px 0 0; padding: 14px 16px; border-radius: 12px; background: #06130f; color: #c9f5df; font: 12.5px/1.6 var(--mono); overflow-x: auto; }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.checks li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; font-size: 14px; }
+.checks .ico { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--mint-bg); color: #0d7a46; font-size: 12px; font-weight: 700; }
+.checks li.badl .ico { background: #fde7e5; color: #b8352b; }
+.checks .d { display: block; font-size: 13px; color: var(--ink-2); }
+ol.flow { list-style: none; margin: 0; padding: 0; counter-reset: f; display: grid; gap: 12px; }
+ol.flow li { counter-increment: f; position: relative; padding: 3px 0 0 38px; min-height: 26px; font-weight: 500; font-size: 14px; }
+ol.flow li::before { content: counter(f); position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: #fff; font-size: 12px; }
+ol.flow li span { display: block; font-weight: 400; font-size: 13px; color: var(--ink-2); }
+
+/* ---------- jobs ---------- */
 .jobbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; margin: 0 0 22px; }
 .tabs { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
 .tab { font: 500 13px/1 var(--sans); padding: 9px 13px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink-2); cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
@@ -166,9 +258,8 @@ select { width: 100%; font: 500 13px/1 var(--sans); color: var(--ink); backgroun
 .answers { display: flex; gap: 6px; flex-wrap: wrap; }
 .answer { font-size: 12.5px; padding: 4px 10px; border-radius: 999px; background: #fff; }
 .answer.positive { color: var(--ok); } .answer.negative { color: var(--bad); }
-.empty { color: var(--ink-2); padding: 40px 0; text-align: center; }
 
-/* ledger */
+/* ---------- ledger ---------- */
 .band { background: var(--band); color: #eafff4; border-radius: 24px; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 40px; padding: 48px; }
 .bandhead { position: sticky; top: 24px; align-self: start; }
 .bandhead h3 { font: 600 26px/1.15 var(--display); margin: 0 0 10px; color: #fff; letter-spacing: -.015em; }
@@ -181,49 +272,78 @@ select { width: 100%; font: 500 13px/1 var(--sans); color: var(--ink); backgroun
 .tl::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 1px; background: rgba(234,255,244,.18); }
 .tl li { position: relative; padding: 10px 0 12px 14px; }
 .tl li .d { position: absolute; left: -24px; top: 16px; width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--band); }
-.tl li .d.base, .legend .base { background: #8fb0ff; } .tl li .d.unichain, .legend .unichain { background: #ff8fc0; } .tl li .d.lasna, .legend .lasna { background: var(--mint); }
+.tl li .d.base { background: #8fb0ff; } .tl li .d.unichain { background: #ff8fc0; } .tl li .d.lasna { background: var(--mint); }
 .tl .what { color: #f2fff8; font-size: 15px; }
 .tl .what b { font-weight: 600; }
 .tl .what .bad { color: #ff9c92; } .tl .what .ok { color: var(--mint); } .tl .what .warn { color: #ffd08a; } .tl .what .muted { color: #a9d3c3; } .tl .what .faint { color: #7fb4a2; }
 .tl .meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 3px; font: 11.5px var(--mono); color: #86bba8; }
 .tl .meta a { color: #b8e6d4; text-decoration: none; } .tl .meta a:hover { text-decoration: underline; }
 
-/* agents */
-.field { position: relative; }
-.field svg { position: absolute; left: 0; right: 0; top: -40px; height: 260px; width: 100%; z-index: 0; }
-.feed { position: relative; z-index: 1; list-style: none; margin: 120px auto 0; padding: 8px 20px; max-width: 760px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.95); }
-.feed li { padding: 12px 0; border-top: 1px solid var(--line); font-size: 14px; }
-.feed li:first-child { border-top: 0; }
-.feed .role { display: inline-block; min-width: 82px; font-size: 12px; font-weight: 600; color: var(--mint-text); }
+/* ---------- agents ---------- */
+.roster { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 28px; }
+.agent { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.agent .hd { display: flex; gap: 12px; align-items: center; }
+.agent .av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; flex: none; color: #fff; background: linear-gradient(135deg, #1fa57b, #0a3d31); }
+.agent .av.w { background: linear-gradient(135deg, #3fe596, #13805a); }
+.agent .nm { font: 600 16px/1.2 var(--display); }
+.agent .role { font-size: 12.5px; color: var(--ink-2); }
+.agent .desc { font-size: 13.5px; color: var(--ink-2); margin: 0; }
+.agent dl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0; padding: 12px; border-radius: 12px; background: var(--paper-2); }
+.agent dt { font-size: 12px; color: var(--ink-2); }
+.agent dd { margin: 2px 0 0; font: 600 18px/1.1 var(--display); }
+.agent .last { font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 12px; }
+.agent .last b { color: var(--ink); font-weight: 500; }
+.hub { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+.activity { padding: 0; overflow: hidden; }
+.activity .top2 { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.activity .top2 h3 { margin: 0; font: 600 16px/1.2 var(--display); }
+.arows { list-style: none; margin: 0; padding: 0; max-height: 640px; overflow: auto; }
+.arows li { display: grid; grid-template-columns: 72px 92px minmax(0, 1fr) auto; gap: 12px; align-items: baseline; padding: 12px 20px; border-top: 1px solid var(--line); font-size: 14px; }
+.arows li:first-child { border-top: 0; }
+.arows .when { font: 12px var(--mono); color: var(--ink-3); }
+.arows .what b { font-weight: 600; }
+.arows a, .arows .tx { font: 11.5px var(--mono); color: var(--ink-3); text-decoration: none; }
+.arows a:hover { color: var(--ink); text-decoration: underline; }
+.ttag { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: var(--paper-2); color: var(--ink-2); text-align: center; }
+.ttag.audit { background: var(--mint-bg); color: #0d7a46; } .ttag.challenge, .ttag.slash, .ttag.faulty { background: #fde7e5; color: #b8352b; }
+.ttag.honest { background: var(--mint-bg); color: #0d7a46; } .ttag.fault { background: #fdf0dc; color: #9a6513; } .ttag.skip { background: var(--paper-2); color: var(--ink-2); }
+.jlink { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); cursor: pointer; }
 
 footer { background: var(--black); color: #8fa49b; }
 footer .in { max-width: 1200px; margin: 0 auto; padding: 28px 32px; display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; align-items: center; }
 footer .spacer { flex: 1; }
 
+@media (max-width: 1080px) {
+  .grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .roster { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpis.five { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 @media (max-width: 980px) {
   nav { grid-template-columns: auto minmax(0, 1fr); }
   .menu { grid-row: 2; grid-column: 1 / -1; justify-self: center; overflow-x: auto; max-width: 100%; }
   .pages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .split { grid-template-columns: minmax(0, 1fr); }
+  .split, .mlayout, .hub, .provide { grid-template-columns: minmax(0, 1fr); }
+  .side { position: static; }
   .glowpanel { min-height: 320px; }
   .band { grid-template-columns: minmax(0, 1fr); padding: 32px 24px; }
   .bandhead { position: static; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
-  nav { padding: 16px; gap: 12px; } .navr .btn.ghost { display: none; }
-  .menu a { padding: 7px 10px; font-size: 13px; }
-  .wrap { padding: 0 16px; } footer .in { padding: 22px 16px; }
+  nav { padding: 14px 16px; gap: 12px; } .navr .btn.ghost { display: none; }
+  .menu a { padding: 7px 9px; font-size: 13px; }
+  .wrap { padding: 0 16px; } footer .in { padding: 22px 16px; } .pagehead { padding: 18px 16px 76px; }
   .lede { font-size: 15.5px; }
   .steps { flex-direction: column; align-items: center; padding-bottom: 96px; }
-  .link { flex: 0 0 36px; height: 36px; width: 64px; } .link::before { left: 50%; right: auto; top: 0; bottom: 0; width: 1px; height: auto; background: linear-gradient(180deg, transparent, rgba(47,224,167,.45), transparent); }
-  .pages { grid-template-columns: minmax(0, 1fr); } .pagecard { min-height: 0; }
-  .mintpanel { padding: 28px 22px; }
-  .stat { min-width: 0; flex: 1 1 40%; }
-  .market { grid-template-columns: minmax(0, 1fr); }
+  .link { flex: 0 0 36px; height: 36px; width: 56px; } .link::before { left: 50%; right: auto; top: 0; bottom: 0; width: 1px; height: auto; background: linear-gradient(180deg, transparent, rgba(47,224,167,.45), transparent); }
+  .pages, .grid3, .roster, .rules { grid-template-columns: minmax(0, 1fr); } .pagecard { min-height: 0; }
+  .kpis, .kpis.five { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mintpanel { padding: 28px 22px; } .fsec { padding: 18px 16px; }
   .tile { width: calc(33.3% - 6px); min-width: 0; padding: 10px 6px; } .tile .addr { display: none; }
-  .view { padding: 48px 0 72px; }
+  .view { padding: 32px 0 72px; }
+  .arows li { grid-template-columns: 60px minmax(0, 1fr); } .arows li .what { grid-column: 1 / -1; } .arows li > :last-child { grid-column: 1 / -1; }
 }
-@media (prefers-reduced-motion: reduce) { .live, .orb { animation: none !important; } .pulse-path { display: none; } }
+@media (prefers-reduced-motion: reduce) { .live, .orb, .pill.run::before { animation: none !important; } .pulse-path { display: none; } }
 </style>
 </head>
 <body>
@@ -255,51 +375,53 @@ footer .spacer { flex: 1; }
   <nav>
     <a class="logo" href="/" data-link><span class="mark"><i></i><i></i><i></i></span>LOOM</a>
     <div class="menu" id="menu"><a href="/marketplace" data-link>Marketplace</a><a href="/jobs" data-link>Jobs</a><a href="/ledger" data-link>Ledger</a><a href="/agents" data-link>Agents</a></div>
-    <div class="navr"><a class="btn ghost" href="https://github.com/Shivanikinagi/Loom" target="_blank" rel="noopener">GitHub</a><button class="btn white" id="navPost">Post a job</button></div>
+    <div class="navr"><a class="btn ghost" href="https://github.com/Shivanikinagi/Loom" target="_blank" rel="noopener">GitHub</a><a class="btn white" href="/post" data-link id="navPost">Post a job</a></div>
   </nav>
 
-  <!-- home hero -->
   <div class="hero" id="hero">
     <svg class="chipart" viewBox="0 0 920 230" aria-hidden="true">
       <defs>
         <linearGradient id="chipEdge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4af0b4"/><stop offset="1" stop-color="#0f6b4f"/></linearGradient>
         <radialGradient id="chipGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#2fe0a7" stop-opacity=".45"/><stop offset="1" stop-color="#2fe0a7" stop-opacity="0"/></radialGradient>
       </defs>
-      <g fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1.2" id="traces">
+      <g fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1.6" id="traces">
         <path d="M404 112 H300 L268 80 H136"/><path d="M404 132 H320 L282 170 H86"/>
         <path d="M516 112 H620 L652 80 H784"/><path d="M516 132 H600 L638 170 H834"/>
         <path d="M448 64 V0"/><path d="M460 64 V0"/><path d="M472 64 V0"/>
       </g>
-      <g fill="none" stroke="#3fe5a0" stroke-width="1.6" stroke-linecap="round" id="pulses"></g>
+      <g fill="none" stroke="#3fe5a0" stroke-width="2.2" stroke-linecap="round" id="pulses"></g>
       <circle cx="460" cy="122" r="120" fill="url(#chipGlow)"/>
-      <rect x="404" y="64" width="112" height="116" rx="18" fill="#06130f" stroke="url(#chipEdge)" stroke-width="1.5"/>
+      <rect x="404" y="64" width="112" height="116" rx="18" fill="#06130f" stroke="url(#chipEdge)" stroke-width="2"/>
       <rect x="416" y="76" width="88" height="92" rx="10" fill="#0a1d17" stroke="rgba(74,240,180,.25)"/>
       <g id="pins" fill="rgba(255,255,255,.12)"></g>
-      <text x="460" y="128" text-anchor="middle" fill="#e9fff5" font-family="Inter Tight, Inter, sans-serif" font-weight="600" font-size="17" letter-spacing="2">LOOM</text>
+      <text x="460" y="129" text-anchor="middle" fill="#e9fff5" font-family="Inter Tight, Inter, sans-serif" font-weight="600" font-size="19" letter-spacing="2">LOOM</text>
       <g id="nodes"></g>
     </svg>
     <div class="hero-copy">
       <h1>Inference you can verify</h1>
       <p class="lede">One model, split across community GPUs. A Reactive contract checks every layer and slashes any GPU that cheats.</p>
-      <button class="btn cta" id="heroPost"><span class="ic" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M5 3l4 4-4 4" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Post a job</button>
+      <a class="btn cta" href="/post" data-link id="heroPost"><span class="ic" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M5 3l4 4-4 4" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Post a job</a>
     </div>
     <div class="tiles-label" id="tilesLabel">Live on three chains</div>
     <div class="tiles" id="chains"></div>
   </div>
   <div class="steps" id="steps" aria-label="How LOOM verifies">
-    <div class="step"><div class="ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="3" width="18" height="5" rx="1.5"/><rect x="4" y="10.5" width="18" height="5" rx="1.5"/><rect x="4" y="18" width="18" height="5" rx="1.5"/></svg></div><p><b>Split</b>GPT-2 runs as three stages on three GPUs</p></div>
+    <div class="step"><div class="ico"><svg width="24" height="24" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="3" width="18" height="5" rx="1.5"/><rect x="4" y="10.5" width="18" height="5" rx="1.5"/><rect x="4" y="18" width="18" height="5" rx="1.5"/></svg></div><p><b>Split</b>GPT-2 runs as three stages on three GPUs</p></div>
     <div class="link"><i></i></div>
-    <div class="step"><div class="ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 4L7 22M19 4l-2 18M4 9.5h18M3 16.5h18"/></svg></div><p><b>Commit</b>Each GPU posts the hash of its output</p></div>
+    <div class="step"><div class="ico"><svg width="24" height="24" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 4L7 22M19 4l-2 18M4 9.5h18M3 16.5h18"/></svg></div><p><b>Commit</b>Each GPU posts the hash of its output</p></div>
     <div class="link"><i></i></div>
-    <div class="step"><div class="ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 3l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V6l8-3z"/><path d="M9 13l3 3 5-6"/></svg></div><p><b>Referee</b>Reactive finds the cheater and slashes its bond</p></div>
+    <div class="step"><div class="ico"><svg width="24" height="24" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 3l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V6l8-3z"/><path d="M9 13l3 3 5-6"/></svg></div><p><b>Referee</b>Reactive finds the cheater and slashes its bond</p></div>
   </div>
 
-  <!-- inner page header -->
-  <div class="pagehead" id="pagehead" hidden><span class="tag" id="phTag"></span><h1 id="phTitle"></h1><p id="phText"></p></div>
+  <div class="pagehead" id="pagehead" hidden>
+    <div><span class="crumb" id="phCrumb"></span><h1 id="phTitle"></h1><p id="phText"></p></div>
+    <div class="act" id="phAct"></div>
+  </div>
 </header>
 
 <div class="sheet">
   <div class="wrap">
+    <!-- home -->
     <section class="view" data-view="home">
       <div class="shead">
         <span class="tag">Explore</span>
@@ -309,16 +431,118 @@ footer .spacer { flex: 1; }
       <div class="pages" id="pagecards"></div>
     </section>
 
-    <section class="view" data-view="marketplace" hidden>
-      <div class="stats" id="stats"></div>
-      <div class="market" id="providers"></div>
+    <!-- post a job -->
+    <section class="view" data-view="post" hidden>
+      <div class="mlayout">
+        <div class="card">
+          <section class="fsec">
+            <div class="fsec-head"><h3>Model</h3><div class="seg"><button aria-pressed="true">Listed model</button></div></div>
+            <div class="model">
+              <div class="av">G2</div>
+              <div style="min-width:0">
+                <div><span class="faint">openai-community/</span><b>gpt2</b> <span class="faint">· 124M</span></div>
+                <div class="meta"><span class="v">✓ Verified split</span><span>12 blocks</span><span>3 stages</span><span>NumPy float32</span></div>
+                <div class="chips" id="stageChips"></div>
+              </div>
+            </div>
+          </section>
+          <section class="fsec">
+            <div class="fsec-head"><h3>Task</h3><div class="seg"><button aria-pressed="true">Sentiment</button></div></div>
+            <div class="chips"><span class="chip">positive</span><span class="chip">negative</span></div>
+            <p class="hint">Zero-shot GPT-2, calibrated with a content-free row that runs through the same pipeline and is checked like the rest.</p>
+          </section>
+          <section class="fsec">
+            <div class="fsec-head"><h3>Data</h3>
+              <div class="seg" id="dataSeg"><button data-mode="sample" aria-pressed="true">Sample reviews</button><button data-mode="own" aria-pressed="false">Paste my own</button></div>
+            </div>
+            <ul class="samples" id="samples"></ul>
+            <div id="ownBox" hidden>
+              <textarea id="ownText" placeholder="One review per line, up to 12. For example:&#10;Arrived quickly and works perfectly.&#10;Broke after two days and support never replied."></textarea>
+              <div class="hint" id="ownCount">0 reviews</div>
+            </div>
+          </section>
+          <section class="fsec">
+            <div class="fsec-head"><h3>Rules</h3><span class="small muted">Set by the escrow contract</span></div>
+            <div class="rules" id="rules"></div>
+          </section>
+          <section class="fsec" id="advSec">
+            <details class="adv"><summary>Test the referee</summary>
+              <div class="body">
+                <select id="fault" aria-label="Fault to inject">
+                  <option value="">No fault: every GPU stays honest</option>
+                  <option value="1:skip">Stage 1 GPU skips its layers</option>
+                  <option value="1:noise">Stage 1 GPU adds noise to its output</option>
+                  <option value="2:skip">Stage 2 GPU skips its layers</option>
+                  <option value="1:offline">Stage 1 GPU goes offline</option>
+                </select>
+                <p class="hint">For demos only. The GPU misbehaves on this one job, so you can watch the watcher challenge it, the verifiers vote and the referee slash it on Unichain. It is honest again on the next job.</p>
+              </div>
+            </details>
+          </section>
+        </div>
+
+        <aside class="side">
+          <div class="card est">
+            <h4>Estimate</h4>
+            <div class="big" id="estPay">–</div>
+            <div class="sub" id="estSub">–</div>
+            <div class="rows" id="estRows"></div>
+            <button class="btn dark block" id="submitJob">Post job</button>
+            <div class="note" id="estNote">Paid from escrow on Base Sepolia when the challenge window closes.</div>
+          </div>
+          <div class="card">
+            <h4 style="display:flex;justify-content:space-between">Your jobs <span class="faint" id="myCount"></span></h4>
+            <ul class="myjobs" id="myJobs"></ul>
+          </div>
+        </aside>
+      </div>
     </section>
 
+    <!-- marketplace -->
+    <section class="view" data-view="marketplace" hidden>
+      <div class="kpis" id="mkKpis"></div>
+      <div class="toolbar">
+        <div class="filters" id="mkFilters"></div>
+        <select class="sortsel" id="mkSort" aria-label="Sort GPUs">
+          <option value="score">Sort: Reputation</option><option value="earned">Sort: Earned</option><option value="bond">Sort: Bond</option><option value="jobs">Sort: Jobs served</option>
+        </select>
+      </div>
+      <div class="grid3" id="providers"></div>
+      <div class="provide" id="provide">
+        <div class="card">
+          <h3>Rent out a GPU</h3>
+          <p class="muted" style="margin:0">Bond on Unichain, get scheduled by reputation, and get paid for the layers you serve.</p>
+          <pre class="cmd"># one key funds every role; providers bond on Unichain Sepolia
+cp .env.example .env            # LOOM_PRIVATE_KEY=...
+python -m loom register --network testnet
+python -m loom run --network testnet   # serve stages, commit hashes</pre>
+          <ul class="checks" style="margin-top:18px">
+            <li><span class="ico">✓</span><span>Only activations, never the whole model<span class="d">Each GPU runs its slice of layers on the activations handed to it.</span></span></li>
+            <li><span class="ico">✓</span><span>Paid by layers served<span class="d">Settlement splits the payment across stages by layer count.</span></span></li>
+            <li><span class="ico">✓</span><span>Offline isn't fraud<span class="d">A missed deadline costs a small fixed penalty and the stage is rerouted.</span></span></li>
+            <li class="badl"><span class="ico">!</span><span>Cheating costs the whole bond<span class="d">Two of three verifiers re-run your stage. If they agree you faked it, the bond goes to the challenger and the buyer.</span></span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4 style="margin:0 0 14px;font:600 16px/1.2 var(--display)">How a GPU earns</h4>
+          <ol class="flow">
+            <li>Bond<span>Locked in LoomBonds on Unichain</span></li>
+            <li>Scheduled<span>The referee picks the best-reputation GPUs</span></li>
+            <li>Compute<span>Run your stage, store the blob</span></li>
+            <li>Commit<span>Post the output hash on Base</span></li>
+            <li>Settle<span>Paid when the challenge window closes</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- jobs -->
     <section class="view" data-view="jobs" hidden>
-      <div class="jobbar"><div class="tabs jobtabs"></div><span id="postslot"></span></div>
+      <div class="jobbar"><div class="tabs jobtabs"></div></div>
       <div id="pipeline"><div class="empty">No jobs yet.</div></div>
     </section>
 
+    <!-- ledger -->
     <section class="view" data-view="ledger" hidden>
       <div class="jobbar"><div class="tabs jobtabs"></div></div>
       <div class="band">
@@ -332,9 +556,32 @@ footer .spacer { flex: 1; }
       </div>
     </section>
 
-    <section class="view field" data-view="agents" hidden>
-      <svg id="dots" aria-hidden="true"></svg>
-      <ul class="feed" id="agentfeed"></ul>
+    <!-- agents -->
+    <section class="view" data-view="agents" hidden>
+      <div class="kpis five" id="agKpis"></div>
+      <div class="roster" id="roster"></div>
+      <div class="hub">
+        <div class="card activity">
+          <div class="top2"><h3>Activity</h3><div class="filters" id="agFilters"></div></div>
+          <ul class="arows" id="arows"></ul>
+        </div>
+        <aside class="side">
+          <div class="card">
+            <h4>How a check works</h4>
+            <ol class="flow">
+              <li>Result proposed<span>The last GPU commits; a challenge window opens</span></li>
+              <li>Watcher re-runs<span>It reproduces each stage and accepts every one within tolerance</span></li>
+              <li>Challenge<span>It posts its own trace and a bond from the first stage it can't reproduce</span></li>
+              <li>Verifiers vote<span>Each re-runs only that stage from its agreed input</span></li>
+              <li>Referee resolves<span>At 2 of 3 votes, Reactive slashes, reroutes or rejects</span></li>
+            </ol>
+          </div>
+          <div class="card">
+            <h4>Audit policy</h4>
+            <div class="rows" id="policyRows" style="margin:0"></div>
+          </div>
+        </aside>
+      </div>
     </section>
   </div>
 </div>
@@ -344,41 +591,30 @@ footer .spacer { flex: 1; }
 const NS = "http://www.w3.org/2000/svg";
 const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
 
-/* ---------- chip art: pins, nodes, travelling pulses ---------- */
+/* ---------- chip art ---------- */
 (function chip() {
   const pins = document.getElementById("pins");
   for (let i = 0; i < 4; i++) { el("rect", { x: 428 + i * 18, y: 84, width: 10, height: 6, rx: 1.5 }, pins); el("rect", { x: 428 + i * 18, y: 154, width: 10, height: 6, rx: 1.5 }, pins); }
   const nodes = document.getElementById("nodes");
   [[120, 80, "B"], [70, 170, "U"], [800, 80, "R"], [850, 170, "G"]].forEach(([x, y, t]) => {
-    el("rect", { x: x - 16, y: y - 16, width: 32, height: 32, rx: 8, fill: "#0b1714", stroke: "rgba(255,255,255,.16)" }, nodes);
-    const tx = el("text", { x, y: y + 4, "text-anchor": "middle", fill: "#9fb8ae", "font-size": 11, "font-family": "JetBrains Mono, monospace" }, nodes); tx.textContent = t;
+    el("rect", { x: x - 18, y: y - 18, width: 36, height: 36, rx: 9, fill: "#0b1714", stroke: "rgba(255,255,255,.18)" }, nodes);
+    const tx = el("text", { x, y: y + 5, "text-anchor": "middle", fill: "#a9c3b8", "font-size": 14, "font-family": "JetBrains Mono, monospace" }, nodes); tx.textContent = t;
   });
   const pulses = document.getElementById("pulses");
   document.querySelectorAll("#traces path").forEach((p, i) => {
-    const len = p.getTotalLength(), q = el("path", { d: p.getAttribute("d"), "stroke-dasharray": `26 ${len}`, class: "pulse-path" }, pulses);
+    const len = p.getTotalLength(), q = el("path", { d: p.getAttribute("d"), "stroke-dasharray": `30 ${len}`, class: "pulse-path" }, pulses);
     q.animate([{ strokeDashoffset: i < 4 ? 0 : -len }, { strokeDashoffset: i < 4 ? -len : 0 }], { duration: 2600 + i * 350, iterations: Infinity, delay: i * 300 });
   });
-})();
-
-/* ---------- dot field (agents page) ---------- */
-(function dots() {
-  const svg = document.getElementById("dots"); let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  svg.setAttribute("viewBox", "0 0 1200 260"); svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
-  for (let i = 0; i < 34; i++) { const x = 20 + rnd() * 1160, y = 20 + rnd() * 200, r = [2, 4, 6, 8][Math.floor(rnd() * 4)];
-    el("circle", { cx: x, cy: y, r, fill: rnd() > .5 ? "#3fe596" : "#a9c8bd", opacity: r > 4 ? .9 : .7 }, svg); }
 })();
 
 /* ---------- pages ---------- */
 const PAGES = {
   "/": { view: "home", title: "LOOM" },
-  "/marketplace": { view: "marketplace", title: "Marketplace · LOOM", tag: "Marketplace", h: "Rent GPUs", a: "backed by bonds",
-    p: "Every GPU locks a bond on Unichain. The referee schedules the ones with the best record and takes the bond of any that cheat." },
-  "/jobs": { view: "jobs", title: "Jobs · LOOM", tag: "Jobs", h: "One model,", a: "three GPUs",
-    p: "Each GPU only sees the activations handed to it. If one fakes its layers, the next answer gives it away." },
-  "/ledger": { view: "ledger", title: "Ledger · LOOM", tag: "Ledger", h: "Every step,", a: "on three chains",
-    p: "Every event the referee read and every callback it sent, in order, with a link to the transaction." },
-  "/agents": { view: "agents", title: "Agents · LOOM", tag: "Agents", h: "Who checked", a: "the work",
-    p: "A watcher re-runs every answer. Three verifiers re-run only the stage in dispute and vote." },
+  "/post": { view: "post", title: "Post a job · LOOM", crumb: "Buy inference", h: "Post a job", p: "Pick the model, add your data, and pay for verified layers." },
+  "/marketplace": { view: "marketplace", title: "Marketplace · LOOM", crumb: "Marketplace", h: "GPUs", p: "Community GPUs, bonded on Unichain and checked on every job." },
+  "/jobs": { view: "jobs", title: "Jobs · LOOM", crumb: "Jobs", h: "Jobs", p: "One model split across three GPUs. Follow each stage as it runs." },
+  "/ledger": { view: "ledger", title: "Ledger · LOOM", crumb: "Ledger", h: "Ledger", p: "Every event the referee read and every callback it sent, with links to the transactions." },
+  "/agents": { view: "agents", title: "Agents · LOOM", crumb: "Agents", h: "Agents", p: "The watcher re-runs every answer. Three verifiers re-run only the stage in dispute and vote." },
 };
 let page = "/";
 function go(path, push = true) {
@@ -389,7 +625,7 @@ function go(path, push = true) {
   document.title = P.title;
   $("hero").hidden = $("steps").hidden = !home;
   $("pagehead").hidden = home;
-  if (!home) { $("phTag").textContent = P.tag; $("phTitle").innerHTML = `${P.h}<span class="accent">${P.a}</span>`; $("phText").textContent = P.p; }
+  if (!home) { $("phCrumb").textContent = `LOOM / ${P.crumb}`; $("phTitle").textContent = P.h; $("phText").textContent = P.p; }
   document.querySelectorAll("[data-view]").forEach((v) => (v.hidden = v.dataset.view !== P.view));
   document.querySelectorAll("#menu a").forEach((a) => a.classList.toggle("on", a.getAttribute("href") === path));
   window.scrollTo(0, 0);
@@ -402,15 +638,19 @@ document.addEventListener("click", (e) => {
 });
 window.addEventListener("popstate", () => go(location.pathname, false));
 
-/* ---------- data ---------- */
+/* ---------- helpers ---------- */
 const CHAIN_NAME = { base: "Base Sepolia", unichain: "Unichain Sepolia", lasna: "Reactive Lasna" };
 const CHAIN_ROLE = { base: ["LoomEscrow", "escrow"], unichain: ["LoomBonds", "bonds"], lasna: ["LoomReferee", "referee"] };
 const PHASES = ["None", "Assigning", "Running", "Proposed", "Disputed", "Resolving", "Done"];
-let S = null, selected = null, chainsDrawn = false;
+let S = null, selected = null, chainsDrawn = false, awaitNewJob = 0;
+const ui = { data: "sample", mkFilter: "all", mkSort: "score", agFilter: "all", open: {} };
 function $(id) { return document.getElementById(id); }
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const short = (a) => (a && a.length > 12 ? a.slice(0, 6) + "…" + a.slice(-4) : a || "–");
-const eth = (w) => { const v = Number(BigInt(w || 0)) / 1e18; return (v >= 0.01 ? v.toFixed(3) : v.toPrecision(2)).replace(/\.?0+$/, "") + " ETH"; };
+const toEth = (w) => Number(BigInt(w || 0)) / 1e18;
+const eth = (w) => { const v = toEth(w); return (v === 0 ? "0" : v >= 0.01 ? v.toFixed(3) : v.toPrecision(2)).replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "") + " ETH"; };
+const clock = (t) => new Date(t * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+const nameOf = (addr) => (addr && S.names[addr.toLowerCase()] ? S.names[addr.toLowerCase()].name : short(addr));
 function who(addr) {
   if (!addr) return "–";
   const n = S && S.names[addr.toLowerCase()];
@@ -419,8 +659,9 @@ function who(addr) {
 function txLink(chain, tx) {
   if (!tx) return "";
   const h = tx.startsWith("0x") ? tx : "0x" + tx, ex = S.chains[chain] && S.chains[chain].explorer;
-  return ex ? `<a href="${ex}/tx/${h}" target="_blank" rel="noopener">${h.slice(0, 10)}…</a>` : `<span title="${h}">${h.slice(0, 10)}…</span>`;
+  return ex ? `<a href="${ex}/tx/${h}" target="_blank" rel="noopener">${h.slice(0, 10)}…</a>` : `<span class="tx" title="${h}">${h.slice(0, 10)}…</span>`;
 }
+function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3500); }
 function sentence(e) {
   const a = e.args;
   switch (e.event) {
@@ -454,16 +695,36 @@ function sentence(e) {
 }
 const extIcon = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2h4v4M12 2L6.5 7.5M10.5 8.5V12h-8.5V3.5H5.5"/></svg>`;
 const arrIcon = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"/></svg>`;
+const chipIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5" y="5" width="10" height="10" rx="2"/><rect x="8" y="8" width="4" height="4" rx=".8"/><path d="M8 2v3M12 2v3M8 15v3M12 15v3M2 8h3M2 12h3M15 8h3M15 12h3"/></svg>`;
+const eyeIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10z"/><circle cx="10" cy="10" r="2.5"/></svg>`;
+const checkIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 2l6.5 2.5v5c0 4-2.8 7-6.5 8.5C6.3 16.5 3.5 13.5 3.5 9.5v-5L10 2z"/><path d="M7 10l2.2 2.2L13.5 8"/></svg>`;
 
+/* ---------- derived numbers ---------- */
+function earnings() {
+  const out = {};
+  S.timeline.filter((e) => e.event === "JobSettled").forEach((e) => e.args.providers.forEach((p, i) => { const k = p.toLowerCase(); out[k] = (out[k] || 0n) + BigInt(e.args.amounts[i]); }));
+  return out;
+}
+function busyMap() {
+  const m = {};
+  S.jobs.filter((j) => ["Running", "Proposed", "Disputed"].includes(j.status)).forEach((j) => j.providers.forEach((p, s) => { if (!j.commits[String(s)] || j.status !== "Running") m[p.toLowerCase()] = m[p.toLowerCase()] || `Job ${j.id} · stage ${s}`; }));
+  return m;
+}
 function stats() {
   const settled = S.jobs.filter((j) => j.status === "Settled").length, bonded = S.providers.filter((p) => BigInt(p.bond) > 0n).length;
   const slashed = S.timeline.filter((e) => e.event === "ProviderSlashed").length;
   const times = S.jobs.map((j) => { const c = S.timeline.find((e) => e.event === "JobCreated" && e.args.jobId == j.id), d = S.timeline.find((e) => e.event === "JobSettled" && e.args.jobId == j.id); return c && d ? d.time - c.time : null; })
     .filter((x) => x !== null).sort((a, b) => a - b);
-  const reactive = S.timeline.filter((e) => e.chain === "lasna").length;
-  return { settled, bonded, slashed, median: times.length ? times[Math.floor(times.length / 2)] + "s" : "–", events: S.timeline.length, reactive, jobs: S.jobs.length,
-    checks: (S.reports || []).filter((r) => r.role === "watcher" || r.role.startsWith("verifier")).length };
+  return { settled, bonded, slashed, median: times.length ? times[Math.floor(times.length / 2)] : null, events: S.timeline.length, reactive: S.timeline.filter((e) => e.chain === "lasna").length, jobs: S.jobs.length };
 }
+function payParts() {
+  const pay = BigInt(S.params ? S.params.jobPayment : 0), st = S.stages.length ? S.stages : [{ stage: 0, first: 0, last: 3 }, { stage: 1, first: 4, last: 7 }, { stage: 2, first: 8, last: 11 }];
+  const layers = st.map((s) => BigInt(s.last - s.first + 1)), total = layers.reduce((a, b) => a + b, 0n);
+  const parts = layers.map((l) => (pay * l) / total); parts[parts.length - 1] += pay - parts.reduce((a, b) => a + b, 0n);
+  return { pay, st, parts };
+}
+
+/* ---------- home ---------- */
 function renderChains() {
   $("tilesLabel").textContent = S.network !== "local" ? "Live on three testnets" : "Running on three local chains";
   $("chains").innerHTML = ["lasna", "base", "unichain"].map((k) => {
@@ -476,39 +737,123 @@ function renderChains() {
 function renderHome() {
   const s = stats();
   const cards = [
-    ["/marketplace", s.bonded, "GPUs bonded", "Marketplace", "Bonds, reputation and the cheat switch for each GPU."],
+    ["/marketplace", s.bonded, "GPUs bonded", "Marketplace", "Bonded GPUs, their reputation and what they've earned."],
     ["/jobs", s.jobs, `jobs · ${s.settled} settled`, "Jobs", "Watch three GPUs run GPT-2 and see who got paid."],
     ["/ledger", s.events, `events · ${s.reactive} on Reactive`, "Ledger", "Every event and callback across the three chains."],
-    ["/agents", s.slashed, s.slashed === 1 ? "cheater caught" : "cheaters caught", "Agents", "What the watcher and verifiers found."],
+    ["/agents", s.slashed, s.slashed === 1 ? "cheater caught" : "cheaters caught", "Agents", "What the watcher and verifiers checked and decided."],
   ];
   $("pagecards").innerHTML = cards.map(([href, n, l, h, p]) =>
     `<a class="pagecard" href="${href}" data-link><div class="n">${n}</div><div class="l">${l}</div><h3>${h}<span class="arr">${arrIcon}</span></h3><p>${p}</p></a>`).join("");
 }
-function renderStats() {
-  const s = stats();
-  $("stats").innerHTML = [[s.settled, "jobs settled"], [s.bonded, "GPUs bonded"], [s.slashed, "cheaters slashed"], [s.median, "median time to settle"]]
-    .map(([n, l]) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join("");
+
+/* ---------- post a job ---------- */
+function ownTexts() { return $("ownText").value.split("\n").map((t) => t.trim()).filter(Boolean).slice(0, 12); }
+function renderPost() {
+  const { pay, st, parts } = payParts(), p = S.params || {};
+  $("stageChips").innerHTML = st.map((s, i) => `<span class="chip">Stage ${i} · ${i === 0 ? "embed + " : ""}blocks ${s.first}–${s.last}${i === st.length - 1 ? " + head" : ""}</span>`).join("");
+  if (!$("samples").dataset.done) {
+    $("samples").innerHTML = (S.sampleTexts || []).map((t, i) => `<li><span class="i">${String(i + 1).padStart(2, "0")}</span>${esc(t)}</li>`).join("");
+    $("samples").dataset.done = 1;
+  }
+  const n = ui.data === "own" ? ownTexts().length : (S.sampleTexts || []).length;
+  $("rules").innerHTML = [
+    ["Payment per job", eth(pay)], ["Stage deadline", `${p.stageTimeout ?? "–"} s`],
+    ["Challenge window", `${p.challengeWindow ?? "–"} s`], ["Verifier quorum", `${p.quorum ?? 2} of 3`],
+  ].map(([l, v]) => `<div class="rule"><div class="l">${l}</div><div class="v">${v}</div></div>`).join("");
+  $("advSec").hidden = !S.interactive;
+  const s = stats(), online = S.providers.filter((x) => BigInt(x.bond) > 0n).length;
+  $("estPay").textContent = eth(pay);
+  $("estSub").textContent = `${n} review${n === 1 ? "" : "s"} · 3 stages · ${online} GPUs online`;
+  $("estRows").innerHTML = st.map((x, i) => `<div><span>Stage ${i} GPU (${x.last - x.first + 1} blocks)</span><span>${eth(parts[i])}</span></div>`).join("")
+    + `<div><span>Watcher audit</span><span>included</span></div><div><span>Typical time</span><span>${s.median != null ? s.median + " s" : "–"}</span></div>`;
+  const btn = $("submitJob");
+  btn.disabled = !S.interactive || n === 0;
+  $("estNote").textContent = S.interactive ? "Paid from escrow on Base Sepolia when the challenge window closes. If a GPU cheats, half its bond comes to you." : "This dashboard is read-only. Post jobs with python -m loom run.";
+  const mine = S.jobs.slice(0, 6);
+  $("myCount").textContent = S.jobs.length || "";
+  $("myJobs").innerHTML = mine.map((j) => `<li data-job="${j.id}"><div class="r1"><span class="mono" style="font-size:13px">job-${j.id}</span>${statusPill(j.status)}</div>
+    <div class="r2">sentiment · ${(j.labels || []).length || "–"} answers · ${eth(j.payment)}</div></li>`).join("") || `<li class="muted small">No jobs yet.</li>`;
+  document.querySelectorAll("#myJobs li[data-job]").forEach((li) => li.onclick = () => { selected = Number(li.dataset.job); go("/jobs"); });
 }
-async function postJob(btn) {
-  if (!S || !S.interactive) { go("/jobs"); return; }
-  const old = btn.innerHTML; btn.disabled = true; btn.textContent = "Posting…";
-  await fetch("/api/jobs", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
-  selected = null; if (page !== "/jobs") go("/jobs");
-  setTimeout(() => { btn.disabled = false; btn.innerHTML = old; }, 2500);
+function statusPill(s) { const c = { Settled: "ok", Disputed: "bad", Proposed: "warn", Running: "run", Refunded: "" }[s] ?? ""; return `<span class="pill ${c}">${esc(s.toLowerCase())}</span>`; }
+$("dataSeg").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  ui.data = b.dataset.mode;
+  document.querySelectorAll("#dataSeg button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  $("samples").hidden = ui.data !== "sample"; $("ownBox").hidden = ui.data !== "own";
+  if (S) renderPost();
+});
+$("ownText").addEventListener("input", () => { const n = ownTexts().length; $("ownCount").textContent = `${n} review${n === 1 ? "" : "s"}${n === 12 ? " (max)" : ""}`; if (S) renderPost(); });
+$("submitJob").onclick = async () => {
+  const btn = $("submitJob"), body = {};
+  if (ui.data === "own") body.texts = ownTexts();
+  const f = $("fault").value;
+  if (f) { const [stage, mode] = f.split(":"); body.faultStage = Number(stage); body.faultMode = mode; }
+  btn.disabled = true; btn.textContent = "Posting…";
+  try {
+    const r = await fetch("/api/jobs", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    awaitNewJob = S.jobs.length ? S.jobs[0].id : 0;
+    toast("Job posted. The referee is choosing GPUs…");
+    $("fault").value = "";
+    go("/jobs");
+  } catch (err) { toast(`Couldn't post the job: ${err.message}`); }
+  finally { btn.textContent = "Post job"; btn.disabled = false; }
+};
+
+/* ---------- marketplace ---------- */
+function gpuRows() {
+  const earn = earnings(), busy = busyMap();
+  return S.providers.map((p) => {
+    const k = p.address.toLowerCase(), slashed = p.faults > 0 && BigInt(p.bond) === 0n;
+    const state = slashed ? "slashed" : p.exiting ? "exiting" : busy[k] ? "busy" : "available";
+    return { ...p, k, name: nameOf(p.address), slashed, state, now: busy[k] || (slashed ? "Barred" : "Idle"), earned: earn[k] || 0n, score: p.jobsDone - 10 * p.faults - 3 * (p.timeouts || 0) };
+  });
 }
+function renderMarket() {
+  const rows = gpuRows(), s = stats();
+  const totalBond = rows.reduce((a, r) => a + BigInt(r.bond), 0n), totalEarned = rows.reduce((a, r) => a + r.earned, 0n);
+  $("mkKpis").innerHTML = [["Available now", rows.filter((r) => r.state === "available").length], ["Total bonded", eth(totalBond)], ["Paid to GPUs", eth(totalEarned)], ["Bonds slashed", s.slashed]]
+    .map(([l, n]) => `<div class="card kpi"><div class="l">${l}</div><div class="n">${n}</div></div>`).join("");
+  const counts = { all: rows.length, available: 0, busy: 0, slashed: 0 }; rows.forEach((r) => { if (counts[r.state] !== undefined) counts[r.state]++; });
+  $("mkFilters").innerHTML = [["all", "All"], ["available", "Available"], ["busy", "Busy"], ["slashed", "Slashed"]]
+    .map(([id, l]) => `<button data-f="${id}" aria-pressed="${ui.mkFilter === id}">${l} <span class="c">${counts[id]}</span></button>`).join("");
+  document.querySelectorAll("#mkFilters button").forEach((b) => b.onclick = () => { ui.mkFilter = b.dataset.f; renderMarket(); });
+  const key = { score: (r) => r.score, earned: (r) => Number(r.earned), bond: (r) => Number(BigInt(r.bond)), jobs: (r) => r.jobsDone }[ui.mkSort];
+  const shown = rows.filter((r) => ui.mkFilter === "all" || r.state === ui.mkFilter).sort((a, b) => key(b) - key(a) || a.name.localeCompare(b.name));
+  const exBonds = S.chains.unichain.explorer;
+  $("providers").innerHTML = shown.map((r) => {
+    const total = r.jobsDone + r.faults, pct = total ? Math.round((r.jobsDone / total) * 100) : 0;
+    const pill = { available: `<span class="pill ok">available</span>`, busy: `<span class="pill run">busy</span>`, slashed: `<span class="pill bad">slashed</span>`, exiting: `<span class="pill">exiting</span>` }[r.state];
+    const served = S.timeline.filter((e) => e.event === "StageCommitted" && e.args.provider.toLowerCase() === r.k).slice(-4).reverse();
+    const detail = ui.open[r.k] ? `<div class="gdetail">
+        <div><span class="muted">Address</span>${exBonds ? `<a class="mono" href="${exBonds}/address/${r.address}" target="_blank" rel="noopener">${short(r.address)}</a>` : `<span class="mono">${short(r.address)}</span>`}</div>
+        <div><span class="muted">Timeouts</span><span>${r.timeouts || 0}</span></div>
+        ${served.map((e) => `<div><span class="muted">Job ${e.args.jobId} · stage ${e.args.stage}</span><span class="mono">${short(e.args.outHash)}</span></div>`).join("") || `<div><span class="muted">No stages served yet</span></div>`}
+      </div>` : "";
+    return `<div class="card gcard ${r.slashed ? "slashed" : ""}">
+      <div class="hd"><span class="icon">${chipIcon}</span><div style="min-width:0"><div class="nm">${esc(r.name)}</div><div class="sub trunc">${short(r.address)} · Unichain</div></div></div>
+      <div class="fig"><div><b>${eth(r.earned)}</b><div class="l">earned</div></div>${pill}</div>
+      <dl><div><dt>Bond</dt><dd>${eth(r.bond)}</dd></div><div><dt>Reputation</dt><dd class="${r.score < 0 ? "bad" : ""}">${r.score}</dd></div>
+        <div><dt>Jobs served</dt><dd>${r.jobsDone}</dd></div><div><dt>Right now</dt><dd>${esc(r.now)}</dd></div></dl>
+      <div class="bar"><div class="track"><div class="fill" style="width:${pct}%"></div></div><span><b>${r.jobsDone}</b> passed · ${r.faults} failed</span></div>
+      <div class="foot"><span class="small muted">Serves GPT-2 · any stage</span><button class="btn line sm" data-open="${r.k}">${ui.open[r.k] ? "Hide" : "Details"}</button></div>${detail}</div>`;
+  }).join("") || `<div class="empty" style="grid-column:1/-1">No GPUs match this filter.</div>`;
+  document.querySelectorAll("[data-open]").forEach((b) => b.onclick = () => { ui.open[b.dataset.open] = !ui.open[b.dataset.open]; renderMarket(); });
+}
+$("mkSort").onchange = (e) => { ui.mkSort = e.target.value; renderMarket(); };
+
+/* ---------- jobs ---------- */
 function renderTabs() {
+  if (awaitNewJob !== null && S.jobs.length && S.jobs[0].id > awaitNewJob) { selected = S.jobs[0].id; awaitNewJob = null; }
   if (!selected && S.jobs.length) selected = S.jobs[0].id;
   const html = S.jobs.slice(0, 12).map((j) => `<button class="tab ${j.id === selected ? "on" : ""}" data-job="${j.id}"><span class="st ${j.status}"></span>Job ${j.id} · ${j.status}</button>`).join("");
   document.querySelectorAll(".jobtabs").forEach((t) => (t.innerHTML = html));
   document.querySelectorAll(".tab").forEach((b) => b.onclick = () => { selected = Number(b.dataset.job); render(); });
-  if (!$("post") && S.interactive) {
-    $("postslot").innerHTML = `<button class="btn dark" id="post"><span class="ic" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 3v8M3 7h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></span>Post a job</button>`;
-    $("post").onclick = (ev) => postJob(ev.currentTarget);
-  }
 }
 function renderPipeline() {
   const j = S.jobs.find((x) => x.id === selected);
-  if (!j) { $("pipeline").innerHTML = `<div class="empty">No jobs yet${S.interactive ? ". Post one to watch three GPUs run GPT-2 together." : "."}</div>`; return; }
+  if (!j) { $("pipeline").innerHTML = `<div class="empty">No jobs yet. <a href="/post" data-link class="jlink">Post one</a> to watch three GPUs run GPT-2 together.</div>`; return; }
   const evs = S.timeline.filter((e) => e.args.jobId == j.id), replaced = {};
   evs.filter((e) => e.event === "StageReassigned").forEach((e) => (replaced[e.args.stage] = [...(replaced[e.args.stage] || []), e.args.oldProvider]));
   const rows = [];
@@ -519,7 +864,7 @@ function renderPipeline() {
     else if (j.status === "Running" && j.nextStage === s) state = `<span class="live" style="color:var(--lasna)">computing…</span>`;
     if (j.status === "Disputed" && j.disputedStage === s) state = `<span class="bad">under dispute: verifiers are re-running it</span>`;
     const gone = (replaced[s] || []).map((p) => `<span class="struck">${who(p)}</span> → `).join("");
-    rows.push(`<li><div><span class="t">Stage ${s} · ${gone}${who(j.providers[s])}</span><span class="s">${st ? `blocks ${st.first}–${st.last}` : ""} · ${state}</span></div></li>`);
+    rows.push(`<li><div><span class="t">Stage ${s} · ${gone}${j.providers[s] ? who(j.providers[s]) : "assigning…"}</span><span class="s">${st ? `blocks ${st.first}–${st.last}` : ""} · ${state}</span></div></li>`);
   }
   const slash = S.timeline.find((e) => e.event === "ProviderSlashed" && e.args.jobId == j.id), quorum = evs.find((e) => e.event === "QuorumReached"), counted = evs.filter((e) => e.event === "VoteCounted").pop();
   let verdict = "";
@@ -527,12 +872,13 @@ function renderPipeline() {
   else if (quorum && quorum.args.faulty) verdict = `<div class="verdict v-bad"><b>Caught</b>${who(quorum.args.accused)} faked its layers. ${slash ? `Slashed ${eth(slash.args.amount)} on Unichain` : "Slash pending on Unichain"}, work rerouted to ${who(quorum.args.replacement)}.</div>`;
   if (j.status === "Settled") verdict += `<div class="verdict v-ok"><b>Settled</b>${Object.entries(j.payouts).map(([p, v]) => `${who(p)} ${eth(v)}`).join(" · ")}</div>`;
   const answers = (j.labels || []).length ? `<div class="answers">${j.labels.map((l) => `<span class="answer ${l}">${l}</span>`).join("")}</div>` : "";
-  const created = evs.find((e) => e.event === "JobCreated");
   $("pipeline").innerHTML = `<div class="split">
-    <div class="glowpanel"><span class="k">${(j.labels || []).length || 6} reviews · sentiment · GPT-2</span><div class="big">Job ${j.id}</div>
-      <span class="sub">${esc(j.status)}${created ? ` · ${eth(created.args.payment)} escrowed` : ""}</span><div class="orb ${j.status}"></div></div>
+    <div class="glowpanel"><span class="k">sentiment · GPT-2 · 3 stages</span><div class="big">Job ${j.id}</div>
+      <span class="sub">${esc(j.status)} · ${eth(j.payment)} escrowed</span><div class="orb ${j.status}"></div></div>
     <div class="mintpanel"><h3>The pipeline</h3><ul class="chev">${rows.join("")}</ul>${verdict}${answers}</div></div>`;
 }
+
+/* ---------- ledger ---------- */
 function renderTimeline() {
   const j = S.jobs.find((x) => x.id === selected);
   $("ledgerTitle").textContent = j ? `Job ${j.id} · ${j.status}` : "All events";
@@ -544,47 +890,107 @@ function renderTimeline() {
   $("timeline").innerHTML = evs.slice().sort((a, b) => a.time - b.time || a.seq - b.seq).map((e) =>
     `<li><span class="d ${e.chain}"></span><div class="what">${sentence(e)}</div><div class="meta"><span>+${e.time - t0}s</span><span>${CHAIN_NAME[e.chain]}</span>${txLink(e.chain, e.tx)}</div></li>`).join("");
 }
-function renderProviders() {
-  $("providers").innerHTML = S.providers.map((p) => {
-    const n = S.names[p.address.toLowerCase()] || {}, barred = p.faults > 0 && BigInt(p.bond) === 0n, score = p.jobsDone - 10 * p.faults - 3 * (p.timeouts || 0);
-    const badge = barred ? `<span class="badge bad">Slashed</span>` : p.exiting ? `<span class="badge muted">Exiting</span>` : `<span class="badge ok">Available</span>`;
-    let control = "";
-    if (S.interactive && n.mode !== undefined && !barred) {
-      const cur = n.mode.split(" ")[0];
-      control = `<select data-addr="${p.address}" aria-label="Behaviour of ${esc(n.name || p.address)}">${["honest", "skip", "noise", "offline"].map((m) => `<option ${m === cur ? "selected" : ""} value="${m}">${{ honest: "Behaviour: honest", skip: "Cheat: skip layers", noise: "Cheat: add noise", offline: "Go offline" }[m]}</option>`).join("")}</select>`;
+
+/* ---------- agents ---------- */
+function agentList() {
+  const list = [], seen = new Set();
+  const add = (addr, name, kind) => { if (!addr || seen.has(addr.toLowerCase())) return; seen.add(addr.toLowerCase()); list.push({ addr, name, kind }); };
+  Object.entries(S.names).forEach(([a, n]) => { if (n.name === "watcher") add(a, "watcher", "watcher"); });
+  Object.entries(S.names).filter(([, n]) => /^verifier/.test(n.name)).sort((x, y) => x[1].name.localeCompare(y[1].name)).forEach(([a, n]) => add(a, n.name, "verifier"));
+  S.timeline.filter((e) => e.event === "Challenged").forEach((e) => add(e.args.challenger, nameOf(e.args.challenger), "watcher"));
+  S.timeline.filter((e) => e.event === "VerdictVote").forEach((e) => add(e.args.verifier, nameOf(e.args.verifier), "verifier"));
+  return list;
+}
+function activity() {
+  const items = [];
+  (S.reports || []).forEach((r) => {
+    if (r.role === "watcher") {
+      if (r.action === "challenge") items.push({ t: r.at, type: "challenge", tag: "challenge", text: `<b>watcher challenged <span class="jlink" data-job="${r.job}">job ${r.job}</span> at stage ${r.stage}</b> · max |Δ| ${Number(r.divergence).toPrecision(3)}`, tx: r.tx });
+      else if (r.action === "audit passed") items.push({ t: r.at, type: "audit", tag: "audit", text: `watcher re-ran <span class="jlink" data-job="${r.job}">job ${r.job}</span>: every stage reproduced <span class="faint">(${esc(r.detail || "")})</span>` });
+      else items.push({ t: r.at, type: "audit", tag: "skip", text: `watcher skipped <span class="jlink" data-job="${r.job}">job ${r.job}</span> <span class="faint">(${esc(r.detail || "")})</span>` });
+    } else if (r.role.startsWith("verifier")) {
+      items.push({ t: r.at, type: "vote", tag: r.faulty ? "faulty" : "honest", text: `${esc(r.role)} re-ran <span class="jlink" data-job="${r.job}">job ${r.job}</span> stage ${r.stage}: <b class="${r.faulty ? "bad" : "ok"}">${r.faulty ? "faulty" : "honest"}</b> <span class="faint">max |Δ| ${Number(r.divergence).toPrecision(3)}</span>`, tx: r.tx });
+    } else if (r.cheat || r.action === "went offline") {
+      items.push({ t: r.at, type: "fault", tag: "fault", text: r.action === "went offline" ? `${esc(r.role)} went offline on <span class="jlink" data-job="${r.job}">job ${r.job}</span> stage ${r.stage}` : `${esc(r.role)} misbehaved (${esc(r.cheat)}) on <span class="jlink" data-job="${r.job}">job ${r.job}</span> stage ${r.stage}`, tx: r.tx });
     }
-    return `<div class="gpu ${barred ? "slashed" : ""}">${badge}<div><div class="nm"><span class="dot ${barred ? "" : "lasna"}"></span>${esc(n.name || "GPU")}</div><div class="mono addr trunc">${esc(short(p.address))}</div></div>
-      <dl><div><dt>Bond</dt><dd>${eth(p.bond)}</dd></div><div><dt>Score</dt><dd class="${score < 0 ? "bad" : ""}">${score}</dd></div><div><dt>Jobs</dt><dd>${p.jobsDone}</dd></div><div><dt>Faults</dt><dd class="${p.faults ? "bad" : ""}">${p.faults}${p.timeouts ? ` <span class="warn">+${p.timeouts}t</span>` : ""}</dd></div></dl>${control}</div>`;
-  }).join("") || `<div class="empty">No GPUs bonded yet.</div>`;
-  document.querySelectorAll("#providers select").forEach((sel) => sel.onchange = () =>
-    fetch(`/api/providers/${sel.dataset.addr}/mode`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: sel.value }) }));
+  });
+  S.timeline.filter((e) => e.event === "ProviderSlashed").forEach((e) => items.push({ t: e.time, type: "fault", tag: "slash", text: `<b>${who(e.args.provider)} slashed ${eth(e.args.amount)}</b> on Unichain · ${eth(e.args.bounty)} to the watcher`, tx: e.tx, chain: "unichain" }));
+  return items.sort((a, b) => b.t - a.t);
 }
 function renderAgents() {
-  const items = (S.reports || []).slice().reverse().filter((r) => r.role === "watcher" || r.role.startsWith("verifier") || r.cheat || r.action === "went offline").slice(0, 40);
-  $("agentfeed").innerHTML = items.map((r) => {
-    let txt;
-    if (r.role === "watcher") txt = r.action === "challenge" ? `<b class="bad">challenged job ${r.job} at stage ${r.stage}</b> · max |Δ| ${Number(r.divergence).toPrecision(3)}` : `${esc(r.action)} on job ${r.job}`;
-    else if (r.role.startsWith("verifier")) txt = `job ${r.job} stage ${r.stage}: <b class="${r.faulty ? "bad" : "ok"}">${r.faulty ? "faulty" : "honest"}</b> <span class="faint">${esc(r.detail || "")}</span>`;
-    else txt = r.action === "went offline" ? `<span class="warn">went offline on job ${r.job}</span>` : `<span class="bad">cheated (${esc(r.cheat)}) on job ${r.job} stage ${r.stage}</span>`;
-    return `<li><span class="role">${esc(r.role)}</span>${txt}</li>`;
-  }).join("") || `<li class="muted">${S.interactive ? "The watcher audits every proposed result." : "Agent reports appear when the dashboard runs next to the actors."}</li>`;
+  const reps = S.reports || [], watch = reps.filter((r) => r.role === "watcher"), votes = reps.filter((r) => r.role.startsWith("verifier") && r.tx);
+  const quorums = S.timeline.filter((e) => e.event === "QuorumReached");
+  const agree = votes.filter((v) => { const q = quorums.find((x) => x.args.jobId == v.job); return q ? q.args.faulty === v.faulty : false; }).length;
+  const decided = votes.filter((v) => quorums.some((x) => x.args.jobId == v.job)).length;
+  $("agKpis").innerHTML = [["Audits run", watch.filter((r) => r.action !== "skip audit").length], ["Challenges", watch.filter((r) => r.action === "challenge").length],
+    ["Votes cast", votes.length], ["Cheaters caught", quorums.filter((q) => q.args.faulty).length], ["Agreed with quorum", decided ? `${Math.round((agree / decided) * 100)}%` : "–"]]
+    .map(([l, n]) => `<div class="card kpi"><div class="l">${l}</div><div class="n">${n}</div></div>`).join("");
+
+  $("roster").innerHTML = agentList().map((a) => {
+    const mine = reps.filter((r) => r.role === a.name), last = mine[mine.length - 1];
+    let metrics, desc;
+    if (a.kind === "watcher") {
+      desc = "Re-runs every proposed result and challenges from the first stage it can't reproduce.";
+      metrics = [["Audits", mine.filter((r) => r.action !== "skip audit").length], ["Passed", mine.filter((r) => r.action === "audit passed").length], ["Challenges", mine.filter((r) => r.action === "challenge").length], ["Won", quorums.filter((q) => q.args.faulty).length]];
+    } else {
+      desc = "Re-runs only the disputed stage from its agreed input and votes faulty or honest.";
+      const v = mine.filter((r) => r.faulty !== undefined);
+      metrics = [["Checks", v.length], ["Faulty", v.filter((r) => r.faulty).length], ["Honest", v.filter((r) => !r.faulty).length], ["Votes on chain", v.filter((r) => r.tx).length]];
+    }
+    const lastTxt = !last ? "Waiting for the first job" : a.kind === "watcher" ? `${last.action} · job ${last.job}` : `job ${last.job} stage ${last.stage}: ${last.faulty ? "faulty" : "honest"}`;
+    return `<div class="card agent"><div class="hd"><span class="av ${a.kind === "watcher" ? "w" : ""}">${a.kind === "watcher" ? eyeIcon : checkIcon}</span>
+      <div style="min-width:0;flex:1"><div class="nm">${esc(a.name)}</div><div class="role">${a.kind === "watcher" ? "Watcher agent" : "Verifier"} · <span class="mono">${short(a.addr)}</span></div></div><span class="pill ok">online</span></div>
+      <p class="desc">${desc}</p><dl>${metrics.map(([l, n]) => `<div><dt>${l}</dt><dd>${n}</dd></div>`).join("")}</dl>
+      <div class="last">Last: <b>${esc(lastTxt)}</b>${last ? ` · ${clock(last.at)}` : ""}</div></div>`;
+  }).join("") || `<div class="empty" style="grid-column:1/-1">Agent details appear when the dashboard runs next to the agents.</div>`;
+
+  const items = activity(), counts = { all: items.length, audit: 0, challenge: 0, vote: 0, fault: 0 }; items.forEach((i) => counts[i.type]++);
+  $("agFilters").innerHTML = [["all", "All"], ["audit", "Audits"], ["challenge", "Challenges"], ["vote", "Votes"], ["fault", "Faults"]]
+    .map(([id, l]) => `<button data-f="${id}" aria-pressed="${ui.agFilter === id}">${l} <span class="c">${counts[id]}</span></button>`).join("");
+  document.querySelectorAll("#agFilters button").forEach((b) => b.onclick = () => { ui.agFilter = b.dataset.f; renderAgents(); });
+  const shown = items.filter((i) => ui.agFilter === "all" || i.type === ui.agFilter);
+  $("arows").innerHTML = shown.map((i) => `<li><span class="when">${clock(i.t)}</span><span><span class="ttag ${i.tag}">${i.tag}</span></span><span class="what">${i.text}</span>${i.tx ? txLink(i.chain || "base", i.tx) : "<span></span>"}</li>`).join("")
+    || `<li style="display:block" class="muted">Nothing yet. <a href="/post" data-link class="jlink">Post a job</a> and the watcher will audit it.</li>`;
+  document.querySelectorAll("#arows .jlink[data-job]").forEach((x) => x.onclick = () => { selected = Number(x.dataset.job); go("/jobs"); });
+
+  const pol = S.policy || {}, p = S.params || {};
+  $("policyRows").innerHTML = [["Unproven GPUs", `always audited${pol.trustedAfter ? ` (under ${pol.trustedAfter} jobs)` : ""}`], ["Proven GPUs", "sampled"], ["Tolerance", pol.tolerance ?? "–"],
+    ["Quorum", `${p.quorum ?? 2} of 3`], ["Challenge bond", p.minChallengeBond ? eth(p.minChallengeBond) : "–"], ["Vote window", "120 s"]]
+    .map(([l, v]) => `<div><span>${l}</span><span>${esc(String(v))}</span></div>`).join("");
+}
+
+/* ---------- page headers & loop ---------- */
+function renderHead() {
+  const s = stats(), act = $("phAct");
+  if (page === "/marketplace") act.innerHTML = `<span class="meta">${s.bonded} GPUs bonded</span><a class="btn white" href="#provide" onclick="document.getElementById('provide').scrollIntoView({behavior:'smooth'});return false">Rent out a GPU</a>`;
+  else if (page === "/jobs" || page === "/ledger") act.innerHTML = `<span class="meta">${s.jobs} jobs · ${s.settled} settled</span><a class="btn white" href="/post" data-link>Post a job</a>`;
+  else if (page === "/post") act.innerHTML = `<span class="meta">${s.bonded} GPUs online</span>`;
+  else if (page === "/agents") act.innerHTML = `<span class="meta">${agentList().length} agents online</span>`;
+  else act.innerHTML = "";
 }
 function render() {
   if (!S) return;
   if (!chainsDrawn) renderChains();
+  renderHead();
   const v = PAGES[page].view;
   if (v === "home") renderHome();
-  if (v === "marketplace") { renderStats(); renderProviders(); }
+  if (v === "post") renderPost();
+  if (v === "marketplace") renderMarket();
   if (v === "jobs") { renderTabs(); renderPipeline(); }
   if (v === "ledger") { renderTabs(); renderTimeline(); }
   if (v === "agents") renderAgents();
 }
 async function tick() {
-  try { const r = await fetch("/api/state"); if (r.ok) { const focus = document.activeElement && document.activeElement.tagName === "SELECT"; S = await r.json(); if (!focus) render(); } } catch (e) { /* server restarting */ }
+  try {
+    const r = await fetch("/api/state");
+    if (r.ok) {
+      S = await r.json();
+      const busy = document.activeElement && ["SELECT", "TEXTAREA", "INPUT"].includes(document.activeElement.tagName);
+      if (!busy) render(); else renderHead();
+    }
+  } catch (e) { /* server restarting */ }
   setTimeout(tick, 1500);
 }
-$("heroPost").onclick = (ev) => postJob(ev.currentTarget);
-$("navPost").onclick = (ev) => postJob(ev.currentTarget);
 go(location.pathname, false);
 tick();
 </script>
