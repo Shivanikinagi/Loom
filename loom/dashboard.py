@@ -66,6 +66,7 @@ def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
     @app.get("/post")
     @app.get("/marketplace")
     @app.get("/provide")
+    @app.get("/proof")
     @app.get("/jobs")
     @app.get("/ledger")
     @app.get("/agents")
@@ -132,6 +133,21 @@ def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
             "policy": policy,
             "sampleTexts": TEXTS,
         }
+
+    @app.get("/api/proof")
+    def proof():
+        """The recorded testnet run (evidence/testnet-run.json) with explorer URLs, so every claim links to a tx."""
+        import json
+
+        from .config import TESTNET
+
+        path = ROOT / "evidence" / "testnet-run.json"
+        if not path.exists():
+            raise HTTPException(404, "no testnet evidence yet: run `python -m loom run --network testnet --scenarios ...`")
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["chains"] = {k: {"chainId": v["chainId"], "explorer": v["explorer"]} for k, v in TESTNET.items()}
+        data["selectors"] = SELECTORS
+        return data
 
     @app.post("/api/jobs")
     def post_job(body: JobIn):

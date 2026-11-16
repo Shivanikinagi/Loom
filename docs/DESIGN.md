@@ -39,7 +39,12 @@ window, with the footer pinned to the end.
 | `/provide` | View marketplace | Its own page, in the menu as "Rent out a GPU". KPIs (minimum bond, paid per job, paid to GPUs, stages served). Numbered steps: requirements, bond and register (CLI), serve stages (CLI), then "Good to know". Side: earnings per job by stage, "How a GPU earns" and a link to the marketplace | params, stages, settlements |
 | `/jobs` | Post a job | Job tabs and the split card: glowing panel (job, status, escrow) plus mint panel (stages, verdicts, answers) | selected job |
 | `/ledger` | Post a job | Job tabs and a deep-green card: the word *Refereed*, a chain legend and a vertical timeline with one dot per event, coloured by chain | timeline, tx links |
-| `/agents` | agents online | KPIs (audits, challenges, votes, cheaters caught, agreement with quorum). Roster cards for the watcher and three verifiers (role, address, metrics, last action). An activity log with filters (Audits / Challenges / Votes / Faults) and tx links. Side cards: "How a check works" and "Audit policy" | agent reports, timeline, policy |
+| `/agents` | agents online | Titled sections, top to bottom: a stats strip (audits, challenges, votes, cheaters caught, agreement with quorum); "Agents", four equal-height roster cards for the watcher and three verifiers; "How a check works", a horizontal five-step stepper; "Activity", a table with column headers (time, type, event, proof) and filters, beside the audit policy | agent reports, timeline, policy |
+| `/proof` | Raw evidence on GitHub | The recorded testnet run (`evidence/testnet-run.json`, served by `/api/proof`). A stats strip (scenarios passed, Reactive transactions, callbacks, challenge-to-slash time, transactions linked), the three deployed contracts linked to Reactscan, Basescan and Uniscan, then one card per scenario with its checks, cross-chain legs with timings and both tx links, and the full transaction table, every hash linked | testnet evidence |
+
+On local chains there is no public explorer, so hashes show as plain text.
+The Ledger and Agents pages say so and link to `/proof`, and the landing hero
+has a "Verified on testnet" link under the chain tiles.
 
 The marketplace has no behaviour switches. The only way to make a GPU
 misbehave is the "Test the referee" control on `/post`, which affects one GPU

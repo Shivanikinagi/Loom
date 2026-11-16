@@ -291,14 +291,67 @@ ol.flow li span { display: block; font-weight: 400; font-size: 13px; color: var(
 .tl .meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 3px; font: 11.5px var(--mono); color: #86bba8; }
 .tl .meta a { color: #b8e6d4; text-decoration: none; } .tl .meta a:hover { text-decoration: underline; }
 
+/* ---------- shared section structure ---------- */
+.sectitle { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 36px 0 14px; }
+.sectitle h3 { margin: 0; font: 600 20px/1.2 var(--display); letter-spacing: -.01em; }
+.sectitle p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.statstrip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); overflow: hidden; }
+.statstrip.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.statstrip > div { padding: 18px 22px; border-left: 1px solid var(--line); }
+.statstrip > div:first-child { border-left: 0; }
+.statstrip .l { font-size: 13px; color: var(--ink-2); }
+.statstrip .n { font: 600 26px/1.1 var(--display); letter-spacing: -.02em; margin-top: 6px; }
+.statstrip .s { font-size: 12.5px; color: var(--ink-3); margin-top: 2px; }
+.stepper { padding: 22px 24px; }
+.hsteps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; counter-reset: h; }
+.hsteps li { counter-increment: h; position: relative; padding-top: 40px; font-size: 13.5px; color: var(--ink-2); }
+.hsteps li::before { content: counter(h); position: absolute; top: 0; left: 0; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: #fff; font-size: 12.5px; font-weight: 600; z-index: 1; }
+.hsteps li::after { content: ""; position: absolute; top: 14px; left: 36px; right: -10px; height: 1px; background: var(--line); }
+.hsteps li:last-child::after { display: none; }
+.hsteps b { display: block; color: var(--ink); font-weight: 600; font-size: 14.5px; margin-bottom: 3px; }
+
 /* ---------- agents ---------- */
-.roster { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 28px; }
+.roster { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .agent { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.agent .last { margin-top: auto; }
+.ahead { display: grid; grid-template-columns: 84px 100px minmax(0, 1fr) 130px; gap: 12px; padding: 10px 20px; background: var(--paper-2); border-bottom: 1px solid var(--line); font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: .04em; }
+.ahead span:last-child { text-align: right; }
+
+/* ---------- proof ---------- */
+.contracts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.contract { padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; }
+.contract .t { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.contract .c { font-size: 13px; color: var(--ink-2); }
+.contract a { font: 12.5px var(--mono); color: var(--ink); word-break: break-all; }
+.run { margin-bottom: 16px; overflow: hidden; }
+.run .rh { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 18px 22px; border-bottom: 1px solid var(--line); }
+.run .rh h4 { margin: 0; font: 600 17px/1.2 var(--display); }
+.run .rh .m { font-size: 13px; color: var(--ink-2); }
+.run .rb { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); }
+.run .rb > div { padding: 18px 22px; }
+.run .rb > div + div { border-left: 1px solid var(--line); }
+.run h5 { margin: 0 0 10px; font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: .04em; }
+.legs { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.legs td { padding: 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+.legs tr:first-child td { border-top: 0; }
+.legs td.s { text-align: right; font-family: var(--mono); white-space: nowrap; padding-left: 12px; }
+.legs a, .ptl a { font: 12px var(--mono); color: var(--mint-text); }
+.run details { border-top: 1px solid var(--line); }
+.run summary { cursor: pointer; padding: 14px 22px; font-weight: 500; font-size: 14px; color: var(--ink); list-style: none; }
+.run summary::before { content: "›"; display: inline-block; margin-right: 8px; transition: transform .2s; }
+.run details[open] summary::before { transform: rotate(90deg); }
+.ptl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.ptl th { text-align: left; font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: .04em; padding: 8px 22px; background: var(--paper-2); }
+.ptl td { padding: 8px 22px; border-top: 1px solid var(--line); }
+.ptl td:first-child { font-family: var(--mono); font-size: 12px; color: var(--ink-3); width: 70px; }
+.ptl td:last-child, .ptl th:last-child { text-align: right; }
+.prooflink { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; color: #cfeee0; font-size: 13px; text-decoration: none; }
+.prooflink:hover { color: #fff; text-decoration: underline; }
 .agent .hd { display: flex; gap: 12px; align-items: center; }
 .agent .av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; flex: none; color: #fff; background: linear-gradient(135deg, #1fa57b, #0a3d31); }
 .agent .av.w { background: linear-gradient(135deg, #3fe596, #13805a); }
 .agent .nm { font: 600 16px/1.2 var(--display); }
-.agent .role { font-size: 12.5px; color: var(--ink-2); }
+.agent .role { font-size: 12.5px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .agent .desc { font-size: 13.5px; color: var(--ink-2); margin: 0; }
 .agent dl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0; padding: 12px; border-radius: 12px; background: var(--paper-2); }
 .agent dt { font-size: 12px; color: var(--ink-2); }
@@ -310,7 +363,8 @@ ol.flow li span { display: block; font-weight: 400; font-size: 13px; color: var(
 .activity .top2 { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
 .activity .top2 h3 { margin: 0; font: 600 16px/1.2 var(--display); }
 .arows { list-style: none; margin: 0; padding: 0; max-height: 640px; overflow: auto; }
-.arows li { display: grid; grid-template-columns: 72px 92px minmax(0, 1fr) auto; gap: 12px; align-items: baseline; padding: 12px 20px; border-top: 1px solid var(--line); font-size: 14px; }
+.arows li { display: grid; grid-template-columns: 84px 100px minmax(0, 1fr) 130px; gap: 12px; align-items: baseline; padding: 12px 20px; border-top: 1px solid var(--line); font-size: 14px; }
+.arows li > :last-child { text-align: right; }
 .arows li:first-child { border-top: 0; }
 .arows .when { font: 12px var(--mono); color: var(--ink-3); }
 .arows .what b { font-weight: 600; }
@@ -340,6 +394,15 @@ footer .spacer { flex: 1; }
   .band { grid-template-columns: minmax(0, 1fr); padding: 32px 24px; }
   .bandhead { position: static; }
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .statstrip, .statstrip.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .statstrip > div { border-left: 0; border-top: 1px solid var(--line); }
+  .statstrip > div:nth-child(-n+2) { border-top: 0; }
+  .statstrip > div:nth-child(even) { border-left: 1px solid var(--line); }
+  .hsteps { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .hsteps li { padding: 3px 0 0 42px; }
+  .hsteps li::after { display: none; }
+  .contracts, .run .rb { grid-template-columns: minmax(0, 1fr); }
+  .run .rb > div + div { border-left: 0; border-top: 1px solid var(--line); }
 }
 @media (max-width: 640px) {
   nav { padding: 14px 16px; gap: 12px; } .navr .btn.ghost { display: none; }
@@ -353,7 +416,9 @@ footer .spacer { flex: 1; }
   .mintpanel { padding: 28px 22px; } .fsec { padding: 18px 16px; }
   .tile { width: calc(33.3% - 6px); min-width: 0; padding: 10px 6px; } .tile .addr { display: none; }
   .view { padding: 32px 0 72px; }
-  .arows li { grid-template-columns: 60px minmax(0, 1fr); } .arows li .what { grid-column: 1 / -1; } .arows li > :last-child { grid-column: 1 / -1; }
+  .arows li { grid-template-columns: 70px minmax(0, 1fr); } .arows li .what { grid-column: 1 / -1; } .arows li > :last-child { grid-column: 1 / -1; text-align: left; }
+  .ahead { display: none; }
+  .ptl th:nth-child(2), .ptl td:nth-child(2) { display: none; } .ptl td, .ptl th { padding-left: 14px; padding-right: 14px; }
 }
 @media (prefers-reduced-motion: reduce) { .live, .orb, .pill.run::before { animation: none !important; } .pulse-path { display: none; } }
 </style>
@@ -386,7 +451,7 @@ footer .spacer { flex: 1; }
 
   <nav>
     <a class="logo" href="/" data-link><span class="mark"><i></i><i></i><i></i></span>LOOM</a>
-    <div class="menu" id="menu"><a href="/marketplace" data-link>Marketplace</a><a href="/provide" data-link>Rent out a GPU</a><a href="/jobs" data-link>Jobs</a><a href="/ledger" data-link>Ledger</a><a href="/agents" data-link>Agents</a></div>
+    <div class="menu" id="menu"><a href="/marketplace" data-link>Marketplace</a><a href="/provide" data-link>Rent out a GPU</a><a href="/jobs" data-link>Jobs</a><a href="/ledger" data-link>Ledger</a><a href="/agents" data-link>Agents</a><a href="/proof" data-link>Proof</a></div>
     <div class="navr"><a class="btn ghost" href="https://github.com/Shivanikinagi/Loom" target="_blank" rel="noopener">GitHub</a><a class="btn white" href="/post" data-link id="navPost">Post a job</a></div>
   </nav>
 
@@ -416,6 +481,7 @@ footer .spacer { flex: 1; }
     </div>
     <div class="tiles-label" id="tilesLabel">Live on three chains</div>
     <div class="tiles" id="chains"></div>
+    <a class="prooflink" href="/proof" data-link>Verified on testnet: see every transaction →</a>
   </div>
   <div class="steps" id="steps" aria-label="How LOOM verifies">
     <div class="step"><div class="ico"><svg width="24" height="24" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="3" width="18" height="5" rx="1.5"/><rect x="4" y="10.5" width="18" height="5" rx="1.5"/><rect x="4" y="18" width="18" height="5" rx="1.5"/></svg></div><p><b>Split</b>GPT-2 runs as three stages on three GPUs</p></div>
@@ -591,6 +657,7 @@ python -m loom register --network testnet  # bonds each GPU on Unichain</pre>
           <p>Base holds the money, Unichain holds the bonds, and the referee on Reactive Lasna decides. Each line links to its transaction.</p>
           <div class="word">Refereed <span class="big"></span></div>
           <div class="legend"><span><i class="dot lasna"></i>Reactive Lasna</span><span><i class="dot base"></i>Base Sepolia</span><span><i class="dot unichain"></i>Unichain Sepolia</span></div>
+          <p id="ledgerLocal" style="margin-top:18px" hidden>These are local chains, so there is no public explorer. <a href="/proof" data-link style="color:var(--mint)">See the same flow on testnet</a>, with every transaction linked.</p>
         </div>
         <ul class="tl" id="timeline"></ul>
       </div>
@@ -598,30 +665,46 @@ python -m loom register --network testnet  # bonds each GPU on Unichain</pre>
 
     <!-- agents -->
     <section class="view" data-view="agents" hidden>
-      <div class="kpis five" id="agKpis"></div>
+      <div class="card statstrip" id="agKpis"></div>
+
+      <div class="sectitle"><h3>Agents</h3><p>One watcher audits every result. Three verifiers settle disputes by vote.</p></div>
       <div class="roster" id="roster"></div>
+
+      <div class="sectitle"><h3>How a check works</h3><p>From a proposed result to a decision on chain.</p></div>
+      <div class="card stepper">
+        <ol class="hsteps">
+          <li><b>Result proposed</b><span>The last GPU commits and a challenge window opens.</span></li>
+          <li><b>Watcher re-runs</b><span>It reproduces each stage and accepts every one within tolerance.</span></li>
+          <li><b>Challenge</b><span>It posts its trace and a bond from the first stage it can't reproduce.</span></li>
+          <li><b>Verifiers vote</b><span>Each re-runs only that stage from its agreed input.</span></li>
+          <li><b>Referee resolves</b><span>At 2 of 3 votes, Reactive slashes, reroutes or rejects.</span></li>
+        </ol>
+      </div>
+
+      <div class="sectitle"><h3>Activity</h3><p>Every audit, challenge and vote, newest first.</p></div>
       <div class="hub">
         <div class="card activity">
-          <div class="top2"><h3>Activity</h3><div class="filters" id="agFilters"></div></div>
+          <div class="top2"><div class="filters" id="agFilters"></div><span class="small muted" id="agNote"></span></div>
+          <div class="ahead"><span>Time</span><span>Type</span><span>Event</span><span>Proof</span></div>
           <ul class="arows" id="arows"></ul>
         </div>
         <aside class="side">
           <div class="card">
-            <h4>How a check works</h4>
-            <ol class="flow">
-              <li>Result proposed<span>The last GPU commits; a challenge window opens</span></li>
-              <li>Watcher re-runs<span>It reproduces each stage and accepts every one within tolerance</span></li>
-              <li>Challenge<span>It posts its own trace and a bond from the first stage it can't reproduce</span></li>
-              <li>Verifiers vote<span>Each re-runs only that stage from its agreed input</span></li>
-              <li>Referee resolves<span>At 2 of 3 votes, Reactive slashes, reroutes or rejects</span></li>
-            </ol>
-          </div>
-          <div class="card">
             <h4>Audit policy</h4>
             <div class="rows" id="policyRows" style="margin:0"></div>
           </div>
+          <a class="btn line block" href="/proof" data-link>See the testnet proof</a>
         </aside>
       </div>
+    </section>
+
+    <!-- proof -->
+    <section class="view" data-view="proof" hidden>
+      <div class="card statstrip" id="pfKpis"></div>
+      <div class="sectitle"><h3>Deployed contracts</h3><p>The same contracts the dashboard drives, deployed on public testnets.</p></div>
+      <div class="contracts" id="pfContracts"></div>
+      <div class="sectitle"><h3>Scenarios</h3><p>Each run below is a real job on the testnets. Every step links to its transaction.</p></div>
+      <div id="pfRuns"><div class="empty">Loading the testnet run…</div></div>
     </section>
   </div>
 </div>
@@ -655,6 +738,7 @@ const PAGES = {
   "/provide": { view: "provide", title: "Rent out a GPU · LOOM", crumb: "Rent out a GPU", h: "Rent out a GPU", p: "Bond on Unichain, get scheduled by reputation, and get paid for the layers you serve." },
   "/jobs": { view: "jobs", title: "Jobs · LOOM", crumb: "Jobs", h: "Jobs", p: "One model split across three GPUs. Follow each stage as it runs." },
   "/ledger": { view: "ledger", title: "Ledger · LOOM", crumb: "Ledger", h: "Ledger", p: "Every event the referee read and every callback it sent, with links to the transactions." },
+  "/proof": { view: "proof", title: "Proof · LOOM", crumb: "Proof", h: "Proof on testnet", p: "Fraud caught, an honest job paid and an offline GPU replaced, on Reactive Lasna, Base Sepolia and Unichain Sepolia. Every step links to its transaction." },
   "/agents": { view: "agents", title: "Agents · LOOM", crumb: "Agents", h: "Agents", p: "The watcher re-runs every answer. Three verifiers re-run only the stage in dispute and vote." },
 };
 let page = "/";
@@ -937,6 +1021,7 @@ function renderPipeline() {
 function renderTimeline() {
   const j = S.jobs.find((x) => x.id === selected);
   $("ledgerTitle").textContent = j ? `Job ${j.id} · ${j.status}` : "All events";
+  $("ledgerLocal").hidden = !!S.chains.base.explorer;
   let evs = S.timeline;
   if (j) { const settled = S.timeline.find((x) => x.event === "JobSettled" && x.args.jobId == j.id);
     evs = S.timeline.filter((e) => e.args.jobId == j.id || (settled && e.event === "ReputationUpdated" && j.providers.includes(e.args.provider) && e.time >= settled.time && e.time - settled.time < 30)); }
@@ -977,9 +1062,10 @@ function renderAgents() {
   const quorums = S.timeline.filter((e) => e.event === "QuorumReached");
   const agree = votes.filter((v) => { const q = quorums.find((x) => x.args.jobId == v.job); return q ? q.args.faulty === v.faulty : false; }).length;
   const decided = votes.filter((v) => quorums.some((x) => x.args.jobId == v.job)).length;
-  $("agKpis").innerHTML = [["Audits run", watch.filter((r) => r.action !== "skip audit").length], ["Challenges", watch.filter((r) => r.action === "challenge").length],
-    ["Votes cast", votes.length], ["Cheaters caught", quorums.filter((q) => q.args.faulty).length], ["Agreed with quorum", decided ? `${Math.round((agree / decided) * 100)}%` : "–"]]
-    .map(([l, n]) => `<div class="card kpi"><div class="l">${l}</div><div class="n">${n}</div></div>`).join("");
+  $("agKpis").innerHTML = [["Audits run", watch.filter((r) => r.action !== "skip audit").length, "by the watcher"], ["Challenges", watch.filter((r) => r.action === "challenge").length, "posted with a bond"],
+    ["Votes cast", votes.length, "on Base"], ["Cheaters caught", quorums.filter((q) => q.args.faulty).length, "slashed on Unichain"], ["Agreed with quorum", decided ? `${Math.round((agree / decided) * 100)}%` : "–", "verifier votes"]]
+    .map(([l, n, s]) => `<div><div class="l">${l}</div><div class="n">${n}</div><div class="s">${s}</div></div>`).join("");
+  $("agNote").textContent = S.chains.base.explorer ? "" : "Local chains: hashes have no public explorer";
 
   $("roster").innerHTML = agentList().map((a) => {
     const mine = reps.filter((r) => r.role === a.name), last = mine[mine.length - 1];
@@ -1022,6 +1108,7 @@ function renderHead() {
   else if (page === "/jobs" || page === "/ledger") act.innerHTML = `<span class="meta">${s.jobs} jobs · ${s.settled} settled</span><a class="btn white" href="/post" data-link>Post a job</a>`;
   else if (page === "/post") act.innerHTML = `<span class="meta">${s.bonded} GPUs online</span>`;
   else if (page === "/agents") act.innerHTML = `<span class="meta">${agentList().length} agents online</span>`;
+  else if (page === "/proof") act.innerHTML = `<a class="btn ghost" href="https://github.com/Shivanikinagi/Loom/blob/main/evidence/testnet.md" target="_blank" rel="noopener">Raw evidence on GitHub</a>`;
   else act.innerHTML = "";
 }
 function render() {
@@ -1036,6 +1123,58 @@ function render() {
   if (v === "jobs") { renderTabs(); renderPipeline(); }
   if (v === "ledger") { renderTabs(); renderTimeline(); }
   if (v === "agents") renderAgents();
+  if (v === "proof") renderProof();
+}
+
+/* ---------- proof (recorded testnet run) ---------- */
+let PROOF = null, proofLoading = false;
+const EVENT_LABEL = {
+  JobCreated: "Buyer posted the job", ProvidersSelected: "Referee chose the GPUs", CallbackSent: "Referee sent a callback", ProvidersAssigned: "Escrow assigned the pipeline",
+  StageCommitted: "GPU committed a stage", ResultProposed: "Result proposed", Challenged: "Watcher challenged", VerdictVote: "Verifier voted", VoteCounted: "Referee counted a vote",
+  QuorumReached: "Quorum reached", FaultResolved: "Fault confirmed on Base", StageReassigned: "Stage rerouted", ProviderSlashed: "Cheater slashed", TimerFired: "Referee's clock fired",
+  StageTimedOut: "Stage timed out", ProviderTimedOut: "Timeout penalty", JobSettled: "Job settled, GPUs paid", ReputationUpdated: "Reputation updated", CronToggled: "Referee toggled its clock",
+  ChallengeRejected: "Challenge rejected", ChallengeVoided: "Challenge voided", JobRefunded: "Buyer refunded", CallbackIgnored: "Stale callback ignored",
+};
+function pLink(chain, tx, text) {
+  const ex = PROOF.chains[chain] && PROOF.chains[chain].explorer, h = tx && (tx.startsWith("0x") ? tx : "0x" + tx);
+  return h ? `<a href="${ex}/tx/${h}" target="_blank" rel="noopener">${text || h.slice(0, 10) + "…"}</a>` : "";
+}
+async function renderProof() {
+  if (!PROOF) {
+    if (!proofLoading) {
+      proofLoading = true;
+      try { const r = await fetch("/api/proof"); PROOF = r.ok ? await r.json() : { error: (await r.json()).detail }; } catch (e) { PROOF = { error: String(e) }; }
+      proofLoading = false; if (page === "/proof") renderProof();
+    }
+    return;
+  }
+  if (PROOF.error) { $("pfRuns").innerHTML = `<div class="empty">${esc(PROOF.error)}</div>`; return; }
+  if ($("pfRuns").dataset.done) return; // a fixed recording: draw once so open sections stay open
+  $("pfRuns").dataset.done = 1;
+  const jobs = PROOF.jobs, all = jobs.flatMap((j) => j.events);
+  const reactive = all.filter((e) => e.chain === "lasna").length, callbacks = all.filter((e) => e.event === "CallbackSent").length;
+  const dur = (j) => j.events.length ? j.events[j.events.length - 1].time - j.events[0].time : 0;
+  const fraud = jobs.find((j) => /fraud/.test(j.scenario || ""));
+  const tOf = (j, ev) => (j && j.events.find((e) => e.event === ev) || {}).time;
+  const catchSecs = fraud && tOf(fraud, "Challenged") && tOf(fraud, "ProviderSlashed") ? tOf(fraud, "ProviderSlashed") - tOf(fraud, "Challenged") : null;
+  $("pfKpis").innerHTML = [["Scenarios passed", `${jobs.filter((j) => j.passed).length} of ${jobs.length}`, "fraud, honest, timeout"], ["Reactive transactions", reactive, "on Reactive Lasna"],
+    ["Callbacks delivered", callbacks, "to Base and Unichain"], ["Challenge to slash", catchSecs != null ? `${catchSecs} s` : "–", "Base → Lasna → Unichain"],
+    ["Transactions linked", all.length, "across three chains"]]
+    .map(([l, n, s]) => `<div><div class="l">${l}</div><div class="n">${n}</div><div class="s">${s}</div></div>`).join("");
+  const C = PROOF.contracts, ex = (k) => PROOF.chains[k].explorer;
+  $("pfContracts").innerHTML = [["lasna", "LoomReferee", "Reactive contract: schedules, counts votes, runs the clock", C.referee], ["base", "LoomEscrow", "Buyer chain: payments, commitments, challenges, votes", C.escrow], ["unichain", "LoomBonds", "Provider chain: bonds, slashing, reputation", C.bonds]]
+    .map(([k, n, d, a]) => `<div class="card contract"><div class="t"><span class="dot ${k}"></span>${n} <span class="faint" style="font-weight:400">· ${CHAIN_NAME[k]}</span></div><div class="c">${d}</div><a href="${ex(k)}/address/${a}" target="_blank" rel="noopener">${a}</a></div>`).join("");
+  $("pfRuns").innerHTML = jobs.map((j, idx) => {
+    const t0 = j.events.length ? j.events[0].time : 0;
+    const checks = (j.checks || []).map(([c, ok]) => `<li class="${ok ? "" : "badl"}"><span class="ico">${ok ? "✓" : "!"}</span><span>${esc(c)}</span></li>`).join("");
+    const legs = (j.legs || []).map((l) => `<tr><td>${esc(l.leg)}<br>${pLink(l.from_chain, l.from_tx, CHAIN_NAME[l.from_chain] + " tx")} → ${pLink(l.to_chain, l.to_tx, CHAIN_NAME[l.to_chain] + " tx")}</td><td class="s">${l.seconds} s</td></tr>`).join("");
+    const rows = j.events.map((e) => `<tr><td>+${e.time - t0}s</td><td><span class="dot ${e.chain}"></span> ${CHAIN_NAME[e.chain]}</td><td>${esc(EVENT_LABEL[e.event] || e.event)}</td><td>${pLink(e.chain, e.tx)}</td></tr>`).join("");
+    return `<div class="card run">
+      <div class="rh"><div><h4>${esc((j.scenario || `Job ${j.jobId}`).replace(/^./, (c) => c.toUpperCase()))}</h4><div class="m">Job ${j.jobId} · ${j.events.length} transactions · ${dur(j)} s end to end</div></div>${j.passed ? `<span class="pill ok">passed</span>` : `<span class="pill bad">failed</span>`}</div>
+      <div class="rb"><div><h5>Checks</h5><ul class="checks">${checks}</ul></div><div><h5>Cross-chain legs</h5><table class="legs">${legs}</table></div></div>
+      <details ${idx === 0 ? "open" : ""}><summary>All ${j.events.length} transactions</summary>
+        <table class="ptl"><tr><th>Time</th><th>Chain</th><th>Step</th><th>Transaction</th></tr>${rows}</table></details></div>`;
+  }).join("");
 }
 async function tick() {
   try {

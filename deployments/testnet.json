@@ -1,0 +1,41 @@
+{
+  "network": "testnet",
+  "chains": {
+    "base": {
+      "chainId": 84532,
+      "explorer": "https://sepolia.basescan.org"
+    },
+    "unichain": {
+      "chainId": 1301,
+      "explorer": "https://sepolia.uniscan.xyz"
+    },
+    "lasna": {
+      "chainId": 5318007,
+      "explorer": "https://lasna.reactscan.net"
+    }
+  },
+  "contracts": {
+    "referee": "0x5907e30b9470A38173949547a480804e296d2497",
+    "escrow": "0xE90B525c5f1527275C8D581BfED17e1d2580B65A",
+    "bonds": "0x5907e30b9470A38173949547a480804e296d2497"
+  },
+  "startBlocks": {
+    "base": 58793106,
+    "unichain": 67828064,
+    "lasna": 8346725
+  },
+  "params": {
+    "minBond": 1000000000000000,
+    "timeoutPenalty": 100000000000000,
+    "minChallengeBond": 300000000000000,
+    "quorum": 2,
+    "refereeFunding": 2000000000000000000,
+    "escrowFeeFunding": 3000000000000000,
+    "bondsFeeFunding": 3000000000000000,
+    "jobPayment": 300000000000000,
+    "stageTimeout": 180,
+    "challengeWindow": 90
+  },
+  "blobd": "http://127.0.0.1:8700",
+  "deployer": "0xa881fab9bEdF50b8E4eF79E940d10135EeC29F67"
+}

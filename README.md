@@ -214,9 +214,12 @@ used; Reactive Lasna drives the same contracts.
 
 | Contract | Chain | Address |
 |---|---|---|
-| LoomReferee (reactive) | Reactive Lasna (5318007) | _pending_ |
-| LoomEscrow | Base Sepolia (84532) | _pending_ |
-| LoomBonds | Unichain Sepolia (1301) | _pending_ |
+| LoomReferee (reactive) | Reactive Lasna (5318007) | [`0x5907e30b9470A38173949547a480804e296d2497`](https://lasna.reactscan.net/address/0x5907e30b9470A38173949547a480804e296d2497) |
+| LoomEscrow | Base Sepolia (84532) | [`0xE90B525c5f1527275C8D581BfED17e1d2580B65A`](https://sepolia.basescan.org/address/0xE90B525c5f1527275C8D581BfED17e1d2580B65A) |
+| LoomBonds | Unichain Sepolia (1301) | [`0x5907e30b9470A38173949547a480804e296d2497`](https://sepolia.uniscan.xyz/address/0x5907e30b9470A38173949547a480804e296d2497) |
+
+All three scenarios (fraud, honest, timeout) pass on these deployments. Every
+step, with tx hashes on all three explorers, is in [evidence/testnet.md](evidence/testnet.md).
 
 ```bash
 cp .env.example .env                       # LOOM_PRIVATE_KEY = a fresh testnet-only key
@@ -230,16 +233,18 @@ python -m loom evidence --network testnet  # evidence/testnet.md with explorer l
 ```
 
 A single funded key drives every role: the buyer, challenger, five GPUs and
-three verifiers use keys derived from it. In total it needs about 0.06 Base
-Sepolia ETH (half is swapped for lREACT) and 0.016 Unichain Sepolia ETH. Gas on
-both chains is a fraction of a gwei, so role wallets receive 0.001 ETH each and
-jobs pay 0.001 ETH.
+three verifiers use keys derived from it. It needs about 0.012 Base Sepolia
+ETH, 0.0125 Unichain Sepolia ETH and 3 lREACT (0.03 ETH at Reactive's faucet).
+Gas on Base and Unichain Sepolia is a fraction of a gwei, so role wallets get
+0.0003 ETH each and jobs pay 0.0003 ETH.
 
-Without a mainnet balance, the
-[Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia)
-and [QuickNode's Base faucet](https://faucet.quicknode.com/base/sepolia) work
-for a fresh wallet, and Ethereum Sepolia ETH can be bridged to either chain
-through its standard bridge.
+Without a mainnet balance, most faucets refuse a fresh wallet. What worked for
+us: the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia)
+for Ethereum Sepolia ETH, then Reactive's Sepolia lREACT faucet
+(`0x9b9BB25f1A81078C544C829c5EB7822d747Cf434`, `request(address)`), and the
+standard bridges (`depositETH`) for Base Sepolia
+(`0xfd0Bf71F60660E2f608ed56e1659C450eB113120`) and Unichain Sepolia
+(`0xea58fcA6849d79EAd1f26608855c2D6407d54Ce2`).
 
 ---
 
