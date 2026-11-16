@@ -25,12 +25,18 @@ back button all work.
 The inner pages follow the console patterns of KINETIC: a compact header
 (breadcrumb, title, one line, and the page's main action on the right),
 KPI cards, filter chips with counts, a sort menu, and cards or rows below.
+The glowing arcs appear only behind the landing hero. Inner headers are a
+flat dark band with a faint top glow and a hairline under the nav, so
+nothing crosses the title. Content fills the window width (up to 1760px with
+48px gutters, 16px on phones), and every page reaches the bottom of the
+window, with the footer pinned to the end.
 
 | Path | Header action | White sheet | Data |
 |---|---|---|---|
 | `/` | (full hero) | Small chip animation (520px) wired to B/U/R/G nodes, the CTA, chain tiles linked to explorers, the Split → Commit → Referee steps, then four page cards with live numbers | contracts, counts |
 | `/post` | GPUs online | A two-column form, like KINETIC's Run page. Left: Model (GPT-2 listing with its three stage chips), Task (sentiment), Data (sample reviews, or paste up to 12 of your own), Rules (payment, deadlines, quorum, from the escrow), and a collapsed "Test the referee" demo control. Right: Estimate (payment split per stage by layers, typical time, Post job) and Your jobs | params, stages, jobs |
-| `/marketplace` | Rent out a GPU | KPIs (available, total bonded, paid to GPUs, bonds slashed), filters (All / Available / Busy / Slashed), sort (reputation, earned, bond, jobs). Each GPU card shows earnings, a status pill, bond, reputation, jobs served, what it is doing right now, a passed/failed bar and expandable details. Below: "Rent out a GPU" with the CLI and rules, plus "How a GPU earns" | providers, settlements |
+| `/marketplace` | Rent out a GPU | KPIs (available, total bonded, paid to GPUs, bonds slashed), filters (All / Available / Busy / Slashed), sort (reputation, earned, bond, jobs). Each GPU card shows earnings, a status pill, bond, reputation, jobs served, what it is doing right now, a passed/failed bar and expandable details | providers, settlements |
+| `/provide` | View marketplace | Its own page, in the menu as "Rent out a GPU". KPIs (minimum bond, paid per job, paid to GPUs, stages served). Numbered steps: requirements, bond and register (CLI), serve stages (CLI), then "Good to know". Side: earnings per job by stage, "How a GPU earns" and a link to the marketplace | params, stages, settlements |
 | `/jobs` | Post a job | Job tabs and the split card: glowing panel (job, status, escrow) plus mint panel (stages, verdicts, answers) | selected job |
 | `/ledger` | Post a job | Job tabs and a deep-green card: the word *Refereed*, a chain legend and a vertical timeline with one dot per event, coloured by chain | timeline, tx links |
 | `/agents` | agents online | KPIs (audits, challenges, votes, cheaters caught, agreement with quorum). Roster cards for the watcher and three verifiers (role, address, metrics, last action). An activity log with filters (Audits / Challenges / Votes / Faults) and tx links. Side cards: "How a check works" and "Audit policy" | agent reports, timeline, policy |

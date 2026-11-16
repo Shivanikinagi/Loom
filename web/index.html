@@ -22,7 +22,7 @@
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--black); color: var(--ink); font: 15px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--black); color: var(--ink); font: 15px/1.55 var(--sans); -webkit-font-smoothing: antialiased; min-height: 100vh; display: flex; flex-direction: column; }
 a { color: inherit; }
 [hidden] { display: none !important; }
 button { font: inherit; }
@@ -91,16 +91,22 @@ h1 { font: 600 clamp(42px, 6.6vw, 84px)/1 var(--display); letter-spacing: -.035e
 .link i { width: 9px; height: 9px; transform: rotate(45deg); border: 1px solid rgba(47,224,167,.7); background: var(--black); position: relative; }
 
 /* compact page header (inner pages) */
-.pagehead { max-width: 1200px; margin: 0 auto; padding: 22px 32px 84px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
-.pagehead h1 { font-size: clamp(32px, 4vw, 44px); margin: 0 0 8px; }
-.pagehead p { color: #b9cbc3; margin: 0; max-width: 560px; }
-.pagehead .crumb { font-size: 13px; color: #8fb3a4; margin-bottom: 10px; display: block; }
+.pagehead { width: 100%; max-width: 1760px; margin: 0 auto; padding: 22px 48px 84px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.pagehead h1 { font-size: clamp(28px, 3vw, 36px); line-height: 1.15; letter-spacing: -.02em; margin: 0 0 6px; background: none; color: #fff; -webkit-text-fill-color: #fff; }
+.pagehead p { color: #a8bab2; margin: 0; max-width: 620px; font-size: 15px; }
+.pagehead .crumb { font-size: 12.5px; color: #7f978c; margin-bottom: 12px; display: flex; gap: 6px; align-items: center; }
+.pagehead .crumb b { color: #cfdcd6; font-weight: 500; }
+/* inner pages: no hero arcs behind text, just a quiet dark band */
+body.inner .arcs { display: none; }
+body.inner .top { background: radial-gradient(1200px 260px at 50% -40px, rgba(47,224,167,.10), transparent 70%), #040706; }
+body.inner nav { border-bottom: 1px solid rgba(255,255,255,.07); }
+body.inner .pagehead { padding-top: 34px; }
 .pagehead .act { display: flex; gap: 8px; align-items: center; }
 .pagehead .meta { color: #b9cbc3; font-size: 13px; }
 
 /* ---------- light sheet ---------- */
-.sheet { background: var(--paper); border-radius: 28px 28px 0 0; margin-top: -48px; position: relative; z-index: 2; overflow: hidden; min-height: 50vh; }
-.wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+.sheet { background: var(--paper); border-radius: 28px 28px 0 0; margin-top: -48px; position: relative; z-index: 2; overflow: hidden; flex: 1 0 auto; }
+.wrap { max-width: 1760px; margin: 0 auto; padding: 0 48px; }
 .view { padding: 40px 0 96px; }
 .view[data-view="home"] { padding-top: 72px; }
 .shead { text-align: center; max-width: 720px; margin: 0 auto 40px; }
@@ -188,7 +194,7 @@ details.adv .body { margin-top: 14px; }
 .filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
 .filters button[aria-pressed="true"] .c { color: #a9d3c3; }
 .sortsel { width: auto; min-width: 170px; }
-.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
 .gcard { padding: 20px; display: flex; flex-direction: column; gap: 16px; transition: border-color .2s, box-shadow .2s; }
 .gcard:hover { border-color: var(--mint-line); box-shadow: 0 10px 30px rgba(10,61,49,.06); }
 .gcard .hd { display: flex; gap: 12px; align-items: center; }
@@ -210,9 +216,15 @@ details.adv .body { margin-top: 14px; }
 .gcard .foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .gdetail { border-top: 1px solid var(--line); padding-top: 12px; font-size: 13px; display: grid; gap: 6px; }
 .gdetail div { display: flex; justify-content: space-between; gap: 8px; }
-.provide { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
-.provide .card { padding: 24px; }
-.provide h3 { margin: 0 0 6px; font: 600 20px/1.2 var(--display); }
+.fsec p.lead { margin: 0; color: var(--ink-2); font-size: 14px; }
+.stepno { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 12px; margin-right: 8px; vertical-align: 1px; }
+.side-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 12px; }
+.side-stats b { display: block; font: 600 22px/1.15 var(--display); letter-spacing: -.01em; }
+.side-stats span { font-size: 12.5px; color: var(--ink-2); }
+.earn { width: 100%; border-collapse: collapse; font-size: 14px; }
+.earn th, .earn td { text-align: left; padding: 9px 0; border-top: 1px solid var(--line); }
+.earn th { font-weight: 500; color: var(--ink-2); font-size: 12.5px; border-top: 0; }
+.earn td:last-child, .earn th:last-child { text-align: right; font-family: var(--mono); font-size: 13px; }
 pre.cmd { margin: 14px 0 0; padding: 14px 16px; border-radius: 12px; background: #06130f; color: #c9f5df; font: 12.5px/1.6 var(--mono); overflow-x: auto; }
 .checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .checks li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; font-size: 14px; }
@@ -225,8 +237,8 @@ ol.flow li::before { content: counter(f); position: absolute; left: 0; top: 0; w
 ol.flow li span { display: block; font-weight: 400; font-size: 13px; color: var(--ink-2); }
 
 /* ---------- jobs ---------- */
-.jobbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; margin: 0 0 22px; }
-.tabs { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.jobbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-start; margin: 0 0 22px; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-start; }
 .tab { font: 500 13px/1 var(--sans); padding: 9px 13px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink-2); cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
 .tab.on { border-color: var(--ink); color: var(--ink); }
 .st { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
@@ -310,7 +322,7 @@ ol.flow li span { display: block; font-weight: 400; font-size: 13px; color: var(
 .jlink { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); cursor: pointer; }
 
 footer { background: var(--black); color: #8fa49b; }
-footer .in { max-width: 1200px; margin: 0 auto; padding: 28px 32px; display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; align-items: center; }
+footer .in { max-width: 1760px; margin: 0 auto; padding: 28px 48px; display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; align-items: center; }
 footer .spacer { flex: 1; }
 
 @media (max-width: 1080px) {
@@ -322,7 +334,7 @@ footer .spacer { flex: 1; }
   nav { grid-template-columns: auto minmax(0, 1fr); }
   .menu { grid-row: 2; grid-column: 1 / -1; justify-self: center; overflow-x: auto; max-width: 100%; }
   .pages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .split, .mlayout, .hub, .provide { grid-template-columns: minmax(0, 1fr); }
+  .split, .mlayout, .hub { grid-template-columns: minmax(0, 1fr); }
   .side { position: static; }
   .glowpanel { min-height: 320px; }
   .band { grid-template-columns: minmax(0, 1fr); padding: 32px 24px; }
@@ -374,7 +386,7 @@ footer .spacer { flex: 1; }
 
   <nav>
     <a class="logo" href="/" data-link><span class="mark"><i></i><i></i><i></i></span>LOOM</a>
-    <div class="menu" id="menu"><a href="/marketplace" data-link>Marketplace</a><a href="/jobs" data-link>Jobs</a><a href="/ledger" data-link>Ledger</a><a href="/agents" data-link>Agents</a></div>
+    <div class="menu" id="menu"><a href="/marketplace" data-link>Marketplace</a><a href="/provide" data-link>Rent out a GPU</a><a href="/jobs" data-link>Jobs</a><a href="/ledger" data-link>Ledger</a><a href="/agents" data-link>Agents</a></div>
     <div class="navr"><a class="btn ghost" href="https://github.com/Shivanikinagi/Loom" target="_blank" rel="noopener">GitHub</a><a class="btn white" href="/post" data-link id="navPost">Post a job</a></div>
   </nav>
 
@@ -508,31 +520,59 @@ footer .spacer { flex: 1; }
         </select>
       </div>
       <div class="grid3" id="providers"></div>
-      <div class="provide" id="provide">
+    </section>
+
+    <!-- rent out a GPU -->
+    <section class="view" data-view="provide" hidden>
+      <div class="kpis" id="pvKpis"></div>
+      <div class="mlayout">
         <div class="card">
-          <h3>Rent out a GPU</h3>
-          <p class="muted" style="margin:0">Bond on Unichain, get scheduled by reputation, and get paid for the layers you serve.</p>
-          <pre class="cmd"># one key funds every role; providers bond on Unichain Sepolia
-cp .env.example .env            # LOOM_PRIVATE_KEY=...
-python -m loom register --network testnet
-python -m loom run --network testnet   # serve stages, commit hashes</pre>
-          <ul class="checks" style="margin-top:18px">
-            <li><span class="ico">✓</span><span>Only activations, never the whole model<span class="d">Each GPU runs its slice of layers on the activations handed to it.</span></span></li>
-            <li><span class="ico">✓</span><span>Paid by layers served<span class="d">Settlement splits the payment across stages by layer count.</span></span></li>
-            <li><span class="ico">✓</span><span>Offline isn't fraud<span class="d">A missed deadline costs a small fixed penalty and the stage is rerouted.</span></span></li>
-            <li class="badl"><span class="ico">!</span><span>Cheating costs the whole bond<span class="d">Two of three verifiers re-run your stage. If they agree you faked it, the bond goes to the challenger and the buyer.</span></span></li>
-          </ul>
+          <section class="fsec">
+            <div class="fsec-head"><h3><span class="stepno">1</span>Requirements</h3></div>
+            <div class="rules" id="pvReq"></div>
+          </section>
+          <section class="fsec">
+            <div class="fsec-head"><h3><span class="stepno">2</span>Bond and register</h3><span class="small muted">LoomBonds · Unichain Sepolia</span></div>
+            <p class="lead">One funded key runs every role. Your GPU's key is derived from it, bonds on Unichain and publishes the endpoint buyers' blobs are served from.</p>
+            <pre class="cmd">cp .env.example .env                       # LOOM_PRIVATE_KEY = a testnet-only key
+python -m loom preflight                   # checks RPCs and balances
+python -m loom fund     --network testnet  # tops up the derived GPU keys
+python -m loom register --network testnet  # bonds each GPU on Unichain</pre>
+          </section>
+          <section class="fsec">
+            <div class="fsec-head"><h3><span class="stepno">3</span>Serve stages</h3><span class="small muted">Commits on Base Sepolia</span></div>
+            <p class="lead">The node waits for the referee to schedule it, runs its slice of GPT-2 on the activations handed to it, stores the output blob and commits its hash.</p>
+            <pre class="cmd">python -m loom run --network testnet       # serve stages, commit hashes, get paid</pre>
+          </section>
+          <section class="fsec">
+            <div class="fsec-head"><h3>Good to know</h3></div>
+            <ul class="checks">
+              <li><span class="ico">✓</span><span>Only activations, never the whole model<span class="d">Each GPU runs its slice of layers on the activations handed to it.</span></span></li>
+              <li><span class="ico">✓</span><span>Paid by layers served<span class="d">Settlement splits the job payment across stages by layer count, when the challenge window closes.</span></span></li>
+              <li><span class="ico">✓</span><span>Reputation decides who gets work<span class="d">The referee ranks GPUs by jobs − 10 × faults − 3 × timeouts.</span></span></li>
+              <li><span class="ico">✓</span><span>Offline isn't fraud<span class="d" id="pvTimeout">A missed deadline costs a small fixed penalty and the stage is rerouted.</span></span></li>
+              <li class="badl"><span class="ico">!</span><span>Cheating costs the whole bond<span class="d">Two of three verifiers re-run your stage. If they agree you faked it, half the bond goes to the challenger and half to the buyer, and the address is barred.</span></span></li>
+            </ul>
+          </section>
         </div>
-        <div class="card">
-          <h4 style="margin:0 0 14px;font:600 16px/1.2 var(--display)">How a GPU earns</h4>
-          <ol class="flow">
-            <li>Bond<span>Locked in LoomBonds on Unichain</span></li>
-            <li>Scheduled<span>The referee picks the best-reputation GPUs</span></li>
-            <li>Compute<span>Run your stage, store the blob</span></li>
-            <li>Commit<span>Post the output hash on Base</span></li>
-            <li>Settle<span>Paid when the challenge window closes</span></li>
-          </ol>
-        </div>
+        <aside class="side">
+          <div class="card">
+            <h4>Earnings per job</h4>
+            <table class="earn" id="pvEarn"></table>
+            <p class="hint" style="margin-bottom:0">Each job pays its stages by layer count. The stage you serve is set by the referee.</p>
+          </div>
+          <div class="card">
+            <h4>How a GPU earns</h4>
+            <ol class="flow">
+              <li>Bond<span>Locked in LoomBonds on Unichain</span></li>
+              <li>Scheduled<span>The referee picks the best-reputation GPUs</span></li>
+              <li>Compute<span>Run your stage, store the blob</span></li>
+              <li>Commit<span>Post the output hash on Base</span></li>
+              <li>Settle<span>Paid when the challenge window closes</span></li>
+            </ol>
+          </div>
+          <a class="btn line block" href="/marketplace" data-link>See the GPUs already earning</a>
+        </aside>
       </div>
     </section>
 
@@ -612,6 +652,7 @@ const PAGES = {
   "/": { view: "home", title: "LOOM" },
   "/post": { view: "post", title: "Post a job · LOOM", crumb: "Buy inference", h: "Post a job", p: "Pick the model, add your data, and pay for verified layers." },
   "/marketplace": { view: "marketplace", title: "Marketplace · LOOM", crumb: "Marketplace", h: "GPUs", p: "Community GPUs, bonded on Unichain and checked on every job." },
+  "/provide": { view: "provide", title: "Rent out a GPU · LOOM", crumb: "Rent out a GPU", h: "Rent out a GPU", p: "Bond on Unichain, get scheduled by reputation, and get paid for the layers you serve." },
   "/jobs": { view: "jobs", title: "Jobs · LOOM", crumb: "Jobs", h: "Jobs", p: "One model split across three GPUs. Follow each stage as it runs." },
   "/ledger": { view: "ledger", title: "Ledger · LOOM", crumb: "Ledger", h: "Ledger", p: "Every event the referee read and every callback it sent, with links to the transactions." },
   "/agents": { view: "agents", title: "Agents · LOOM", crumb: "Agents", h: "Agents", p: "The watcher re-runs every answer. Three verifiers re-run only the stage in dispute and vote." },
@@ -625,7 +666,8 @@ function go(path, push = true) {
   document.title = P.title;
   $("hero").hidden = $("steps").hidden = !home;
   $("pagehead").hidden = home;
-  if (!home) { $("phCrumb").textContent = `LOOM / ${P.crumb}`; $("phTitle").textContent = P.h; $("phText").textContent = P.p; }
+  document.body.classList.toggle("inner", !home);
+  if (!home) { $("phCrumb").innerHTML = `<span>LOOM</span><span>/</span><b>${esc(P.crumb)}</b>`; $("phTitle").textContent = P.h; $("phText").textContent = P.p; }
   document.querySelectorAll("[data-view]").forEach((v) => (v.hidden = v.dataset.view !== P.view));
   document.querySelectorAll("#menu a").forEach((a) => a.classList.toggle("on", a.getAttribute("href") === path));
   window.scrollTo(0, 0);
@@ -843,6 +885,19 @@ function renderMarket() {
 }
 $("mkSort").onchange = (e) => { ui.mkSort = e.target.value; renderMarket(); };
 
+/* ---------- rent out a GPU ---------- */
+function renderProvide() {
+  const rows = gpuRows(), p = S.params || {}, { pay, st, parts } = payParts();
+  const paid = rows.reduce((a, r) => a + r.earned, 0n), jobsServed = rows.reduce((a, r) => a + r.jobsDone, 0);
+  $("pvKpis").innerHTML = [["Minimum bond", p.minBond ? eth(p.minBond) : "–"], ["Paid per job", eth(pay)], ["Paid to GPUs so far", eth(paid)], ["Stages served", jobsServed]]
+    .map(([l, n]) => `<div class="card kpi"><div class="l">${l}</div><div class="n">${n}</div></div>`).join("");
+  $("pvReq").innerHTML = [["Bond", p.minBond ? `${eth(p.minBond)} on Unichain` : "–"], ["Model", "GPT-2 (124M), NumPy float32"],
+    ["Stage deadline", `${p.stageTimeout ?? "–"} s to commit`], ["Determinism", `within ${(S.policy || {}).tolerance ?? 0.01} of an honest re-run`]]
+    .map(([l, v]) => `<div class="rule"><div class="l">${l}</div><div class="v">${esc(v)}</div></div>`).join("");
+  if (p.timeoutPenalty) $("pvTimeout").textContent = `A missed deadline costs ${eth(p.timeoutPenalty)} (not a slash) and the stage is rerouted.`;
+  $("pvEarn").innerHTML = `<tr><th>Stage</th><th>Layers</th><th>Pays</th></tr>` + st.map((x, i) => `<tr><td>Stage ${i}</td><td>${i === 0 ? "embed + " : ""}blocks ${x.first}–${x.last}${i === st.length - 1 ? " + head" : ""}</td><td>${eth(parts[i])}</td></tr>`).join("");
+}
+
 /* ---------- jobs ---------- */
 function renderTabs() {
   if (awaitNewJob !== null && S.jobs.length && S.jobs[0].id > awaitNewJob) { selected = S.jobs[0].id; awaitNewJob = null; }
@@ -962,7 +1017,8 @@ function renderAgents() {
 /* ---------- page headers & loop ---------- */
 function renderHead() {
   const s = stats(), act = $("phAct");
-  if (page === "/marketplace") act.innerHTML = `<span class="meta">${s.bonded} GPUs bonded</span><a class="btn white" href="#provide" onclick="document.getElementById('provide').scrollIntoView({behavior:'smooth'});return false">Rent out a GPU</a>`;
+  if (page === "/marketplace") act.innerHTML = `<span class="meta">${s.bonded} GPUs bonded</span><a class="btn white" href="/provide" data-link>Rent out a GPU</a>`;
+  else if (page === "/provide") act.innerHTML = `<span class="meta">${s.bonded} GPUs earning</span><a class="btn ghost" href="/marketplace" data-link>View marketplace</a>`;
   else if (page === "/jobs" || page === "/ledger") act.innerHTML = `<span class="meta">${s.jobs} jobs · ${s.settled} settled</span><a class="btn white" href="/post" data-link>Post a job</a>`;
   else if (page === "/post") act.innerHTML = `<span class="meta">${s.bonded} GPUs online</span>`;
   else if (page === "/agents") act.innerHTML = `<span class="meta">${agentList().length} agents online</span>`;
@@ -976,6 +1032,7 @@ function render() {
   if (v === "home") renderHome();
   if (v === "post") renderPost();
   if (v === "marketplace") renderMarket();
+  if (v === "provide") renderProvide();
   if (v === "jobs") { renderTabs(); renderPipeline(); }
   if (v === "ledger") { renderTabs(); renderTimeline(); }
   if (v === "agents") renderAgents();

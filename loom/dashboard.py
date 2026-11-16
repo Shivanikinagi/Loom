@@ -65,6 +65,7 @@ def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
     @app.get("/")
     @app.get("/post")
     @app.get("/marketplace")
+    @app.get("/provide")
     @app.get("/jobs")
     @app.get("/ledger")
     @app.get("/agents")
