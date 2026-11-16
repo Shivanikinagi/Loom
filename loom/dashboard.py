@@ -63,14 +63,18 @@ def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
 
     # One page app: every page path returns the same file, which renders the page from the URL.
     @app.get("/")
+    @app.get("/jobs")
+    @app.get("/jobs/{job_id}")
+    @app.get("/gpus")
+    @app.get("/provide")
+    @app.get("/agents")
+    @app.get("/transactions")
+    # older paths, redirected by the page itself
     @app.get("/post")
     @app.get("/marketplace")
-    @app.get("/provide")
     @app.get("/proof")
-    @app.get("/jobs")
     @app.get("/ledger")
-    @app.get("/agents")
-    def index():
+    def index(job_id: str | None = None):
         return FileResponse(WEB / "index.html")
 
     @app.get("/api/state")
