@@ -35,20 +35,25 @@ button work. Old paths (`/marketplace`, `/ledger`) redirect.
 
 ## Visual language
 
+The theme is dark.
+
 | Token | Value | Use |
 |---|---|---|
-| `--bg` / `--soft` / `--soft2` | `#ffffff` / `#f6f7f9` / `#eef0f4` | page, table headers and hovers, chips |
-| `--line` / `--line2` | `#e6e8ec` / `#d5d9df` | borders |
-| `--ink` / `--mut` / `--faint` | `#0b0c0e` / `#5d6470` / `#8b929d` | text |
-| `--link` / `--ok` | `#0b7a4b` / `#0f9d63` | tx links, success |
-| `--bad` / `--warn` | `#e5484d` / `#c27c0e` | faults, timeouts |
-| `--base` / `--uni` / `--lasna` | `#3b6cff` / `#e0408c` / `#0f9d63` | chain dots |
+| `--bg` / `--card` | `#0b0c0f` / `#111317` | page, panels and nav |
+| `--soft` / `--soft2` | `#15181d` / `#1c2026` | table headers, hovers, chips, pressed segments |
+| `--line` / `--line2` | `#22262d` / `#2e333b` | borders |
+| `--ink` / `--mut` / `--faint` | `#eceef1` / `#a1a7b1` / `#6f7680` | text |
+| `--inv` / `--inv-ink` | `#f2f3f5` / `#0b0c0f` | primary buttons, pressed filters, toasts |
+| `--link` / `--ok` | `#4ade9a` / `#34d399` | tx links, success |
+| `--bad` / `--warn` | `#f87171` / `#fbbf24` | faults, timeouts |
+| `--base` / `--uni` / `--lasna` | `#6f9bff` / `#ff7ab8` / `#34d399` | chain dots |
 | brand | `#3b6cff` → `#7b5cff` → `#ff6a3d` | the logo's three bars (three stages), the hero slabs |
 | `--navy` | `#0a0f24` | research band |
 
 - **Type:** Geist for text, Geist Mono for buttons, tags, hashes and amounts.
-  Buttons are black or grey, square-cornered, mono and uppercase. Headlines
-  are two-tone: the claim in black, the qualifier in grey.
+  Buttons are square-cornered, mono and uppercase: the primary one is white
+  with dark text, the secondary one dark grey. Headlines are two-tone: the
+  claim in near-white, the qualifier in grey.
 - **Hero art:** an original isometric illustration of the three stages as
   stacked slabs, with mono callouts for the blocks each stage runs. It floats
   gently and stops under `prefers-reduced-motion`.
