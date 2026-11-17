@@ -1,68 +1,84 @@
 # LOOM design
 
-LOOM's interface is a network explorer, modelled on how decentralized
-networks present themselves to people who want proof rather than a pitch:
-[Akash Network Stats](https://stats.akash.network/) (one dashboard, a big
-chart, a "network right now" panel, stat cards with sparklines, latest
-tables) and [Reactscan](https://lasna.reactscan.net/) (search by tx or
-address, latest transactions, every hash a link). There is no marketing hero
-and almost no prose: labels, numbers, tables, and links to transactions.
+LOOM is presented the way mature AI-infrastructure products present
+themselves: a calm marketing site that shows the product, with a working app
+behind it in the same visual language. The reference is together.ai's
+structure (floating nav with dropdowns, two-tone headline, model cards, a
+tabbed platform section with real screenshots and code, a research band,
+metrics, a sitemap footer). The explorer pages follow network explorers like
+Akash Stats and Reactscan: dense tables, every hash a link.
 
-## Structure
+## Information architecture
 
-One top bar: the LOOM mark and an `EXPLORER` tag, five tabs, a search box
-(job number, tx hash, address or name; `/` focuses it), a live indicator
-and the **Post job** button.
+```
+Home /                      what LOOM is, live cards, platform tabs, research, proof metrics
+Product
+  Post a job /post          playground: input, estimate, the API call, your jobs
+  Rent out a GPU /provide   CLI steps, rules, pay per stage
+  Proof /proof              the testnet run: contracts, scenarios, checks, legs, every tx
+Explorer
+  Overview /explorer        chart, network right now, stat cards, latest jobs / txs, testnet panel
+  Jobs /jobs, /jobs/:id     table; detail with overview rows, pipeline, dispute trail, txs
+  GPUs /gpus                table with filters
+  Agents /agents            agents table, activity with filters
+  Transactions              all three chains, paginated, Local devnet / Testnet switch
+Docs → GitHub README
+```
 
-| Path | What it shows |
-|---|---|
-| `/` Overview | A cumulative chart (paid to GPUs / jobs / transactions). "The network, right now" (bonded, busy, running, disputes, total bonded, slashed, Reactive clock). Four stat cards with sparklines. Latest jobs and latest transactions. "Verified on testnet": the three contracts and the three recorded scenarios, all linked |
-| `/jobs` | Jobs table with status filters: id, status, stage squares, GPUs, payment, duration, posted tx, age |
-| `/jobs/:id` | Explorer-style detail: overview key/value rows (status, buyer, payment, posted and settled tx, payouts, slash, result), the pipeline table (layers, GPU, output hash, commit tx, state), the dispute trail (challenge, each vote, quorum, slash, each with its tx), and every transaction for the job |
-| `/gpus` | Stat cards and the GPU table with filters: status, bond, reputation, jobs, faults, earned, right now. "Rent out a GPU" opens `/provide` |
-| `/provide` | The two CLI steps, the rules, pay per stage and network numbers |
-| `/agents` | Stat cards, the agents table (role, address, checks, flagged, last action) and the activity table with filters. Each row opens its job |
-| `/transactions` | Every event across the three chains, paginated, filterable by chain. A **Local devnet / Testnet** switch: the testnet view is the recorded run from `evidence/testnet-run.json`, every hash linked to Reactscan, Basescan or Uniscan |
-
-**Post job** is a dialog, not a page: the model, sample or pasted reviews,
-the estimate split per stage, and a collapsed fault test for demos (one GPU
-misbehaves on that one job). After posting, the new job's page opens as soon
-as the referee assigns it. Old paths (`/marketplace`, `/ledger`, `/proof`,
-`/post`) redirect.
+Navigation is the same everywhere: a floating nav card (logo, Product ▾,
+Explorer ▾, Proof, Docs) with GitHub and **Post a job** beside it. Dropdown
+entries carry an icon, a name and a one-line description. App pages add a
+breadcrumb, a title with one line underneath, search (`/` focuses it) and an
+underlined sub-nav for the explorer pages. On phones the nav collapses to a
+full-screen menu. Every page has a real URL, so links, refresh and the back
+button work. Old paths (`/marketplace`, `/ledger`) redirect.
 
 ## Visual language
 
 | Token | Value | Use |
 |---|---|---|
-| `--bg` / `--card` / `--card2` | `#0a0b0b` / `#111312` / `#171a19` | page, panels, hover |
-| `--line` / `--line2` | `#222725` / `#2f3633` | borders |
-| `--ink` / `--mut` / `--faint` | `#edf2ef` / `#9ba6a1` / `#6b7570` | text |
-| `--mint` | `#3fe596` | links, the chart, positive states, primary button |
-| `--red` / `--amber` | `#ff6b61` / `#f2b45a` | faults / timeouts |
-| `--base` / `--uni` / `--lasna` | `#6f9bff` / `#ff7ab8` / `#3fe596` | chain dots |
+| `--bg` / `--soft` / `--soft2` | `#ffffff` / `#f6f7f9` / `#eef0f4` | page, table headers and hovers, chips |
+| `--line` / `--line2` | `#e6e8ec` / `#d5d9df` | borders |
+| `--ink` / `--mut` / `--faint` | `#0b0c0e` / `#5d6470` / `#8b929d` | text |
+| `--link` / `--ok` | `#0b7a4b` / `#0f9d63` | tx links, success |
+| `--bad` / `--warn` | `#e5484d` / `#c27c0e` | faults, timeouts |
+| `--base` / `--uni` / `--lasna` | `#3b6cff` / `#e0408c` / `#0f9d63` | chain dots |
+| brand | `#3b6cff` → `#7b5cff` → `#ff6a3d` | the logo's three bars (three stages), the hero slabs |
+| `--navy` | `#0a0f24` | research band |
 
-- Inter for text and numbers. JetBrains Mono for labels (11px, uppercase,
-  tracked), hashes, addresses and amounts.
-- Panels: 12px radius, 1px borders, no shadows. Headers are a mono label or
-  a short title, with a `View all ›` link where there is more.
-- Event names appear as monospace pills, like method names on an explorer
-  (red for Challenged, QuorumReached and ProviderSlashed, green for
-  JobSettled).
-- Status is a coloured dot plus a word. Live states pulse (disabled under
-  `prefers-reduced-motion`).
-- Dark only, like the explorers it follows.
+- **Type:** Geist for text, Geist Mono for buttons, tags, hashes and amounts.
+  Buttons are black or grey, square-cornered, mono and uppercase. Headlines
+  are two-tone: the claim in black, the qualifier in grey.
+- **Hero art:** an original isometric illustration of the three stages as
+  stacked slabs, with mono callouts for the blocks each stage runs. It floats
+  gently and stops under `prefers-reduced-motion`.
+- **Showing, not telling:**
+  - live cards for the model, GPUs and agents;
+  - platform tabs that pair a short accordion with live tables and the real
+    API call;
+  - proof metrics taken from the recorded testnet run.
+
+## Post a job
+
+A two-column playground:
+- **Left:** the model (with its three stage chips), the input (sample
+  reviews or paste up to 12), and a collapsed fault test for demos.
+- **Right, sticky:** the estimate (payment split per stage, challenge window),
+  the **Post job** button, the matching `curl` / Python request (it updates as
+  you type), and your recent jobs.
+
+After posting, the job's page opens as soon as the referee assigns it.
 
 ## Proof
 
-Every transaction hash is a link when the chain has a public explorer. The
-local devnet has none, so local hashes are plain text with a note pointing to
-the testnet run. The Overview's "Verified on testnet" panel and the testnet
-switch on Transactions put the real Lasna, Base Sepolia and Unichain Sepolia
-transactions one click away.
+Every transaction hash links to its explorer when the chain has one. Local
+devnet hashes have no public explorer, so they show as text, with a pointer to
+`/proof` and to the Testnet view on Transactions. Both show the recorded run on
+Reactive Lasna, Base Sepolia and Unichain Sepolia with every hash linked.
 
 ## Responsiveness
 
-Content fills the window (up to 1760px). Below 1180px the side panels stack.
-Below 980px the tabs move to their own row and the detail rows stack. Below
-640px, secondary table columns hide, search takes the full width and the page
-never scrolls sideways (checked at 390px).
+The content width is 1360px on marketing pages. Below 1180px, side columns
+stack. Below 1040px, the nav collapses to the menu button. Below 900px, the
+hero and platform panels stack. Below 640px, secondary table columns hide and
+the page never scrolls sideways (checked at 390px on every page).

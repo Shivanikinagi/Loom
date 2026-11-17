@@ -3,380 +3,560 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LOOM Explorer</title>
+<title>LOOM · Verifiable inference on community GPUs</title>
+<meta name="description" content="Run GPT-2 across community GPUs. Every layer is committed on chain and a Reactive contract slashes any GPU that cheats.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0a0b0b; --card: #111312; --card2: #171a19; --line: #222725; --line2: #2f3633;
-  --ink: #edf2ef; --mut: #9ba6a1; --faint: #6b7570;
-  --mint: #3fe596; --mint2: #22c27c; --red: #ff6b61; --amber: #f2b45a;
-  --base: #6f9bff; --uni: #ff7ab8; --lasna: #3fe596;
-  --sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  color-scheme: dark;
+  --bg: #ffffff; --soft: #f6f7f9; --soft2: #eef0f4; --line: #e6e8ec; --line2: #d5d9df;
+  --ink: #0b0c0e; --mut: #5d6470; --faint: #8b929d;
+  --link: #0b7a4b; --ok: #0f9d63; --bad: #e5484d; --warn: #c27c0e;
+  --base: #3b6cff; --uni: #e0408c; --lasna: #0f9d63;
+  --navy: #0a0f24;
+  --sans: Geist, Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
-body { min-height: 100vh; display: flex; flex-direction: column; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--sans); -webkit-font-smoothing: antialiased; min-height: 100vh; display: flex; flex-direction: column; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; }
 [hidden] { display: none !important; }
-:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--base); outline-offset: 2px; }
 .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-.lbl { font: 500 11px/1.2 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--faint); }
-.mut { color: var(--mut); } .faint { color: var(--faint); } .ok { color: var(--mint); } .bad { color: var(--red); } .warn { color: var(--amber); }
+.tag { font: 500 11.5px/1.2 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--mut); }
+.mut { color: var(--mut); } .faint { color: var(--faint); } .ok { color: var(--ok); } .bad { color: var(--bad); } .warn { color: var(--warn); }
 .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex: none; background: var(--faint); }
 .dot.base { background: var(--base); } .dot.unichain { background: var(--uni); } .dot.lasna { background: var(--lasna); }
 .pulse { animation: pulse 1.6s infinite; } @keyframes pulse { 50% { opacity: .35; } }
+.wrap { width: 100%; max-width: 1360px; margin: 0 auto; padding: 0 32px; }
 
-/* ---------- top bar ---------- */
-.bar { position: sticky; top: 0; z-index: 20; background: rgba(10,11,11,.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
-.bar .in { display: flex; align-items: center; gap: 18px; padding: 12px 24px; }
-.brand { display: flex; align-items: center; gap: 10px; font: 700 17px/1 var(--sans); letter-spacing: .06em; }
-.brand .mark { width: 16px; height: 15px; display: grid; grid-template-rows: repeat(3, 1fr); gap: 2px; }
-.brand .mark i { display: block; border-radius: 1.5px; background: var(--mint); }
-.brand .mark i:nth-child(2) { margin-right: 3px; opacity: .8; } .brand .mark i:nth-child(3) { margin-right: 6px; opacity: .6; }
-.brand .tagc { font: 500 10.5px/1 var(--mono); letter-spacing: .1em; color: var(--mut); border: 1px solid var(--line2); border-radius: 5px; padding: 4px 6px; }
-.tabs { display: flex; gap: 2px; }
-.tabs a { padding: 7px 12px; border-radius: 8px; color: var(--mut); font-weight: 500; }
-.tabs a:hover { color: var(--ink); }
-.tabs a.on { background: var(--card2); color: var(--ink); }
-.spacer { flex: 1; }
-.search { position: relative; width: 300px; }
-.search input { width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 9px; padding: 8px 12px 8px 32px; color: var(--ink); font: 13px var(--mono); }
-.search input::placeholder { color: var(--faint); }
-.search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--faint); }
-.results { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--card); border: 1px solid var(--line2); border-radius: 10px; overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,.5); }
-.results a { display: flex; justify-content: space-between; gap: 10px; padding: 9px 12px; border-top: 1px solid var(--line); font-size: 13px; }
-.results a:first-child { border-top: 0; }
-.results a:hover, .results a.sel { background: var(--card2); }
-.results .none { padding: 10px 12px; color: var(--faint); font-size: 13px; }
-.live { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line2); border-radius: 999px; padding: 6px 11px; font: 500 11px/1 var(--mono); letter-spacing: .06em; color: var(--mut); white-space: nowrap; }
-.live b { color: var(--ink); font-weight: 500; }
-.live .dot { background: var(--red); }
-.live.on .dot { background: var(--mint); }
-.btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 9px; padding: 8px 14px; font-weight: 600; font-size: 13.5px; cursor: pointer; border: 1px solid var(--line2); background: var(--card2); white-space: nowrap; }
-.btn:hover { border-color: var(--faint); }
-.btn.pri { background: var(--mint); color: #04130c; border-color: var(--mint); }
-.btn.pri:hover { background: #63eeab; }
-.btn:disabled { opacity: .5; cursor: default; }
+/* ---------- buttons ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; border-radius: 4px; padding: 12px 16px; font: 500 12.5px/1 var(--mono); text-transform: uppercase; letter-spacing: .06em; cursor: pointer; white-space: nowrap; transition: background .15s, border-color .15s; }
+.btn.black { background: var(--ink); color: #fff; } .btn.black:hover { background: #2a2d33; }
+.btn.grey { background: #ececee; color: var(--ink); } .btn.grey:hover { background: #e2e2e5; }
+.btn.line { background: #fff; border-color: var(--line2); } .btn.line:hover { border-color: var(--ink); }
+.btn.sm { padding: 8px 11px; font-size: 11.5px; }
+.btn:disabled { opacity: .45; cursor: default; }
+.arrow-link { font: 500 12.5px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--ink); border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
 
-/* ---------- layout ---------- */
-main { flex: 1; width: 100%; max-width: 1760px; margin: 0 auto; padding: 22px 24px 48px; }
-.pagetitle { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 4px 0 18px; flex-wrap: wrap; }
-.pagetitle h1 { margin: 0; font: 700 24px/1.2 var(--sans); letter-spacing: -.01em; }
-.pagetitle .lbl { color: var(--mint2); }
-.crumbs { display: flex; gap: 8px; align-items: center; color: var(--faint); font-size: 13px; margin-bottom: 6px; }
+/* ---------- announcement + nav ---------- */
+.announce { background: var(--ink); color: #fff; text-align: center; font-size: 13.5px; padding: 10px 16px; }
+.announce a { color: #fff; } .announce a:hover { text-decoration: underline; }
+.navwrap { position: sticky; top: 0; z-index: 40; padding: 12px 16px; background: linear-gradient(var(--bg) 70%, rgba(255,255,255,0)); }
+.nav { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; gap: 8px; }
+.navcard { flex: 1; display: flex; align-items: center; gap: 24px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px 10px 18px; box-shadow: 0 1px 2px rgba(11,12,14,.04); min-width: 0; }
+.navside { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 8px; box-shadow: 0 1px 2px rgba(11,12,14,.04); }
+.logo { display: flex; align-items: center; gap: 9px; font: 600 19px/1 var(--sans); letter-spacing: -.01em; flex: none; }
+.logo svg { flex: none; }
+.menu { display: flex; align-items: center; gap: 2px; margin: 0 auto; }
+.menu > .item { position: relative; }
+.menu > .item > a, .menu > .item > button { display: inline-flex; align-items: center; gap: 5px; padding: 8px 12px; border-radius: 6px; border: 0; background: none; cursor: pointer; font-size: 15px; color: var(--ink); }
+.menu > .item > a:hover, .menu > .item > button:hover, .menu > .item.open > button { background: var(--soft); }
+.menu > .item > a.on, .menu > .item > button.on { font-weight: 600; }
+.menu .chev { transition: transform .2s; } .menu .item.open .chev { transform: rotate(180deg); }
+.drop { position: absolute; top: calc(100% + 10px); left: -8px; min-width: 320px; background: #fff; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 18px 50px rgba(11,12,14,.12); padding: 8px; display: none; }
+.item.open .drop { display: block; }
+.drop a { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: center; padding: 10px; border-radius: 8px; }
+.drop a:hover { background: var(--soft); }
+.drop .ic { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; background: var(--soft); border: 1px solid var(--line); color: var(--ink); }
+.drop b { display: block; font-weight: 600; font-size: 14.5px; }
+.drop span.d { display: block; font-size: 13px; color: var(--mut); }
+.navside .ghost { font: 500 12.5px var(--mono); text-transform: uppercase; letter-spacing: .06em; padding: 10px 12px; color: var(--ink); }
+.navside .ghost:hover { background: var(--soft); border-radius: 6px; }
+.burger { display: none; background: none; border: 0; padding: 8px; cursor: pointer; margin-left: auto; }
+.sheet { position: fixed; inset: 0; z-index: 60; background: #fff; padding: 18px 20px; overflow: auto; }
+.sheet .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.sheet h6 { margin: 18px 0 6px; } .sheet a.l { display: block; padding: 10px 0; font-size: 17px; border-bottom: 1px solid var(--line); }
+
+/* ---------- home ---------- */
+.hero { position: relative; overflow: hidden; }
+.hero::before { content: ""; position: absolute; inset: -200px 0 auto 0; height: 620px; background: radial-gradient(900px 380px at 20% 10%, #eaf1ff, transparent 70%), radial-gradient(700px 360px at 85% 20%, #f3ecff, transparent 70%); z-index: -1; }
+.hero .herogrid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; gap: 32px; min-height: 540px; padding-top: 32px; padding-bottom: 24px; }
+.hero h1 { font: 600 clamp(40px, 4.6vw, 66px)/1.04 var(--sans); letter-spacing: -.035em; margin: 0 0 22px; }
+.hero h1 span { color: #9a9ea6; display: block; }
+.hero p { font-size: 19px; color: #30343b; margin: 0 0 28px; max-width: 520px; }
+.hero .cta { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero .live { display: inline-flex; align-items: center; gap: 8px; margin-top: 28px; font: 12.5px var(--mono); color: var(--mut); }
+.art { width: 100%; height: auto; }
+.art .floaty { animation: floaty 7s ease-in-out infinite; } .art .floaty.b { animation-delay: -2.3s; } .art .floaty.c { animation-delay: -4.6s; }
+@keyframes floaty { 50% { transform: translateY(-10px); } }
+.trust { display: flex; align-items: center; gap: 44px; padding: 26px 0 8px; overflow-x: auto; scrollbar-width: none; }
+.trust .tag { flex: none; }
+.trust b { flex: none; font: 600 19px var(--sans); color: #a3a8b0; letter-spacing: -.01em; display: inline-flex; align-items: center; gap: 8px; }
+section.block { padding: 96px 0 0; }
+.center { text-align: center; }
+.h2 { font: 600 clamp(32px, 3.6vw, 46px)/1.1 var(--sans); letter-spacing: -.03em; margin: 0 0 12px; }
+.sub { color: var(--faint); font-size: 18px; margin: 0 auto 28px; max-width: 640px; }
+.cards-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-top: 34px; }
+.mcard { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: #fff; transition: border-color .15s, box-shadow .15s, transform .15s; min-width: 0; }
+.mcard:hover { border-color: var(--line2); box-shadow: 0 10px 30px rgba(11,12,14,.07); transform: translateY(-2px); }
+.mcard .ico { width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--line); background: var(--soft); display: grid; place-items: center; margin-bottom: 14px; }
+.mcard .nm { font-size: 18px; font-weight: 500; letter-spacing: -.01em; }
+.mcard .badge { position: absolute; top: 16px; right: 16px; font: 500 11px var(--mono); padding: 3px 7px; border-radius: 4px; background: var(--soft2); color: var(--ink); }
+.mcard .badge.ok { background: #e3f6ec; color: #0b7a4b; } .mcard .badge.bad { background: #fde8e8; color: #b42318; }
+.platform { margin-top: 34px; }
+.ptabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.ptabs button { border: 0; border-radius: 8px; background: #fff; padding: 20px; font: 500 24px/1 var(--sans); letter-spacing: -.02em; cursor: pointer; border: 1px solid var(--line); }
+.ptabs button[aria-selected="true"] { background: #dff5ff; border-color: #dff5ff; }
+.ppanel { margin-top: 12px; border: 1px solid var(--line); border-radius: 12px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 24px; padding: 24px; background: #fff; }
+.acc { display: flex; flex-direction: column; }
+.acc .ai { border-top: 1px solid var(--line); }
+.acc .ai:first-child { border-top: 0; }
+.acc button.ah { width: 100%; display: flex; align-items: center; gap: 14px; padding: 18px 8px; background: none; border: 0; cursor: pointer; text-align: left; font: 500 21px/1.2 var(--sans); letter-spacing: -.015em; }
+.acc .ah .ic { width: 38px; height: 38px; border-radius: 8px; background: var(--soft); border: 1px solid var(--line); display: grid; place-items: center; flex: none; }
+.acc .ai.open .ah .ic { background: #dff5ff; border-color: #c9ecfb; }
+.acc .ab { padding: 0 8px 22px 60px; color: #30343b; display: none; }
+.acc .ai.open .ab { display: block; }
+.acc .ab p { margin: 0 0 16px; font-size: 16px; }
+.shot { position: relative; border-radius: 12px; background: linear-gradient(135deg, #9fd3dd, #c8e7ef 45%, #f4c6dd); padding: 28px; min-height: 420px; overflow: hidden; }
+.shot .win { background: #fff; border-radius: 10px; box-shadow: 0 20px 50px rgba(11,12,14,.18); overflow: hidden; }
+.shot .win .bar { display: flex; gap: 6px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--line); font: 12px var(--mono); color: var(--mut); }
+.shot .win .bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line2); }
+.shot .code { position: relative; margin: -40px 0 0 34px; background: #121316; color: #e8e9ec; border-radius: 10px; box-shadow: 0 20px 50px rgba(11,12,14,.35); }
+.code { color: #e8e9ec; }
+.code .ch { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; border-bottom: 1px solid #2a2c31; font: 12px var(--mono); color: #b9bcc4; }
+.code .ch .tabs2 { display: flex; gap: 2px; } .code .ch .tabs2 button { background: none; border: 0; color: #9da1aa; padding: 4px 8px; border-radius: 4px; cursor: pointer; font: 12px var(--mono); }
+.code .ch .tabs2 button[aria-pressed="true"] { color: #ff8a5c; background: #1d1f24; }
+.code pre { margin: 0; padding: 14px 16px; font: 12.5px/1.7 var(--mono); overflow-x: auto; white-space: pre; }
+.code .k { color: #ff8a5c; } .code .s { color: #9ee6b8; } .code .c { color: #7c818b; }
+.navyband { background: var(--navy); color: #fff; margin-top: 110px; padding: 80px 0; }
+.navyband .h2 { color: #fff; } .navyband .sub { color: #9aa3c0; margin-left: 0; }
+.rcards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 30px; }
+.rcard { display: flex; flex-direction: column; justify-content: space-between; gap: 30px; min-height: 230px; padding: 22px; border: 1px solid #23294a; border-radius: 10px; background: #0f1530; transition: border-color .15s; }
+.rcard:hover { border-color: #3b4479; }
+.rcard .tag { color: #9aa3c0; } .rcard h3 { margin: 0; font: 500 20px/1.25 var(--sans); letter-spacing: -.01em; } .rcard .src { font: 12px var(--mono); color: #7f88a8; }
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 34px; }
+.metric { padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: #fff; display: flex; flex-direction: column; gap: 10px; transition: box-shadow .15s; }
+.metric:hover { box-shadow: 0 10px 30px rgba(11,12,14,.07); }
+.metric .n { font: 600 52px/1 var(--sans); letter-spacing: -.04em; }
+.metric .l { font-size: 15px; color: var(--mut); }
+.final { margin-top: 110px; padding: 90px 0 100px; text-align: center; background: radial-gradient(800px 300px at 50% 100%, #eef3ff, transparent 70%); }
+
+/* ---------- app pages ---------- */
+.apphead { padding: 26px 0 0; border-bottom: 1px solid var(--line); }
+.crumbs { display: flex; gap: 8px; align-items: center; color: var(--faint); font-size: 13.5px; margin-bottom: 8px; }
 .crumbs a:hover { color: var(--ink); }
+.titlerow { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.titlerow h1 { margin: 0; font: 600 32px/1.15 var(--sans); letter-spacing: -.025em; }
+.titlerow p { margin: 6px 0 0; color: var(--mut); }
+.titlerow .act { display: flex; gap: 8px; align-items: center; }
+.subnav { display: flex; gap: 22px; margin-top: 22px; overflow-x: auto; scrollbar-width: none; }
+.subnav a { padding: 10px 0 12px; color: var(--mut); border-bottom: 2px solid transparent; white-space: nowrap; font-weight: 500; }
+.subnav a:hover { color: var(--ink); }
+.subnav a.on { color: var(--ink); border-color: var(--ink); }
+.appbody { padding: 26px 0 72px; }
+.search { position: relative; width: 300px; }
+.search input { width: 100%; border: 1px solid var(--line2); border-radius: 6px; padding: 9px 12px 9px 32px; font: 13px var(--mono); background: #fff; color: var(--ink); }
+.search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--faint); }
+.results { position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 30; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 18px 40px rgba(11,12,14,.12); overflow: hidden; }
+.results a { display: flex; justify-content: space-between; gap: 10px; padding: 9px 12px; border-top: 1px solid var(--line); font-size: 13.5px; }
+.results a:first-child { border-top: 0; } .results a:hover { background: var(--soft); }
+.results .none { padding: 10px 12px; color: var(--faint); font-size: 13px; }
 .grid { display: grid; gap: 16px; }
 .g-main { grid-template-columns: minmax(0, 1fr) 360px; }
 .g-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.g-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .g-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
-.ph { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-.ph h2 { margin: 0; font: 600 15px/1.2 var(--sans); }
-.ph .more { font: 500 11.5px/1 var(--mono); color: var(--mut); }
-.ph .more:hover { color: var(--mint); }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+.ph { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.ph h2 { margin: 0; font: 600 15.5px/1.2 var(--sans); }
+.ph .more { font: 500 12px var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--mut); }
+.ph .more:hover { color: var(--ink); }
 .pb { padding: 16px 18px; }
-.stack { display: flex; flex-direction: column; gap: 16px; }
 .gap { height: 16px; }
-
-/* chart card */
-.chart .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 16px 18px 0; flex-wrap: wrap; }
-.seg { display: inline-flex; padding: 3px; background: var(--bg); border: 1px solid var(--line); border-radius: 9px; }
-.seg button { border: 0; background: transparent; color: var(--mut); padding: 6px 11px; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 500; }
-.seg button[aria-pressed="true"] { background: var(--card2); color: var(--ink); }
-.big { font: 700 40px/1 var(--sans); letter-spacing: -.02em; margin-top: 14px; }
-.big small { font: 500 13px var(--mono); color: var(--mint); margin-left: 8px; letter-spacing: 0; }
-.cap { color: var(--faint); font-size: 12.5px; margin-top: 6px; }
-.chartsvg { display: block; width: 100%; height: 270px; margin-top: 8px; }
-
-/* kv rows (right panel) */
-.kv { display: grid; }
+.stat { padding: 18px 20px; display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+.stat .n { font: 600 30px/1 var(--sans); letter-spacing: -.03em; margin-top: 10px; }
+.stat .d { font-size: 13px; color: var(--faint); margin-top: 6px; }
+.seg { display: inline-flex; padding: 3px; background: var(--soft); border: 1px solid var(--line); border-radius: 7px; }
+.seg button { border: 0; background: transparent; color: var(--mut); padding: 6px 11px; border-radius: 5px; cursor: pointer; font-size: 13.5px; font-weight: 500; }
+.seg button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(11,12,14,.1); }
+.big { font: 600 38px/1 var(--sans); letter-spacing: -.03em; margin-top: 14px; }
+.cap { color: var(--faint); font-size: 13px; margin-top: 6px; }
+.chartsvg { display: block; width: 100%; height: 250px; margin-top: 6px; }
 .kv > div { display: flex; justify-content: space-between; gap: 12px; padding: 11px 18px; border-top: 1px solid var(--line); }
 .kv > div:first-child { border-top: 0; }
 .kv span:first-child { color: var(--mut); }
 .kv span:last-child { font-family: var(--mono); font-size: 13px; text-align: right; }
-.meter { height: 4px; background: var(--card2); border-radius: 2px; margin: 0 18px 14px; overflow: hidden; }
-.meter i { display: block; height: 100%; background: var(--mint); }
-
-/* stat cards */
-.stat { padding: 16px 18px; display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
-.stat .n { font: 700 28px/1 var(--sans); letter-spacing: -.02em; margin-top: 12px; }
-.stat .d { font: 500 11.5px var(--mono); color: var(--mut); margin-top: 8px; }
-.stat svg { flex: none; }
-
-/* tables */
 .tw { overflow-x: auto; }
 table.t { width: 100%; border-collapse: collapse; }
-.t th { text-align: left; font: 500 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--faint); padding: 11px 18px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-.t td { padding: 11px 18px; border-top: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+.t th { text-align: left; font: 500 11.5px/1 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--faint); padding: 11px 18px; background: var(--soft); border-bottom: 1px solid var(--line); white-space: nowrap; }
+.t td { padding: 12px 18px; border-top: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
 .t tr:first-child td { border-top: 0; }
-.t tr.click { cursor: pointer; }
-.t tr.click:hover td { background: var(--card2); }
+.t tr.click { cursor: pointer; } .t tr.click:hover td { background: var(--soft); }
 .t td.r, .t th.r { text-align: right; }
 .t.compact th, .t.compact td { padding-left: 12px; padding-right: 12px; }
-.t.compact th:first-child, .t.compact td:first-child { padding-left: 18px; }
-.t.compact th:last-child, .t.compact td:last-child { padding-right: 18px; }
-.t td.wrap { white-space: normal; }
-.hash { font: 12.5px var(--mono); color: var(--mint); }
-a.hash:hover { text-decoration: underline; }
+.t.compact th:first-child, .t.compact td:first-child { padding-left: 18px; } .t.compact th:last-child, .t.compact td:last-child { padding-right: 18px; }
+.hash { font: 13px var(--mono); color: var(--link); } a.hash:hover { text-decoration: underline; }
 .hash.plain { color: var(--mut); }
-.addr { font: 12.5px var(--mono); color: var(--mut); }
-.ev { display: inline-block; font: 500 11.5px/1 var(--mono); padding: 4px 7px; border-radius: 6px; background: var(--card2); border: 1px solid var(--line2); color: var(--ink); }
-.ev.bad { color: var(--red); border-color: rgba(255,107,97,.35); } .ev.ok { color: var(--mint); border-color: rgba(63,229,150,.3); } .ev.warn { color: var(--amber); border-color: rgba(242,180,90,.35); }
-.st { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+.addr { font: 13px var(--mono); color: var(--mut); }
+.ev { display: inline-block; font: 500 12px/1 var(--mono); padding: 4px 7px; border-radius: 4px; background: var(--soft); border: 1px solid var(--line); }
+.ev.bad { color: #b42318; background: #fdf0f0; border-color: #f7d4d4; } .ev.ok { color: #0b7a4b; background: #eaf7f0; border-color: #cdebdc; } .ev.warn { color: #93590b; background: #fdf5e8; border-color: #f4dfba; }
+.st { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; }
 .st::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
-.st.Settled::before, .st.available::before, .st.online::before { background: var(--mint); }
+.st.Settled::before, .st.available::before, .st.online::before { background: var(--ok); }
 .st.Running::before, .st.busy::before { background: var(--base); animation: pulse 1.6s infinite; }
-.st.Proposed::before { background: var(--amber); }
-.st.Disputed::before, .st.slashed::before { background: var(--red); }
+.st.Proposed::before { background: var(--warn); } .st.Disputed::before, .st.slashed::before { background: var(--bad); }
 .sq { display: inline-flex; gap: 3px; vertical-align: middle; }
-.sq i { width: 12px; height: 12px; border-radius: 3px; background: var(--card2); border: 1px solid var(--line2); }
-.sq i.c { background: var(--mint2); border-color: var(--mint2); } .sq i.a { background: var(--base); border-color: var(--base); animation: pulse 1.6s infinite; } .sq i.x { background: var(--red); border-color: var(--red); }
+.sq i { width: 12px; height: 12px; border-radius: 3px; background: var(--soft2); border: 1px solid var(--line2); }
+.sq i.c { background: var(--ok); border-color: var(--ok); } .sq i.a { background: var(--base); border-color: var(--base); animation: pulse 1.6s infinite; } .sq i.x { background: var(--bad); border-color: var(--bad); }
 .chain { display: inline-flex; align-items: center; gap: 7px; }
-.empty { padding: 28px 18px; text-align: center; color: var(--faint); }
+.empty { padding: 30px 18px; text-align: center; color: var(--faint); }
 .filters { display: flex; gap: 6px; flex-wrap: wrap; }
-.filters button { border: 1px solid var(--line); background: transparent; color: var(--mut); border-radius: 8px; padding: 6px 10px; font-size: 13px; cursor: pointer; }
-.filters button span { color: var(--faint); margin-left: 4px; font-family: var(--mono); font-size: 12px; }
-.filters button[aria-pressed="true"] { background: var(--card2); color: var(--ink); border-color: var(--line2); }
-.pager { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-top: 1px solid var(--line); color: var(--faint); font: 12px var(--mono); }
-.pager .btn { padding: 5px 10px; font-size: 12.5px; }
-
-/* proof list */
-.plist a, .plist div.row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 18px; border-top: 1px solid var(--line); }
-.plist > :first-child { border-top: 0; }
-.plist a:hover { background: var(--card2); }
-.plist .k { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.plist .v { font: 12px var(--mono); color: var(--mut); }
-.check { color: var(--mint); font-weight: 700; }
-
-/* detail (explorer-style overview) */
-.dl > div { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px; padding: 12px 18px; border-top: 1px solid var(--line); }
+.filters button { border: 1px solid var(--line); background: #fff; color: var(--mut); border-radius: 6px; padding: 6px 10px; font-size: 13.5px; cursor: pointer; }
+.filters button span { color: var(--faint); margin-left: 4px; font: 12px var(--mono); }
+.filters button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.filters button[aria-pressed="true"] span { color: #bfc3ca; }
+.pager { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 18px; border-top: 1px solid var(--line); color: var(--faint); font: 12.5px var(--mono); flex-wrap: wrap; }
+.dl > div { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 16px; padding: 12px 18px; border-top: 1px solid var(--line); }
 .dl > div:first-child { border-top: 0; }
-.dl dt { color: var(--mut); margin: 0; }
-.dl dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.dl dt { color: var(--mut); margin: 0; } .dl dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 .answers { display: flex; gap: 6px; flex-wrap: wrap; }
-.answers span { font: 12px var(--mono); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--line2); }
-.answers .positive { color: var(--mint); } .answers .negative { color: var(--red); }
-.note { margin: 0; padding: 12px 18px; color: var(--faint); font-size: 12.5px; border-top: 1px solid var(--line); }
+.answers span { font: 12.5px var(--mono); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--line); }
+.answers .positive { color: #0b7a4b; } .answers .negative { color: #b42318; }
+.note { margin: 0; padding: 12px 18px; color: var(--mut); font-size: 13.5px; border-top: 1px solid var(--line); background: var(--soft); border-radius: 0 0 10px 10px; }
+.note a { color: var(--link); }
+.plist a, .plist .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 18px; border-top: 1px solid var(--line); }
+.plist > :first-child { border-top: 0; } .plist a:hover { background: var(--soft); }
+.plist .k { display: flex; align-items: center; gap: 8px; min-width: 0; } .plist .v { font: 12.5px var(--mono); color: var(--mut); }
+.check { color: var(--ok); font-weight: 700; }
+pre.cmd { margin: 0; padding: 14px 16px; background: #121316; color: #e8e9ec; border-radius: 8px; font: 12.5px/1.7 var(--mono); overflow-x: auto; }
 
-/* modal */
-.overlay { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.6); display: grid; place-items: center; padding: 16px; }
-.modal { width: min(560px, 100%); max-height: calc(100vh - 32px); overflow: auto; background: var(--card); border: 1px solid var(--line2); border-radius: 14px; }
-.modal .mh { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--line); }
-.modal .mh h2 { margin: 0; font: 600 16px/1.2 var(--sans); }
-.modal .x { background: none; border: 0; color: var(--mut); font-size: 20px; cursor: pointer; line-height: 1; }
-.modal .mb { padding: 16px 18px; display: grid; gap: 16px; }
-.field > .lbl { display: block; margin-bottom: 8px; }
-.modal textarea, .modal select { width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 9px; color: var(--ink); padding: 10px 12px; font: 13.5px/1.5 var(--sans); }
-.modal textarea { min-height: 120px; resize: vertical; }
-.modal select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--mut) 50%), linear-gradient(135deg, var(--mut) 50%, transparent 50%); background-position: calc(100% - 17px) 50%, calc(100% - 12px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
-.samples { margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 9px; }
-.samples li { padding: 8px 12px; border-top: 1px solid var(--line); font-size: 13px; color: var(--mut); }
+/* post */
+.field + .field { margin-top: 20px; }
+.field > .tag { display: block; margin-bottom: 8px; }
+.model { display: flex; gap: 14px; align-items: center; padding: 14px; border: 1px solid var(--line); border-radius: 8px; }
+.model .av { width: 42px; height: 42px; border-radius: 8px; background: var(--ink); color: #fff; display: grid; place-items: center; font: 600 14px var(--mono); flex: none; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.chip { font: 12px var(--mono); padding: 3px 8px; border-radius: 4px; background: var(--soft); border: 1px solid var(--line); color: var(--mut); }
+.samples { margin: 10px 0 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 8px; }
+.samples li { padding: 9px 12px; border-top: 1px solid var(--line); font-size: 14px; color: #30343b; }
 .samples li:first-child { border-top: 0; }
-.est { border: 1px solid var(--line); border-radius: 9px; }
-.est > div { display: flex; justify-content: space-between; padding: 9px 12px; border-top: 1px solid var(--line); font-size: 13px; }
-.est > div:first-child { border-top: 0; }
-.est span:last-child { font-family: var(--mono); }
-.modal .mf { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-top: 1px solid var(--line); }
-details.adv summary { cursor: pointer; color: var(--mut); font-size: 13px; }
-details.adv[open] summary { margin-bottom: 8px; }
-pre.cmd { margin: 0; padding: 14px 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 9px; font: 12.5px/1.7 var(--mono); color: #c9f5df; overflow-x: auto; }
-.toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 60; background: var(--card2); border: 1px solid var(--line2); padding: 10px 14px; border-radius: 10px; font-size: 13.5px; }
+textarea, select { width: 100%; border: 1px solid var(--line2); border-radius: 6px; padding: 10px 12px; font: 14px/1.5 var(--sans); color: var(--ink); background: #fff; }
+textarea { min-height: 150px; resize: vertical; margin-top: 10px; }
+select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--mut) 50%), linear-gradient(135deg, var(--mut) 50%, transparent 50%); background-position: calc(100% - 17px) 50%, calc(100% - 12px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 32px; }
+details.adv summary { cursor: pointer; font-weight: 500; }
+details.adv[open] summary { margin-bottom: 10px; }
+.hint { font-size: 13px; color: var(--faint); margin-top: 8px; }
+.sticky { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 16px; }
+.toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 70; background: var(--ink); color: #fff; padding: 11px 15px; border-radius: 8px; font-size: 14px; box-shadow: 0 14px 40px rgba(0,0,0,.25); }
 
-footer { border-top: 1px solid var(--line); color: var(--faint); font: 12px var(--mono); }
-footer .in { max-width: 1760px; margin: 0 auto; padding: 16px 24px; display: flex; gap: 18px; flex-wrap: wrap; }
-footer a:hover { color: var(--ink); }
+/* proof */
+.run { overflow: hidden; }
+.run .rh { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.run .rh h3 { margin: 0; font: 600 17px/1.2 var(--sans); }
+.run .rb { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.3fr); }
+.run .rb > div { padding: 16px 18px; } .run .rb > div + div { border-left: 1px solid var(--line); }
+.clist { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; font-size: 14px; }
+.clist li::before { content: "✓"; color: var(--ok); font-weight: 700; margin-right: 8px; }
+.legs { width: 100%; border-collapse: collapse; font-size: 14px; }
+.legs td { padding: 8px 0; border-top: 1px solid var(--line); vertical-align: top; } .legs tr:first-child td { border-top: 0; }
+.legs td.s { text-align: right; font-family: var(--mono); white-space: nowrap; padding-left: 12px; }
+.run details summary { cursor: pointer; padding: 12px 18px; border-top: 1px solid var(--line); font-weight: 500; }
 
-@media (max-width: 1180px) { .g-main { grid-template-columns: minmax(0, 1fr); } .search { width: 220px; } }
-@media (max-width: 980px) {
-  .bar .in { flex-wrap: wrap; gap: 10px 14px; }
-  .tabs { order: 3; width: 100%; overflow-x: auto; }
-  .g-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .g-2 { grid-template-columns: minmax(0, 1fr); }
-  .dl > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+/* footer */
+footer { margin-top: auto; border-top: 1px solid var(--line); background: #fff; position: relative; overflow: hidden; }
+footer .cols { display: grid; grid-template-columns: 1.2fr repeat(4, minmax(0, 1fr)); gap: 24px; padding: 56px 0 30px; }
+footer h6 { margin: 0 0 12px; } footer a.f { display: block; padding: 4px 0; color: #30343b; font-size: 14px; } footer a.f:hover { color: var(--ink); text-decoration: underline; }
+footer .word { font: 700 clamp(90px, 17vw, 260px)/.8 var(--sans); letter-spacing: -.06em; color: #f1f2f4; user-select: none; padding-bottom: 10px; }
+footer .legal { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 0 22px; border-top: 1px solid var(--line); font: 12px var(--mono); color: var(--faint); }
+h6.tag { font-size: 11.5px; }
+
+@media (max-width: 1180px) { .g-main { grid-template-columns: minmax(0, 1fr); } .cards-row { grid-template-columns: repeat(3, minmax(0, 1fr)); } .rcards, .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sticky { position: static; } }
+@media (max-width: 1040px) { .menu, .navside .ghost { display: none; } .burger { display: block; } .navcard { gap: 12px; } }
+@media (max-width: 900px) {
+  .hero .herogrid { grid-template-columns: minmax(0, 1fr); min-height: 0; } .art { max-width: 520px; margin: 0 auto; }
+  .ppanel { grid-template-columns: minmax(0, 1fr); } .ptabs button { font-size: 18px; padding: 16px 10px; }
+  .g-4, .g-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g-2 { grid-template-columns: minmax(0, 1fr); }
+  .dl > div { grid-template-columns: minmax(0, 1fr); gap: 4px; } .run .rb { grid-template-columns: minmax(0, 1fr); } .run .rb > div + div { border-left: 0; border-top: 1px solid var(--line); }
+  footer .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
-  .bar .in, main, footer .in { padding-left: 14px; padding-right: 14px; }
-  .search { order: 4; width: 100%; } .live { display: none; }
-  .g-4 { grid-template-columns: minmax(0, 1fr); }
-  .big { font-size: 32px; }
-  .t th, .t td { padding-left: 12px; padding-right: 12px; }
-  .hide-sm { display: none; }
+  .wrap { padding: 0 16px; } .navwrap { padding: 10px; } .navside { display: none; }
+  .cards-row, .rcards, .metrics, .g-4, .g-3 { grid-template-columns: minmax(0, 1fr); }
+  .hero p { font-size: 17px; } .search { width: 100%; } .titlerow .act { width: 100%; }
+  .t th, .t td { padding-left: 12px; padding-right: 12px; } .hide-sm { display: none; }
+  .shot { padding: 16px; min-height: 0; } .shot .code { margin: -20px 0 0 10px; } .acc .ab { padding-left: 8px; } .acc button.ah { font-size: 18px; }
+  .metric .n { font-size: 42px; }
 }
-@media (prefers-reduced-motion: reduce) { .pulse, .st::before, .sq i.a { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .pulse, .st::before, .sq i.a, .art .floaty { animation: none !important; } }
 </style>
 </head>
 <body>
-<header class="bar">
-  <div class="in">
-    <a class="brand" href="/" data-link><span class="mark"><i></i><i></i><i></i></span>LOOM <span class="tagc">EXPLORER</span></a>
-    <nav class="tabs" id="tabs">
-      <a href="/" data-link>Overview</a><a href="/jobs" data-link>Jobs</a><a href="/gpus" data-link>GPUs</a><a href="/agents" data-link>Agents</a><a href="/transactions" data-link>Transactions</a>
-    </nav>
-    <span class="spacer"></span>
-    <div class="search">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4.5"/><path d="M9.5 9.5L13 13"/></svg>
-      <input id="q" placeholder="Search job / tx / address" autocomplete="off" aria-label="Search jobs, transactions and addresses">
-      <div class="results" id="results" hidden></div>
-    </div>
-    <span class="live" id="live"><i class="dot pulse"></i>LIVE <b id="liveN">–</b></span>
-    <button class="btn pri" id="postBtn">Post job</button>
-  </div>
-</header>
+<div class="announce" id="announce"><a href="/proof" data-link>LOOM is live on Reactive Lasna, Base Sepolia and Unichain Sepolia · see the proof →</a></div>
 
-<main id="main">
-  <!-- overview -->
-  <section data-view="overview">
-    <div class="pagetitle"><h1>Network overview</h1><span class="lbl" id="updated"></span></div>
-    <div class="grid g-main">
-      <div class="panel chart">
-        <div class="head">
-          <div class="seg" id="chartSeg"><button data-k="paid" aria-pressed="true">Paid to GPUs</button><button data-k="jobs" aria-pressed="false">Jobs</button><button data-k="txs" aria-pressed="false">Transactions</button></div>
-          <span class="lbl" id="chartRange"></span>
+<div class="navwrap">
+  <div class="nav">
+    <div class="navcard">
+      <a class="logo" href="/" data-link aria-label="LOOM home">
+        <svg width="22" height="22" viewBox="0 0 22 22"><rect x="1" y="2" width="20" height="5" rx="2" fill="#3b6cff"/><rect x="1" y="9" width="15" height="5" rx="2" fill="#7b5cff"/><rect x="1" y="16" width="10" height="5" rx="2" fill="#ff6a3d"/></svg>loom
+      </a>
+      <div class="menu" id="menu">
+        <div class="item"><button aria-expanded="false" data-m="product">Product <svg class="chev" width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none"/></svg></button>
+          <div class="drop">
+            <a href="/post" data-link><span class="ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M8 3v10"/></svg></span><span><b>Post a job</b><span class="d">Run GPT-2 across three bonded GPUs</span></span></a>
+            <a href="/provide" data-link><span class="ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="4" width="8" height="8" rx="1.5"/><path d="M6 1.5v2.5M10 1.5v2.5M6 12v2.5M10 12v2.5M1.5 6h2.5M1.5 10h2.5M12 6h2.5M12 10h2.5"/></svg></span><span><b>Rent out a GPU</b><span class="d">Bond, serve layers, get paid</span></span></a>
+            <a href="/proof" data-link><span class="ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5l5 2v4c0 3.2-2.2 5.6-5 6.9-2.8-1.3-5-3.7-5-6.9v-4l5-2z"/><path d="M5.6 8l1.7 1.7L10.6 6.3"/></svg></span><span><b>Proof</b><span class="d">The testnet run, every transaction linked</span></span></a>
+          </div>
         </div>
-        <div class="pb" style="padding-top:0">
-          <div class="big" id="chartBig">–</div>
-          <div class="cap" id="chartCap"></div>
-          <svg class="chartsvg" id="chart" viewBox="0 0 900 270" preserveAspectRatio="none"></svg>
+        <div class="item"><button aria-expanded="false" data-m="explorer">Explorer <svg class="chev" width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none"/></svg></button>
+          <div class="drop">
+            <a href="/explorer" data-link><span class="ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 13l4-5 3 3 5-7"/></svg></span><span><b>Overview</b><span class="d">The network, right now</span></span></a>
+            <a href="/jobs" data-link><span class="ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2.5" width="12" height="3" rx="1"/><rect x="2" y="6.5" width="12" height="3" rx="1"/><rect x="2" y="10.5" width="12" height="3" rx="1"/></svg></span><span><b>Jobs</b><span class="d">Every job, stage by stage</span></span></a>
+            <a href="/gpus" data-link><span class="ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="4" width="8" height="8" rx="1.5"/><rect x="6.5" y="6.5" width="3" height="3" rx=".6"/></svg></span><span><b>GPUs</b><span class="d">Bonds, reputation, earnings</span></span></a>
+            <a href="/agents" data-link><span class="ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/></svg></span><span><b>Agents</b><span class="d">Watcher and verifiers</span></span></a>
+            <a href="/transactions" data-link><span class="ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h10l-3-3M13 11H3l3 3"/></svg></span><span><b>Transactions</b><span class="d">All three chains in one list</span></span></a>
+          </div>
         </div>
+        <div class="item"><a href="/proof" data-link data-top="/proof">Proof</a></div>
+        <div class="item"><a href="https://github.com/Shivanikinagi/Loom#readme" target="_blank" rel="noopener">Docs</a></div>
       </div>
-      <div class="panel">
-        <div class="ph"><span class="lbl">The network, right now</span></div>
-        <div class="kv" id="nowKv"></div>
-        <div class="meter"><i id="nowMeter" style="width:0"></i></div>
-      </div>
+      <button class="burger" id="burger" aria-label="Open menu"><svg width="22" height="22" viewBox="0 0 22 22" stroke="currentColor" stroke-width="1.6"><path d="M3 6h16M3 11h16M3 16h16"/></svg></button>
     </div>
-    <div class="gap"></div>
-    <div class="grid g-4" id="stats"></div>
-    <div class="gap"></div>
-    <div class="grid g-main">
-      <div class="grid g-2">
-        <div class="panel">
-          <div class="ph"><h2>Latest jobs</h2><a class="more" href="/jobs" data-link>View all ›</a></div>
-          <div class="tw"><table class="t compact" id="latestJobs"></table></div>
-        </div>
-        <div class="panel">
-          <div class="ph"><h2>Latest transactions</h2><a class="more" href="/transactions" data-link>View all ›</a></div>
-          <div class="tw"><table class="t compact" id="latestTx"></table></div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="ph"><span class="lbl">Verified on testnet</span><a class="more" href="/transactions?net=testnet" data-link>All txs ›</a></div>
-        <div class="plist" id="proofList"><div class="row faint">Loading…</div></div>
-      </div>
+    <div class="navside">
+      <a class="ghost" href="https://github.com/Shivanikinagi/Loom" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn black" href="/post" data-link>Post a job</a>
     </div>
-  </section>
-
-  <!-- jobs -->
-  <section data-view="jobs" hidden>
-    <div class="pagetitle"><h1>Jobs</h1><span class="lbl" id="jobsCount"></span></div>
-    <div class="panel">
-      <div class="ph"><div class="filters" id="jobFilters"></div></div>
-      <div class="tw"><table class="t" id="jobsTable"></table></div>
-    </div>
-  </section>
-
-  <!-- job detail -->
-  <section data-view="job" hidden>
-    <div class="crumbs"><a href="/jobs" data-link>Jobs</a><span>/</span><span id="jdCrumb"></span></div>
-    <div class="pagetitle"><h1 id="jdTitle"></h1><span id="jdStatus"></span></div>
-    <div class="panel"><div class="ph"><span class="lbl">Overview</span></div><dl class="dl" id="jdOverview"></dl></div>
-    <div class="gap"></div>
-    <div class="panel"><div class="ph"><h2>Pipeline</h2><span class="lbl">GPT-2 · 3 stages</span></div><div class="tw"><table class="t" id="jdStages"></table></div></div>
-    <div id="jdDisputeWrap"><div class="gap"></div><div class="panel"><div class="ph"><h2>Dispute</h2><span class="lbl" id="jdDisputeLbl"></span></div><div class="tw"><table class="t" id="jdDispute"></table></div></div></div>
-    <div class="gap"></div>
-    <div class="panel"><div class="ph"><h2>Transactions</h2><span class="lbl" id="jdTxCount"></span></div><div class="tw"><table class="t" id="jdTx"></table></div><p class="note" id="jdNote" hidden></p></div>
-  </section>
-
-  <!-- gpus -->
-  <section data-view="gpus" hidden>
-    <div class="pagetitle"><h1>GPUs</h1><a class="btn" href="/provide" data-link>Rent out a GPU</a></div>
-    <div class="grid g-4" id="gpuStats"></div>
-    <div class="gap"></div>
-    <div class="panel">
-      <div class="ph"><div class="filters" id="gpuFilters"></div><span class="lbl">Bonded on Unichain</span></div>
-      <div class="tw"><table class="t" id="gpuTable"></table></div>
-    </div>
-  </section>
-
-  <!-- provide -->
-  <section data-view="provide" hidden>
-    <div class="crumbs"><a href="/gpus" data-link>GPUs</a><span>/</span><span>Rent out a GPU</span></div>
-    <div class="pagetitle"><h1>Rent out a GPU</h1></div>
-    <div class="grid g-main">
-      <div class="stack">
-        <div class="panel"><div class="ph"><h2>1 · Bond and register</h2><span class="lbl">Unichain Sepolia</span></div>
-          <div class="pb"><pre class="cmd">cp .env.example .env                       # LOOM_PRIVATE_KEY = testnet-only key
-python -m loom preflight                   # RPCs and balances
-python -m loom fund     --network testnet  # tops up GPU keys
-python -m loom register --network testnet  # bonds each GPU</pre></div></div>
-        <div class="panel"><div class="ph"><h2>2 · Serve stages</h2><span class="lbl">Base Sepolia</span></div>
-          <div class="pb"><pre class="cmd">python -m loom run --network testnet       # compute, commit hashes, get paid</pre></div></div>
-        <div class="panel"><div class="ph"><h2>Rules</h2></div><div class="kv" id="pvRules"></div></div>
-      </div>
-      <div class="stack">
-        <div class="panel"><div class="ph"><span class="lbl">Pays per job</span></div><div class="tw"><table class="t" id="pvEarn"></table></div></div>
-        <div class="panel"><div class="ph"><span class="lbl">Network</span></div><div class="kv" id="pvNet"></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- agents -->
-  <section data-view="agents" hidden>
-    <div class="pagetitle"><h1>Agents</h1><span class="lbl" id="agCount"></span></div>
-    <div class="grid g-4" id="agStats"></div>
-    <div class="gap"></div>
-    <div class="panel"><div class="ph"><h2>Agents</h2><span class="lbl" id="agPolicy"></span></div><div class="tw"><table class="t" id="agTable"></table></div></div>
-    <div class="gap"></div>
-    <div class="panel"><div class="ph"><h2>Activity</h2><div class="filters" id="agFilters"></div></div><div class="tw"><table class="t" id="agActivity"></table></div></div>
-  </section>
-
-  <!-- transactions -->
-  <section data-view="transactions" hidden>
-    <div class="pagetitle"><h1>Transactions</h1><div class="seg" id="netSeg"><button data-n="local" aria-pressed="true">Local devnet</button><button data-n="testnet" aria-pressed="false">Testnet</button></div></div>
-    <div class="panel">
-      <div class="ph"><div class="filters" id="txFilters"></div><span class="lbl" id="txInfo"></span></div>
-      <div class="tw"><table class="t" id="txTable"></table></div>
-      <div class="pager" id="txPager"></div>
-    </div>
-  </section>
-</main>
-
-<footer><div class="in"><span>LOOM · pooled-GPU inference refereed by Reactive Network</span><span class="spacer"></span><a href="https://github.com/Shivanikinagi/Loom" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/Shivanikinagi/Loom/blob/main/evidence/testnet.md" target="_blank" rel="noopener">Evidence</a></div></footer>
-
-<div class="overlay" id="modal" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
-    <div class="mh"><h2 id="mTitle">Post job</h2><button class="x" id="mClose" aria-label="Close">×</button></div>
-    <div class="mb">
-      <div class="field"><span class="lbl">Model</span><div class="mono" style="font-size:13px">openai-community/gpt2 · sentiment · 3 stages</div></div>
-      <div class="field"><span class="lbl">Data</span>
-        <div class="seg" id="dataSeg" style="margin-bottom:10px"><button data-d="sample" aria-pressed="true">Sample reviews</button><button data-d="own" aria-pressed="false">Paste my own</button></div>
-        <ul class="samples" id="samples"></ul>
-        <textarea id="ownText" hidden placeholder="One review per line, up to 12"></textarea>
-      </div>
-      <div class="field"><span class="lbl">Estimate</span><div class="est" id="est"></div></div>
-      <details class="adv" id="adv"><summary>Fault test (demo)</summary>
-        <select id="fault" aria-label="Fault to inject">
-          <option value="">None</option>
-          <option value="1:skip">Stage 1 GPU skips its layers</option>
-          <option value="1:noise">Stage 1 GPU adds noise</option>
-          <option value="2:skip">Stage 2 GPU skips its layers</option>
-          <option value="1:offline">Stage 1 GPU goes offline</option>
-        </select>
-      </details>
-    </div>
-    <div class="mf"><span class="faint" style="font-size:12.5px" id="mNote">Escrowed on Base Sepolia</span><button class="btn pri" id="submitJob">Post job</button></div>
   </div>
 </div>
 
+<div class="sheet" id="sheet" hidden>
+  <div class="top"><a class="logo" href="/" data-link>loom</a><button class="burger" id="sheetClose" aria-label="Close menu" style="display:block">✕</button></div>
+  <a class="btn black" href="/post" data-link style="width:100%">Post a job</a>
+  <h6 class="tag">Product</h6><a class="l" href="/post" data-link>Post a job</a><a class="l" href="/provide" data-link>Rent out a GPU</a><a class="l" href="/proof" data-link>Proof</a>
+  <h6 class="tag">Explorer</h6><a class="l" href="/explorer" data-link>Overview</a><a class="l" href="/jobs" data-link>Jobs</a><a class="l" href="/gpus" data-link>GPUs</a><a class="l" href="/agents" data-link>Agents</a><a class="l" href="/transactions" data-link>Transactions</a>
+  <h6 class="tag">Developers</h6><a class="l" href="https://github.com/Shivanikinagi/Loom" target="_blank" rel="noopener">GitHub</a>
+</div>
+
+<main id="main" style="flex:1">
+  <!-- ================= HOME ================= -->
+  <div data-view="home">
+    <section class="hero">
+      <div class="wrap herogrid">
+        <div>
+          <h1>Verifiable inference <span>on community GPUs</span></h1>
+          <p>One model, split across bonded GPUs. Every layer is committed on chain, and a Reactive contract slashes any GPU that cheats.</p>
+          <div class="cta"><a class="btn black" href="/post" data-link>Post a job</a><a class="btn grey" href="/proof" data-link>View proof</a></div>
+          <div class="live"><i class="dot lasna pulse"></i><span id="heroLive">Connecting to the network…</span></div>
+        </div>
+        <svg class="art" viewBox="0 0 620 520" role="img" aria-label="Three model stages stacked as slabs, refereed by a Reactive contract">
+          <defs>
+            <linearGradient id="s0" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fb4ff"/><stop offset="1" stop-color="#3b6cff"/></linearGradient>
+            <linearGradient id="s1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c8b6ff"/><stop offset="1" stop-color="#7b5cff"/></linearGradient>
+            <linearGradient id="s2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb48f"/><stop offset="1" stop-color="#ff5a2a"/></linearGradient>
+            <linearGradient id="ed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset="1" stop-color="#000" stop-opacity=".32"/></linearGradient>
+            <radialGradient id="sh" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#0b0c0e" stop-opacity=".16"/><stop offset="1" stop-color="#0b0c0e" stop-opacity="0"/></radialGradient>
+          </defs>
+          <ellipse cx="320" cy="470" rx="220" ry="26" fill="url(#sh)"/>
+          <g class="floaty c"><path d="M150 360 L330 270 L510 360 L330 450 Z" fill="url(#s2)"/><path d="M150 360 L330 450 L330 470 L150 380 Z" fill="#c2401a"/><path d="M330 450 L510 360 L510 380 L330 470 Z" fill="#e0532a"/></g>
+          <g class="floaty b"><path d="M150 260 L330 170 L510 260 L330 350 Z" fill="url(#s1)" opacity=".95"/><path d="M150 260 L330 350 L330 370 L150 280 Z" fill="#5a3fd6"/><path d="M330 350 L510 260 L510 280 L330 370 Z" fill="#6c4ff0"/></g>
+          <g class="floaty"><path d="M150 160 L330 70 L510 160 L330 250 Z" fill="url(#s0)" opacity=".95"/><path d="M150 160 L330 250 L330 270 L150 180 Z" fill="#2a52d4"/><path d="M330 250 L510 160 L510 180 L330 270 Z" fill="#3561f0"/>
+            <g opacity=".5" stroke="#fff" stroke-width="1"><path d="M195 160 L330 92.5 L465 160"/><path d="M240 160 L330 115 L420 160"/></g></g>
+          <g font-family="Geist Mono, monospace" font-size="12" fill="#0b0c0e" letter-spacing=".5">
+            <path d="M510 160 H560 V60" stroke="#0b0c0e" stroke-width="1" fill="none"/><rect x="556" y="44" width="8" height="8" fill="#0b0c0e"/><text x="606" y="34" text-anchor="end">STAGE 0 · EMBED + BLOCKS 0–3</text>
+            <path d="M150 262 H60 V316" stroke="#0b0c0e" stroke-width="1" fill="none"/><rect x="56" y="316" width="8" height="8" fill="#0b0c0e"/><text x="10" y="344">STAGE 1 · BLOCKS 4–7</text>
+            <path d="M510 360 H570 V440" stroke="#0b0c0e" stroke-width="1" fill="none"/><circle cx="570" cy="450" r="4.5" fill="#0b0c0e"/><text x="606" y="478" text-anchor="end">STAGE 2 · BLOCKS 8–11 + HEAD</text>
+          </g>
+        </svg>
+      </div>
+      <div class="wrap"><div class="trust"><span class="tag">Secured by</span><b><i class="dot lasna"></i>Reactive Network</b><b><i class="dot base"></i>Base</b><b><i class="dot unichain"></i>Unichain</b><b>GPT-2</b><b>Foundry</b><b>keccak256</b></div></div>
+    </section>
+
+    <section class="block center">
+      <div class="wrap">
+        <h2 class="h2">Live on the network</h2>
+        <p class="sub">The model, the GPUs serving it and the agents checking them, right now.</p>
+        <div class="cta" style="display:flex;gap:10px;justify-content:center"><a class="btn black" href="/gpus" data-link>Browse GPUs</a><a class="btn grey" href="/explorer" data-link>Open explorer</a></div>
+        <div class="cards-row" id="liveCards" style="text-align:left"></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="wrap">
+        <div class="center"><h2 class="h2">The LOOM platform</h2><p class="sub">Buy verified inference, earn with your GPU, or check anyone's work.</p></div>
+        <div class="platform">
+          <div class="ptabs" role="tablist" id="ptabs"><button role="tab" data-t="buy" aria-selected="true">Buy inference</button><button role="tab" data-t="rent" aria-selected="false">Rent out a GPU</button><button role="tab" data-t="verify" aria-selected="false">Verify</button></div>
+          <div class="ppanel" id="ppanel"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="navyband">
+      <div class="wrap">
+        <h2 class="h2">Grounded in research</h2>
+        <p class="sub">The dispute game and calibration come from published work.</p>
+        <div class="rcards">
+          <a class="rcard" href="https://arxiv.org/abs/2401.17555" target="_blank" rel="noopener"><span class="tag">Fraud proofs</span><h3>Optimistic machine learning: accept by default, prove fraud on challenge</h3><span class="src">opML · arXiv 2401.17555 ↗</span></a>
+          <a class="rcard" href="https://gensyn.ai/articles/verde" target="_blank" rel="noopener"><span class="tag">Refereed delegation</span><h3>Re-run only the first step two parties disagree on</h3><span class="src">Gensyn Verde ↗</span></a>
+          <a class="rcard" href="https://arxiv.org/abs/2102.09690" target="_blank" rel="noopener"><span class="tag">Calibration</span><h3>Contextual calibration takes zero-shot GPT-2 from 50% to 90%</h3><span class="src">Zhao et al. 2021 ↗</span></a>
+          <a class="rcard" href="https://dev.reactive.network/" target="_blank" rel="noopener"><span class="tag">Reactive contracts</span><h3>Contracts that react to events on other chains and call back</h3><span class="src">Reactive Network docs ↗</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="wrap">
+        <div class="center"><h2 class="h2">Proven on testnet</h2><p class="sub">A cheating GPU caught, an honest job paid and an offline GPU replaced, on public chains.</p></div>
+        <div class="metrics" id="metrics"></div>
+        <div class="center" style="margin-top:28px"><a class="btn black" href="/proof" data-link>See every transaction</a></div>
+      </div>
+    </section>
+
+    <section class="final">
+      <div class="wrap">
+        <h2 class="h2">Start building on LOOM</h2>
+        <p class="sub">Post a job in one click, or bond a GPU and start earning.</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn black" href="/post" data-link>Post a job</a><a class="btn grey" href="/provide" data-link>Rent out a GPU</a></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= APP SHELL ================= -->
+  <div data-view="app" hidden>
+    <div class="apphead">
+      <div class="wrap">
+        <div class="crumbs" id="crumbs"></div>
+        <div class="titlerow"><div><h1 id="appTitle"></h1><p id="appSub"></p></div>
+          <div class="act" id="appAct"><div class="search" id="searchBox"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4.5"/><path d="M9.5 9.5L13 13"/></svg><input id="q" placeholder="Search job, tx or address  /" autocomplete="off" aria-label="Search"><div class="results" id="results" hidden></div></div></div>
+        </div>
+        <nav class="subnav" id="subnav"><a href="/explorer" data-link>Overview</a><a href="/jobs" data-link>Jobs</a><a href="/gpus" data-link>GPUs</a><a href="/agents" data-link>Agents</a><a href="/transactions" data-link>Transactions</a><a href="/proof" data-link>Proof</a></nav>
+      </div>
+    </div>
+    <div class="appbody"><div class="wrap">
+
+      <!-- overview -->
+      <section data-page="explorer">
+        <div class="grid g-main">
+          <div class="panel"><div class="pb">
+            <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div class="seg" id="chartSeg"><button data-k="paid" aria-pressed="true">Paid to GPUs</button><button data-k="jobs" aria-pressed="false">Jobs</button><button data-k="txs" aria-pressed="false">Transactions</button></div><span class="tag" id="chartRange"></span></div>
+            <div class="big" id="chartBig">–</div><div class="cap" id="chartCap"></div>
+            <svg class="chartsvg" id="chart" viewBox="0 0 900 250" preserveAspectRatio="none"></svg>
+          </div></div>
+          <div class="panel"><div class="ph"><span class="tag">The network, right now</span><span class="tag" id="updated"></span></div><div class="kv" id="nowKv"></div></div>
+        </div>
+        <div class="gap"></div>
+        <div class="grid g-4" id="stats"></div>
+        <div class="gap"></div>
+        <div class="grid g-main">
+          <div class="grid g-2">
+            <div class="panel"><div class="ph"><h2>Latest jobs</h2><a class="more" href="/jobs" data-link>View all</a></div><div class="tw"><table class="t compact" id="latestJobs"></table></div></div>
+            <div class="panel"><div class="ph"><h2>Latest transactions</h2><a class="more" href="/transactions" data-link>View all</a></div><div class="tw"><table class="t compact" id="latestTx"></table></div></div>
+          </div>
+          <div class="panel"><div class="ph"><span class="tag">Verified on testnet</span><a class="more" href="/proof" data-link>Proof</a></div><div class="plist" id="proofList"><div class="row faint">Loading…</div></div></div>
+        </div>
+      </section>
+
+      <!-- jobs -->
+      <section data-page="jobs" hidden>
+        <div class="panel"><div class="ph"><div class="filters" id="jobFilters"></div><span class="tag" id="jobsCount"></span></div><div class="tw"><table class="t" id="jobsTable"></table></div></div>
+      </section>
+
+      <!-- job detail -->
+      <section data-page="job" hidden>
+        <div class="panel"><div class="ph"><span class="tag">Overview</span><span id="jdStatus"></span></div><dl class="dl" id="jdOverview" style="margin:0"></dl></div>
+        <div class="gap"></div>
+        <div class="panel"><div class="ph"><h2>Pipeline</h2><span class="tag">GPT-2 · 3 stages</span></div><div class="tw"><table class="t" id="jdStages"></table></div></div>
+        <div id="jdDisputeWrap"><div class="gap"></div><div class="panel"><div class="ph"><h2>Dispute</h2><span class="tag" id="jdDisputeLbl"></span></div><div class="tw"><table class="t" id="jdDispute"></table></div></div></div>
+        <div class="gap"></div>
+        <div class="panel"><div class="ph"><h2>Transactions</h2><span class="tag" id="jdTxCount"></span></div><div class="tw"><table class="t" id="jdTx"></table></div><p class="note" id="jdNote" hidden></p></div>
+      </section>
+
+      <!-- gpus -->
+      <section data-page="gpus" hidden>
+        <div class="grid g-4" id="gpuStats"></div><div class="gap"></div>
+        <div class="panel"><div class="ph"><div class="filters" id="gpuFilters"></div><span class="tag">Bonded on Unichain</span></div><div class="tw"><table class="t" id="gpuTable"></table></div></div>
+      </section>
+
+      <!-- provide -->
+      <section data-page="provide" hidden>
+        <div class="grid g-main">
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="panel"><div class="ph"><h2>1 · Bond and register</h2><span class="tag">Unichain Sepolia</span></div><div class="pb"><pre class="cmd">cp .env.example .env                       # LOOM_PRIVATE_KEY = testnet-only key
+python -m loom preflight                   # RPCs and balances
+python -m loom fund     --network testnet  # tops up GPU keys
+python -m loom register --network testnet  # bonds each GPU</pre></div></div>
+            <div class="panel"><div class="ph"><h2>2 · Serve stages</h2><span class="tag">Base Sepolia</span></div><div class="pb"><pre class="cmd">python -m loom run --network testnet       # compute, commit hashes, get paid</pre></div></div>
+            <div class="panel"><div class="ph"><h2>Rules</h2></div><div class="kv" id="pvRules"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="panel"><div class="ph"><span class="tag">Pays per job</span></div><div class="tw"><table class="t" id="pvEarn"></table></div></div>
+            <div class="panel"><div class="ph"><span class="tag">Network</span></div><div class="kv" id="pvNet"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- agents -->
+      <section data-page="agents" hidden>
+        <div class="grid g-4" id="agStats"></div><div class="gap"></div>
+        <div class="panel"><div class="ph"><h2>Agents</h2><span class="tag" id="agPolicy"></span></div><div class="tw"><table class="t" id="agTable"></table></div></div>
+        <div class="gap"></div>
+        <div class="panel"><div class="ph"><h2>Activity</h2><div class="filters" id="agFilters"></div></div><div class="tw"><table class="t" id="agActivity"></table></div></div>
+      </section>
+
+      <!-- transactions -->
+      <section data-page="transactions" hidden>
+        <div class="panel">
+          <div class="ph"><div class="filters" id="txFilters"></div><div class="seg" id="netSeg"><button data-n="local" aria-pressed="true">Local devnet</button><button data-n="testnet" aria-pressed="false">Testnet</button></div></div>
+          <div class="tw"><table class="t" id="txTable"></table></div>
+          <div class="pager" id="txPager"></div>
+        </div>
+      </section>
+
+      <!-- proof -->
+      <section data-page="proof" hidden>
+        <div class="grid g-4" id="pfStats"></div><div class="gap"></div>
+        <div class="grid g-3" id="pfContracts"></div><div class="gap"></div>
+        <div id="pfRuns" style="display:flex;flex-direction:column;gap:16px"><div class="empty">Loading the testnet run…</div></div>
+      </section>
+
+      <!-- post -->
+      <section data-page="post" hidden>
+        <div class="grid g-main">
+          <div class="panel"><div class="pb" style="padding:22px">
+            <div class="field"><span class="tag">Model</span>
+              <div class="model"><div class="av">G2</div><div style="min-width:0"><div><span class="faint">openai-community/</span><b>gpt2</b> <span class="faint">· 124M · sentiment</span></div><div class="chips" id="stageChips"></div></div></div></div>
+            <div class="field"><span class="tag">Input</span>
+              <div class="seg" id="dataSeg"><button data-d="sample" aria-pressed="true">Sample reviews</button><button data-d="own" aria-pressed="false">Paste my own</button></div>
+              <ul class="samples" id="samples"></ul>
+              <textarea id="ownText" hidden placeholder="One review per line, up to 12"></textarea>
+              <div class="hint" id="inputHint"></div></div>
+            <div class="field" id="advField"><details class="adv"><summary>Fault test <span class="faint">(demo)</span></summary>
+              <select id="fault" aria-label="Fault to inject"><option value="">None: every GPU stays honest</option><option value="1:skip">Stage 1 GPU skips its layers</option><option value="1:noise">Stage 1 GPU adds noise</option><option value="2:skip">Stage 2 GPU skips its layers</option><option value="1:offline">Stage 1 GPU goes offline</option></select>
+              <div class="hint">The GPU misbehaves on this job only, so you can watch it get caught and slashed.</div></details></div>
+          </div></div>
+          <div class="sticky">
+            <div class="panel"><div class="ph"><span class="tag">Estimate</span><span class="tag" id="estGpus"></span></div><div class="kv" id="est"></div>
+              <div class="pb" style="border-top:1px solid var(--line)"><button class="btn black" id="submitJob" style="width:100%">Post job</button><div class="hint" id="postNote" style="text-align:center"></div></div></div>
+            <div class="panel code" style="background:#121316;border-color:#121316"><div class="ch"><span>Run via API</span><div class="tabs2" id="codeTabs"><button data-c="curl" aria-pressed="true">curl</button><button data-c="py" aria-pressed="false">Python</button></div></div><pre id="codeBox"></pre></div>
+            <div class="panel"><div class="ph"><h2>Your jobs</h2><a class="more" href="/jobs" data-link>All</a></div><div class="plist" id="myJobs"></div></div>
+          </div>
+        </div>
+      </section>
+
+    </div></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div><a class="logo" href="/" data-link><svg width="20" height="20" viewBox="0 0 22 22"><rect x="1" y="2" width="20" height="5" rx="2" fill="#3b6cff"/><rect x="1" y="9" width="15" height="5" rx="2" fill="#7b5cff"/><rect x="1" y="16" width="10" height="5" rx="2" fill="#ff6a3d"/></svg>loom</a><p class="mut" style="font-size:14px;max-width:260px">Verifiable pooled-GPU inference, refereed by Reactive Network.</p></div>
+      <div><h6 class="tag">Product</h6><a class="f" href="/post" data-link>Post a job</a><a class="f" href="/provide" data-link>Rent out a GPU</a><a class="f" href="/proof" data-link>Proof</a></div>
+      <div><h6 class="tag">Explorer</h6><a class="f" href="/explorer" data-link>Overview</a><a class="f" href="/jobs" data-link>Jobs</a><a class="f" href="/gpus" data-link>GPUs</a><a class="f" href="/agents" data-link>Agents</a><a class="f" href="/transactions" data-link>Transactions</a></div>
+      <div><h6 class="tag">Developers</h6><a class="f" href="https://github.com/Shivanikinagi/Loom" target="_blank" rel="noopener">GitHub</a><a class="f" href="https://github.com/Shivanikinagi/Loom/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture</a><a class="f" href="https://github.com/Shivanikinagi/Loom/blob/main/evidence/testnet.md" target="_blank" rel="noopener">Evidence</a></div>
+      <div><h6 class="tag">Contracts</h6><a class="f" href="https://lasna.reactscan.net/address/0x5907e30b9470A38173949547a480804e296d2497" target="_blank" rel="noopener">LoomReferee ↗</a><a class="f" href="https://sepolia.basescan.org/address/0xE90B525c5f1527275C8D581BfED17e1d2580B65A" target="_blank" rel="noopener">LoomEscrow ↗</a><a class="f" href="https://sepolia.uniscan.xyz/address/0x5907e30b9470A38173949547a480804e296d2497" target="_blank" rel="noopener">LoomBonds ↗</a></div>
+    </div>
+    <div class="word" aria-hidden="true">loom</div>
+    <div class="legal"><span>© 2026 LOOM · MIT licensed</span><span>Reactive Lasna · Base Sepolia · Unichain Sepolia</span></div>
+  </div>
+</footer>
+
 <script>
-/* ============ state ============ */
+/* ============ state & helpers ============ */
 let S = null, PROOF = null, lastFetch = 0;
-const ui = { chart: "paid", jobF: "all", gpuF: "all", agF: "all", txChain: "all", txPage: 0, data: "sample", awaitJob: null };
+const ui = { chart: "paid", jobF: "all", gpuF: "all", agF: "all", txChain: "all", txPage: 0, data: "sample", code: "curl", tab: "buy", acc: { buy: 0, rent: 0, verify: 0 }, awaitJob: null };
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const short = (a) => (a && a.length > 14 ? a.slice(0, 8) + "…" + a.slice(-6) : a || "–");
@@ -385,7 +565,7 @@ const wei = (w) => { try { return BigInt(w || 0); } catch { return 0n; } };
 const eth = (w) => { const v = Number(wei(w)) / 1e18; return (v === 0 ? "0" : v >= 0.01 ? v.toFixed(3) : v.toPrecision(2)).replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "") + " ETH"; };
 const ago = (t) => { const s = Math.max(0, Math.round(Date.now() / 1000 - t)); return s < 60 ? `${s}s ago` : s < 3600 ? `${Math.floor(s / 60)}m ago` : s < 86400 ? `${Math.floor(s / 3600)}h ago` : `${Math.floor(s / 86400)}d ago`; };
 const dur = (s) => (s == null ? "–" : s < 60 ? `${s}s` : `${Math.floor(s / 60)}m ${s % 60}s`);
-const CHAIN = { base: "Base Sepolia", unichain: "Unichain Sepolia", lasna: "Reactive Lasna" };
+const CHAIN = { base: "Base Sepolia", unichain: "Unichain Sepolia", lasna: "Reactive Lasna" }, SHORT = { base: "Base", unichain: "Unichain", lasna: "Lasna" };
 const nm = (a) => (a && S && S.names[a.toLowerCase()] ? S.names[a.toLowerCase()].name : null);
 const who = (a) => (nm(a) ? `<span title="${esc(a)}">${esc(nm(a))}</span>` : `<span class="addr" title="${esc(a || "")}">${short(a)}</span>`);
 function txl(chain, tx, explorers) {
@@ -393,25 +573,38 @@ function txl(chain, tx, explorers) {
   const h = hx(tx), ex = (explorers || (S && S.chains) || {})[chain]?.explorer;
   return ex ? `<a class="hash" href="${ex}/tx/${h}" target="_blank" rel="noopener">${h.slice(0, 10)}…${h.slice(-4)}</a>` : `<span class="hash plain" title="${h}">${h.slice(0, 10)}…${h.slice(-4)}</span>`;
 }
-const chainCell = (c) => `<span class="chain"><i class="dot ${c}"></i><span class="hide-sm">${CHAIN[c]}</span></span>`;
+const chainCell = (c, s) => `<span class="chain"><i class="dot ${c}"></i>${s ? SHORT[c] : `<span class="hide-sm">${CHAIN[c]}</span>`}</span>`;
 const EV_TONE = { Challenged: "bad", ProviderSlashed: "bad", QuorumReached: "bad", StageTimedOut: "warn", ProviderTimedOut: "warn", JobSettled: "ok", ChallengeRejected: "ok" };
 const evPill = (e) => `<span class="ev ${EV_TONE[e] || ""}">${esc(e)}</span>`;
 function toast(m) { const t = document.createElement("div"); t.className = "toast"; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 3200); }
+const ICON = {
+  model: `<svg width="22" height="22" viewBox="0 0 22 22"><rect x="2" y="3" width="18" height="4.5" rx="1.5" fill="#3b6cff"/><rect x="2" y="9" width="18" height="4.5" rx="1.5" fill="#7b5cff"/><rect x="2" y="15" width="18" height="4.5" rx="1.5" fill="#ff6a3d"/></svg>`,
+  gpu: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#0b0c0e" stroke-width="1.4"><rect x="6" y="6" width="10" height="10" rx="2"/><rect x="9" y="9" width="4" height="4" rx=".8"/><path d="M9 2.5v3.5M13 2.5v3.5M9 16v3.5M13 16v3.5M2.5 9h3.5M2.5 13h3.5M16 9h3.5M16 13h3.5"/></svg>`,
+  agent: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#0b0c0e" stroke-width="1.5"><path d="M11 2.5l7 2.8v5.2c0 4.3-3 7.6-7 9.3-4-1.7-7-5-7-9.3V5.3l7-2.8z"/><path d="M7.8 11l2.3 2.3 4.2-4.6"/></svg>`,
+  eye: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#0b0c0e" stroke-width="1.5"><path d="M2 11s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="11" cy="11" r="2.6"/></svg>`,
+};
 
 /* ============ derived ============ */
 const jobEvents = (id) => S.timeline.filter((e) => e.args && e.args.jobId == id);
 const jobTime = (id, ev) => (S.timeline.find((e) => e.event === ev && e.args.jobId == id) || {}).time;
 function jobDur(j) { const a = jobTime(j.id, "JobCreated"), b = jobTime(j.id, "JobSettled"); return a && b ? b - a : null; }
 function earnings() { const o = {}; S.timeline.filter((e) => e.event === "JobSettled").forEach((e) => e.args.providers.forEach((p, i) => { const k = p.toLowerCase(); o[k] = (o[k] || 0n) + wei(e.args.amounts[i]); })); return o; }
-function busy() { const m = {}; S.jobs.filter((j) => ["Running", "Proposed", "Disputed"].includes(j.status)).forEach((j) => j.providers.forEach((p, s) => { if (!j.commits[String(s)] || j.status !== "Running") m[p.toLowerCase()] = m[p.toLowerCase()] || `job ${j.id} · s${s}`; })); return m; }
+function busy() { const m = {}; S.jobs.filter((j) => ["Running", "Proposed", "Disputed"].includes(j.status)).forEach((j) => j.providers.forEach((p, s) => { if (!j.commits[String(s)] || j.status !== "Running") m[p.toLowerCase()] = m[p.toLowerCase()] || `job ${j.id} · stage ${s}`; })); return m; }
 function gpus() {
   const e = earnings(), b = busy();
   return S.providers.map((p) => { const k = p.address.toLowerCase(), slashed = p.faults > 0 && wei(p.bond) === 0n;
     return { ...p, k, name: nm(p.address) || short(p.address), slashed, state: slashed ? "slashed" : b[k] ? "busy" : "available", now: b[k] || (slashed ? "barred" : "idle"), earned: e[k] || 0n, score: p.jobsDone - 10 * p.faults - 3 * (p.timeouts || 0) }; });
 }
+function agents() {
+  const out = [], seen = new Set(), add = (a, n, kind) => { if (!a || seen.has(a.toLowerCase())) return; seen.add(a.toLowerCase()); out.push({ a, n, kind }); };
+  Object.entries(S.names).forEach(([a, x]) => x.name === "watcher" && add(a, "watcher", "watcher"));
+  Object.entries(S.names).filter(([, x]) => /^verifier/.test(x.name)).sort((p, q) => p[1].name.localeCompare(q[1].name)).forEach(([a, x]) => add(a, x.name, "verifier"));
+  S.timeline.filter((e) => e.event === "Challenged").forEach((e) => add(e.args.challenger, nm(e.args.challenger) || "watcher", "watcher"));
+  S.timeline.filter((e) => e.event === "VerdictVote").forEach((e) => add(e.args.verifier, nm(e.args.verifier) || short(e.args.verifier), "verifier"));
+  return out;
+}
 function series(kind) {
-  const ev = S.timeline.slice().sort((a, b) => a.time - b.time || a.seq - b.seq);
-  let acc = 0; const pts = [];
+  const ev = S.timeline.slice().sort((a, b) => a.time - b.time || a.seq - b.seq); let acc = 0; const pts = [];
   for (const e of ev) {
     let inc = 0;
     if (kind === "paid" && e.event === "JobSettled") inc = Number(e.args.amounts.reduce((a, x) => a + wei(x), 0n)) / 1e18;
@@ -424,73 +617,134 @@ function series(kind) {
   }
   return pts;
 }
+function payParts() {
+  const pay = wei(S.params ? S.params.jobPayment : 0), st = S.stages.length ? S.stages : [{ first: 0, last: 3 }, { first: 4, last: 7 }, { first: 8, last: 11 }];
+  const L = st.map((s) => BigInt(s.last - s.first + 1)), tot = L.reduce((a, b) => a + b, 0n), parts = L.map((l) => (pay * l) / tot);
+  parts[parts.length - 1] += pay - parts.reduce((a, b) => a + b, 0n); return { pay, st, parts };
+}
+const squares = (j) => `<span class="sq">${Array.from({ length: j.nStages }, (_, s) => { const c = j.commits[String(s)]; const cls = j.status === "Disputed" && j.disputedStage === s ? "x" : c ? "c" : j.status === "Running" && j.nextStage === s ? "a" : ""; return `<i class="${cls}" title="stage ${s}"></i>`; }).join("")}</span>`;
 
 /* ============ charts ============ */
 function chartSvg(pts, fmt) {
-  const W = 900, H = 270, L = 8, R = 60, T = 12, B = 26;
-  if (!pts.length) return `<text x="${W / 2}" y="${H / 2}" fill="#6b7570" text-anchor="middle" font-family="JetBrains Mono" font-size="13">No data yet. Post a job.</text>`;
-  const t0 = pts[0].t, t1 = Math.max(pts[pts.length - 1].t, t0 + 1), vmax = Math.max(...pts.map((p) => p.v)) * 1.1 || 1;
+  const W = 900, H = 250, L = 6, R = 56, T = 12, B = 24;
+  if (!pts.length) return `<text x="${W / 2}" y="${H / 2}" fill="#8b929d" text-anchor="middle" font-family="Geist Mono" font-size="13">No data yet · post a job</text>`;
+  const t0 = pts[0].t, t1 = Math.max(pts[pts.length - 1].t, t0 + 1), top = Math.max(...pts.map((p) => p.v)), vmax = top * 1.12 || 1;
   const x = (t) => L + ((t - t0) / (t1 - t0)) * (W - L - R), y = (v) => T + (1 - v / vmax) * (H - T - B);
   let d = `M${x(t0)},${y(0)}`; pts.forEach((p) => { d += ` H${x(p.t)} V${y(p.v)}`; }); d += ` H${W - R}`;
-  const grid = [0, .5, 1].map((f) => { const v = vmax * f / 1.1 * (f ? 1.1 / 1.1 : 1); const yy = y(vmax * f / 1.1 * 1); return `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" stroke="#222725"/><text x="${W - R + 8}" y="${yy + 4}" fill="#6b7570" font-family="JetBrains Mono" font-size="11">${fmt(vmax * f / 1.1)}</text>`; }).join("");
-  const xl = [t0, (t0 + t1) / 2, t1].map((t, i) => `<text x="${x(t)}" y="${H - 6}" fill="#6b7570" font-family="JetBrains Mono" font-size="11" text-anchor="${["start", "middle", "end"][i]}">${new Date(t * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</text>`).join("");
-  return `<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fe596" stop-opacity=".25"/><stop offset="1" stop-color="#3fe596" stop-opacity="0"/></linearGradient></defs>
-    ${grid}<path d="${d} V${y(0)} H${x(t0)} Z" fill="url(#cg)"/><path d="${d}" fill="none" stroke="#3fe596" stroke-width="2" vector-effect="non-scaling-stroke"/>
-    <circle cx="${x(pts[pts.length - 1].t)}" cy="${y(pts[pts.length - 1].v)}" r="3.5" fill="#3fe596"/>${xl}`;
+  const grid = [0, top / 2, top].map((v) => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#eef0f4"/><text x="${W - R + 8}" y="${y(v) + 4}" fill="#8b929d" font-family="Geist Mono" font-size="11">${fmt(v)}</text>`).join("");
+  const xl = [t0, (t0 + t1) / 2, t1].map((t, i) => `<text x="${x(t)}" y="${H - 5}" fill="#8b929d" font-family="Geist Mono" font-size="11" text-anchor="${["start", "middle", "end"][i]}">${new Date(t * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</text>`).join("");
+  return `<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b6cff" stop-opacity=".18"/><stop offset="1" stop-color="#3b6cff" stop-opacity="0"/></linearGradient></defs>
+    ${grid}<path d="${d} V${y(0)} H${x(t0)} Z" fill="url(#cg)"/><path d="${d}" fill="none" stroke="#3b6cff" stroke-width="2" vector-effect="non-scaling-stroke"/><circle cx="${x(pts[pts.length - 1].t)}" cy="${y(pts[pts.length - 1].v)}" r="3.5" fill="#3b6cff"/>${xl}`;
 }
 function spark(pts) {
-  const W = 110, H = 34;
-  if (pts.length < 2) return `<svg width="${W}" height="${H}"><line x1="0" x2="${W}" y1="${H - 4}" y2="${H - 4}" stroke="#2f3633"/></svg>`;
+  const W = 100, H = 32;
+  if (pts.length < 2) return `<svg width="${W}" height="${H}"><line x1="0" x2="${W}" y1="${H - 4}" y2="${H - 4}" stroke="#e6e8ec"/></svg>`;
   const t0 = pts[0].t, t1 = pts[pts.length - 1].t || t0 + 1, vm = pts[pts.length - 1].v || 1;
   const d = pts.map((p, i) => `${i ? "L" : "M"}${((p.t - t0) / Math.max(1, t1 - t0)) * (W - 4) + 2},${H - 4 - (p.v / vm) * (H - 8)}`).join(" ");
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><path d="${d}" fill="none" stroke="#9ba6a1" stroke-width="1.5"/><circle cx="${W - 2}" cy="${4}" r="2.5" fill="#edf2ef"/></svg>`;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><path d="${d}" fill="none" stroke="#3b6cff" stroke-width="1.6"/></svg>`;
+}
+const statCard = (l, n, d, sp) => `<div class="panel stat"><div><div class="tag">${l}</div><div class="n">${n}</div><div class="d">${d}</div></div>${sp || ""}</div>`;
+
+/* ============ proof data ============ */
+async function loadProof() { if (PROOF) return PROOF; try { const r = await fetch("/api/proof"); PROOF = r.ok ? await r.json() : { error: true }; } catch { PROOF = { error: true }; } return PROOF; }
+function proofNums() {
+  if (!PROOF || PROOF.error) return null;
+  const all = PROOF.jobs.flatMap((j) => j.events), fraud = PROOF.jobs.find((j) => /fraud/.test(j.scenario || ""));
+  const t = (ev) => (fraud && fraud.events.find((e) => e.event === ev) || {}).time;
+  return { passed: PROOF.jobs.filter((j) => j.passed).length, total: PROOF.jobs.length, reactive: all.filter((e) => e.chain === "lasna").length, callbacks: all.filter((e) => e.event === "CallbackSent").length,
+    catchS: t("Challenged") && t("ProviderSlashed") ? t("ProviderSlashed") - t("Challenged") : null, txs: all.length };
 }
 
-/* ============ overview ============ */
-function renderOverview() {
-  const fmt = { paid: (v) => `${v.toFixed(v < 1 ? 2 : 1)}`, jobs: (v) => Math.round(v), txs: (v) => Math.round(v) }[ui.chart];
+/* ============ HOME ============ */
+const PLATFORM = {
+  buy: [
+    ["Post a job", "Send reviews to GPT-2, split across three bonded GPUs. You pay from escrow only when the challenge window closes.", "/post", "Post a job", ICON.model],
+    ["Verified by default", "A watcher re-runs every result. If a stage is wrong, it challenges with a bond and the verifiers vote.", "/agents", "See the agents", ICON.eye],
+    ["Compensated if cheated", "A caught GPU loses its whole bond: half goes to whoever caught it, half to you.", "/proof", "View proof", ICON.agent],
+  ],
+  rent: [
+    ["Bond on Unichain", "Lock a bond in LoomBonds. The referee only schedules GPUs with a full bond and a clean record.", "/provide", "Rent out a GPU", ICON.gpu],
+    ["Scheduled by reputation", "Jobs go to the best record first: jobs served minus ten for each fault and three for each timeout.", "/gpus", "Browse GPUs", ICON.model],
+    ["Paid by layers served", "Settlement splits the job's payment across the stages by layer count.", "/provide", "See the rates", ICON.agent],
+  ],
+  verify: [
+    ["Watcher re-runs", "It reproduces each stage and accepts every one within a 0.01 tolerance.", "/agents", "Open agents", ICON.eye],
+    ["Verifiers vote", "Three verifiers re-run only the disputed stage from its agreed input. Two of three decide.", "/jobs", "Open jobs", ICON.agent],
+    ["Reactive referees", "LoomReferee on Reactive Lasna counts the votes, slashes on Unichain and reroutes the stage on Base.", "/proof", "View proof", ICON.model],
+  ],
+};
+function platformVisual(t) {
+  if (!S) return `<div class="shot"><div class="win"><div class="bar"><i></i><i></i><i></i></div><div class="empty">Connecting…</div></div></div>`;
+  if (t === "buy") {
+    const j = S.jobs[0];
+    const win = j ? `<table class="t compact"><tr><th>Job</th><th>Status</th><th>Stages</th><th class="r">Paid</th></tr>${S.jobs.slice(0, 4).map((x) => `<tr><td class="mono">#${x.id}</td><td><span class="st ${x.status}">${x.status}</span></td><td>${squares(x)}</td><td class="r mono">${eth(x.payment)}</td></tr>`).join("")}</table>` : `<div class="empty">No jobs yet · post the first one</div>`;
+    return `<div class="shot"><div class="win"><div class="bar"><i></i><i></i><i></i><span style="margin-left:8px">loom · jobs</span></div>${win}</div>
+      <div class="code"><div class="ch"><span>Post a job</span><span>curl</span></div><pre><span class="k">curl</span> -X POST ${location.origin}/api/jobs \\
+  -H <span class="s">'content-type: application/json'</span> \\
+  -d <span class="s">'{"texts": ["Works perfectly", "Broke in a day"]}'</span></pre></div></div>`;
+  }
+  if (t === "rent") {
+    const G = gpus().sort((a, b) => b.score - a.score).slice(0, 4);
+    return `<div class="shot"><div class="win"><div class="bar"><i></i><i></i><i></i><span style="margin-left:8px">loom · gpus</span></div><table class="t compact"><tr><th>GPU</th><th>Status</th><th class="r">Bond</th><th class="r">Earned</th></tr>${G.map((g) => `<tr><td><b style="font-weight:600">${esc(g.name)}</b></td><td><span class="st ${g.state}">${g.state}</span></td><td class="r mono">${eth(g.bond)}</td><td class="r mono">${eth(g.earned)}</td></tr>`).join("")}</table></div>
+      <div class="code"><div class="ch"><span>Serve stages</span><span>shell</span></div><pre><span class="k">python</span> -m loom register --network testnet  <span class="c"># bond</span>
+<span class="k">python</span> -m loom run      --network testnet  <span class="c"># serve + get paid</span></pre></div></div>`;
+  }
+  const disputed = S.jobs.find((x) => S.timeline.some((e) => e.event === "Challenged" && e.args.jobId == x.id));
+  let rows;
+  if (disputed) { const ev = jobEvents(disputed.id).filter((e) => ["Challenged", "VerdictVote", "QuorumReached", "ProviderSlashed"].includes(e.event)).sort((a, b) => a.time - b.time || a.seq - b.seq);
+    rows = ev.map((e) => `<tr><td>${evPill(e.event)}</td><td>${chainCell(e.chain, true)}</td><td class="r">${txl(e.chain, e.tx)}</td></tr>`).join(""); }
+  else if (PROOF && !PROOF.error) { const f = PROOF.jobs.find((j) => /fraud/.test(j.scenario || "")) || PROOF.jobs[0];
+    rows = f.events.filter((e) => ["Challenged", "VerdictVote", "QuorumReached", "ProviderSlashed"].includes(e.event)).map((e) => `<tr><td>${evPill(e.event)}</td><td>${chainCell(e.chain, true)}</td><td class="r">${txl(e.chain, e.tx, PROOF.chains)}</td></tr>`).join(""); }
+  return `<div class="shot"><div class="win"><div class="bar"><i></i><i></i><i></i><span style="margin-left:8px">loom · dispute trail</span></div>${rows ? `<table class="t compact"><tr><th>Step</th><th>Chain</th><th class="r">Tx</th></tr>${rows}</table>` : `<div class="empty">No disputes yet</div>`}</div>
+    <div class="code"><div class="ch"><span>Verdict</span><span>stage 1</span></div><pre><span class="c"># honest re-run vs committed output</span>
+max |Δ| = <span class="k">92.16</span>   tolerance = <span class="s">0.01</span>
+verdict = <span class="k">FAULTY</span>   quorum = <span class="s">2 of 3</span></pre></div></div>`;
+}
+function renderPlatform() {
+  const t = ui.tab, items = PLATFORM[t];
+  document.querySelectorAll("#ptabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.t === t)));
+  $("ppanel").innerHTML = `<div class="acc">${items.map(([h, p, href, cta, ic], i) => `<div class="ai ${ui.acc[t] === i ? "open" : ""}"><button class="ah" data-i="${i}" aria-expanded="${ui.acc[t] === i}"><span class="ic">${ic}</span>${h}</button><div class="ab"><p>${p}</p><a class="btn black sm" href="${href}" data-link>${cta}</a></div></div>`).join("")}</div>${platformVisual(t)}`;
+  document.querySelectorAll("#ppanel .ah").forEach((b) => (b.onclick = () => { ui.acc[t] = Number(b.dataset.i); renderPlatform(); }));
+}
+$("ptabs").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; ui.tab = b.dataset.t; renderPlatform(); });
+function renderHome() {
+  if (!S) return;
+  const G = gpus(), A = agents(), bonded = G.filter((g) => wei(g.bond) > 0n).length;
+  $("heroLive").textContent = `${bonded} GPUs bonded · ${S.jobs.length} jobs · ${S.timeline.length} transactions on ${S.network === "local" ? "the local devnet" : "testnet"}`;
+  const cards = [[`/jobs`, "MODEL", "GPT-2 · 3 stages", ICON.model, `<span class="badge">124M</span>`]]
+    .concat(G.sort((a, b) => b.score - a.score).slice(0, 5).map((g) => ["/gpus", "GPU", g.name, ICON.gpu, g.slashed ? `<span class="badge bad">SLASHED</span>` : g.state === "busy" ? `<span class="badge">BUSY</span>` : `<span class="badge ok">LIVE</span>`]))
+    .concat(A.slice(0, 4).map((a) => ["/agents", a.kind === "watcher" ? "AGENT · WATCHER" : "AGENT · VERIFIER", a.n, a.kind === "watcher" ? ICON.eye : ICON.agent, `<span class="badge ok">ONLINE</span>`]));
+  $("liveCards").innerHTML = cards.slice(0, 10).map(([href, tg, n, ic, b]) => `<a class="mcard" href="${href}" data-link>${b}<span class="ico">${ic}</span><span class="tag">${tg}</span><span class="nm">${esc(n)}</span></a>`).join("");
+  renderPlatform();
+  const P = proofNums();
+  $("metrics").innerHTML = P ? [[`${P.catchS ?? "–"}s`, "from challenge to slash, across three chains"], [`${P.passed}/${P.total}`, "scenarios passed on testnet"], [P.reactive, "reactive transactions on Lasna"], [P.txs, "transactions, every one linked"]]
+    .map(([n, l]) => `<a class="metric" href="/proof" data-link><span class="n">${n}</span><span class="l">${l}</span><span class="arrow-link" style="align-self:flex-start;margin-top:8px">View proof</span></a>`).join("") : `<div class="empty" style="grid-column:1/-1">Loading testnet numbers…</div>`;
+  if (!PROOF) loadProof().then(() => page.view === "home" && renderHome());
+}
+
+/* ============ EXPLORER: overview ============ */
+function renderExplorer() {
+  const fmt = { paid: (v) => v.toFixed(v < 1 ? 2 : 1), jobs: (v) => Math.round(v), txs: (v) => Math.round(v) }[ui.chart];
   const pts = series(ui.chart), last = pts.length ? pts[pts.length - 1].v : 0;
-  $("chartBig").innerHTML = ui.chart === "paid" ? `${last.toFixed(last < 1 ? 3 : 2).replace(/\.?0+$/, "") || 0} ETH` : `${last}`;
+  $("chartBig").textContent = ui.chart === "paid" ? `${+last.toFixed(3)} ETH` : `${last}`;
   $("chartCap").textContent = { paid: "Paid to GPUs from escrow, settled on Base", jobs: "Jobs posted to LoomEscrow", txs: "Events across Base, Unichain and Reactive Lasna" }[ui.chart];
   $("chartRange").textContent = pts.length ? `since ${new Date(pts[0].t * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "";
   $("chart").innerHTML = chartSvg(pts, fmt);
-
-  const G = gpus(), bonded = G.filter((g) => wei(g.bond) > 0n), busyN = G.filter((g) => g.state === "busy").length;
-  const cron = S.timeline.filter((e) => e.event === "CronToggled").pop(), open = S.jobs.filter((j) => j.status === "Disputed").length;
+  const G = gpus(), bonded = G.filter((g) => wei(g.bond) > 0n), busyN = G.filter((g) => g.state === "busy").length, cron = S.timeline.filter((e) => e.event === "CronToggled").pop();
+  $("updated").textContent = `updated ${Math.max(0, Math.round((Date.now() - lastFetch) / 1000))}s ago`;
   $("nowKv").innerHTML = [["GPUs bonded", bonded.length], ["GPUs busy", `${busyN} / ${bonded.length}`], ["Jobs running", S.jobs.filter((j) => ["Running", "Proposed", "Disputed"].includes(j.status)).length],
-    ["Disputes open", open], ["Total bonded", eth(bonded.reduce((a, g) => a + wei(g.bond), 0n))], ["Bonds slashed", S.timeline.filter((e) => e.event === "ProviderSlashed").length],
-    ["Reactive clock", cron && cron.args.on ? `<span class="ok">ticking</span>` : "idle"], ["Network", S.network === "local" ? "local devnet" : "testnet"]]
-    .map(([k, v]) => `<div><span>${k}</span><span>${v}</span></div>`).join("");
-  $("nowMeter").style.width = `${bonded.length ? Math.round((busyN / bonded.length) * 100) : 0}%`;
-
-  const cards = [["Jobs settled", S.jobs.filter((j) => j.status === "Settled").length, "jobs", `${S.jobs.length} posted`],
-    ["Stages committed", series("stages").pop()?.v || 0, "stages", "hash-chained on Base"],
-    ["Reactive txs", series("reactive").pop()?.v || 0, "reactive", "on Reactive Lasna"],
-    ["Cheaters slashed", series("slashed").pop()?.v || 0, "slashed", "bonds taken on Unichain"]];
-  $("stats").innerHTML = cards.map(([l, n, k, d]) => `<div class="panel stat"><div><div class="lbl">${l}</div><div class="n">${n}</div><div class="d">${d}</div></div>${spark(series(k))}</div>`).join("");
-
-  $("latestJobs").innerHTML = `<tr><th>Job</th><th>Status</th><th>Stages</th><th class="r">Payment</th></tr>` + (S.jobs.slice(0, 6).map((j) =>
-    `<tr class="click" data-href="/jobs/${j.id}"><td class="mono">#${j.id}</td><td><span class="st ${j.status}">${j.status}</span></td><td>${squares(j)}</td><td class="r mono">${eth(j.payment)}</td></tr>`).join("")
-    || `<tr><td colspan="4" class="empty">No jobs yet</td></tr>`);
+    ["Disputes open", S.jobs.filter((j) => j.status === "Disputed").length], ["Total bonded", eth(bonded.reduce((a, g) => a + wei(g.bond), 0n))], ["Bonds slashed", S.timeline.filter((e) => e.event === "ProviderSlashed").length],
+    ["Reactive clock", cron && cron.args.on ? `<span class="ok">ticking</span>` : "idle"], ["Network", S.network === "local" ? "local devnet" : "testnet"]].map(([k, v]) => `<div><span>${k}</span><span>${v}</span></div>`).join("");
+  $("stats").innerHTML = [["Jobs settled", S.jobs.filter((j) => j.status === "Settled").length, `${S.jobs.length} posted`, "jobs"], ["Stages committed", series("stages").pop()?.v || 0, "hash-chained on Base", "stages"],
+    ["Reactive txs", series("reactive").pop()?.v || 0, "on Reactive Lasna", "reactive"], ["Cheaters slashed", series("slashed").pop()?.v || 0, "bonds taken on Unichain", "slashed"]].map(([l, n, d, k]) => statCard(l, n, d, spark(series(k)))).join("");
+  $("latestJobs").innerHTML = `<tr><th>Job</th><th>Status</th><th>Stages</th><th class="r">Payment</th></tr>` + (S.jobs.slice(0, 6).map((j) => `<tr class="click" data-href="/jobs/${j.id}"><td class="mono">#${j.id}</td><td><span class="st ${j.status}">${j.status}</span></td><td>${squares(j)}</td><td class="r mono">${eth(j.payment)}</td></tr>`).join("") || `<tr><td colspan="4" class="empty">No jobs yet · <a class="hash" href="/post" data-link>post one</a></td></tr>`);
   const tx = S.timeline.slice().sort((a, b) => b.time - a.time || b.seq - a.seq).slice(0, 6);
-  const SHORT = { base: "Base", unichain: "Unichain", lasna: "Lasna" };
-  $("latestTx").innerHTML = `<tr><th>Tx</th><th>Event</th><th class="hide-sm">Chain</th><th class="r">Age</th></tr>` + (tx.map((e) =>
-    `<tr><td>${txl(e.chain, e.tx)}</td><td>${evPill(e.event)}</td><td class="hide-sm"><span class="chain"><i class="dot ${e.chain}"></i>${SHORT[e.chain]}</span></td><td class="r faint mono">${ago(e.time)}</td></tr>`).join("") || `<tr><td colspan="4" class="empty">No transactions yet</td></tr>`);
-  renderProofPanel();
-}
-function squares(j) {
-  return `<span class="sq">${Array.from({ length: j.nStages }, (_, s) => { const c = j.commits[String(s)]; const cls = j.status === "Disputed" && j.disputedStage === s ? "x" : c ? "c" : j.status === "Running" && j.nextStage === s ? "a" : ""; return `<i class="${cls}" title="stage ${s}"></i>`; }).join("")}</span>`;
-}
-async function loadProof() { if (PROOF) return PROOF; try { const r = await fetch("/api/proof"); PROOF = r.ok ? await r.json() : { error: true }; } catch { PROOF = { error: true }; } return PROOF; }
-function renderProofPanel() {
-  if (!PROOF) { loadProof().then(() => page.view === "overview" && renderProofPanel()); return; }
+  $("latestTx").innerHTML = `<tr><th>Tx</th><th>Event</th><th class="hide-sm">Chain</th><th class="r">Age</th></tr>` + (tx.map((e) => `<tr><td>${txl(e.chain, e.tx)}</td><td>${evPill(e.event)}</td><td class="hide-sm">${chainCell(e.chain, true)}</td><td class="r faint mono">${ago(e.time)}</td></tr>`).join("") || `<tr><td colspan="4" class="empty">No transactions yet</td></tr>`);
+  if (!PROOF) { loadProof().then(() => page.page === "explorer" && renderExplorer()); return; }
   if (PROOF.error) { $("proofList").innerHTML = `<div class="row faint">No testnet run recorded</div>`; return; }
   const ex = PROOF.chains, C = PROOF.contracts;
-  const contracts = [["lasna", "LoomReferee", C.referee], ["base", "LoomEscrow", C.escrow], ["unichain", "LoomBonds", C.bonds]]
-    .map(([k, n, a]) => `<a href="${ex[k].explorer}/address/${a}" target="_blank" rel="noopener"><span class="k"><i class="dot ${k}"></i>${n}</span><span class="v hash">${short(a)} ↗</span></a>`).join("");
-  const runs = PROOF.jobs.map((j) => { const d = j.events.length ? j.events[j.events.length - 1].time - j.events[0].time : 0;
-    return `<a href="/transactions?net=testnet&job=${j.jobId}" data-link><span class="k"><span class="check">${j.passed ? "✓" : "✗"}</span>${esc((j.scenario || "job " + j.jobId).replace(/^./, (c) => c.toUpperCase()))}</span><span class="v">${j.events.length} txs · ${dur(d)}</span></a>`; }).join("");
-  $("proofList").innerHTML = contracts + runs;
+  $("proofList").innerHTML = [["lasna", "LoomReferee", C.referee], ["base", "LoomEscrow", C.escrow], ["unichain", "LoomBonds", C.bonds]].map(([k, n, a]) => `<a href="${ex[k].explorer}/address/${a}" target="_blank" rel="noopener"><span class="k"><i class="dot ${k}"></i>${n}</span><span class="v hash">${short(a)} ↗</span></a>`).join("")
+    + PROOF.jobs.map((j) => { const d = j.events.length ? j.events[j.events.length - 1].time - j.events[0].time : 0; return `<a href="/transactions?net=testnet&job=${j.jobId}" data-link><span class="k"><span class="check">${j.passed ? "✓" : "✗"}</span>${esc((j.scenario || "job " + j.jobId).replace(/^./, (c) => c.toUpperCase()))}</span><span class="v">${j.events.length} txs · ${dur(d)}</span></a>`; }).join("");
 }
 
 /* ============ jobs ============ */
@@ -502,38 +756,32 @@ function renderJobs() {
   const rows = S.jobs.filter((j) => ui.jobF === "all" || j.status === ui.jobF || (ui.jobF === "Running" && j.status === "Proposed"));
   $("jobsTable").innerHTML = `<tr><th>Job</th><th>Status</th><th>Stages</th><th class="hide-sm">GPUs</th><th class="r">Payment</th><th class="r hide-sm">Duration</th><th class="hide-sm">Posted tx</th><th class="r">Age</th></tr>` + (rows.map((j) => {
     const c = S.timeline.find((e) => e.event === "JobCreated" && e.args.jobId == j.id);
-    return `<tr class="click" data-href="/jobs/${j.id}"><td class="mono">#${j.id}</td><td><span class="st ${j.status}">${j.status}</span></td><td>${squares(j)}</td><td class="hide-sm">${j.providers.map(who).join(", ") || "<span class='faint'>assigning</span>"}</td>
-      <td class="r mono">${eth(j.payment)}</td><td class="r mono hide-sm">${dur(jobDur(j))}</td><td class="hide-sm">${c ? txl("base", c.tx) : "–"}</td><td class="r faint mono">${c ? ago(c.time) : "–"}</td></tr>`; }).join("")
-    || `<tr><td colspan="8" class="empty">No jobs</td></tr>`);
+    return `<tr class="click" data-href="/jobs/${j.id}"><td class="mono">#${j.id}</td><td><span class="st ${j.status}">${j.status}</span></td><td>${squares(j)}</td><td class="hide-sm">${j.providers.map(who).join(", ") || "<span class='faint'>assigning</span>"}</td><td class="r mono">${eth(j.payment)}</td><td class="r mono hide-sm">${dur(jobDur(j))}</td><td class="hide-sm">${c ? txl("base", c.tx) : "–"}</td><td class="r faint mono">${c ? ago(c.time) : "–"}</td></tr>`; }).join("")
+    || `<tr><td colspan="8" class="empty">No jobs yet · <a class="hash" href="/post" data-link>post one</a></td></tr>`);
 }
 function renderJob(id) {
   const j = S.jobs.find((x) => x.id === id);
-  if (!j) { $("jdTitle").textContent = `Job #${id}`; $("jdOverview").innerHTML = `<div><dt>Status</dt><dd class="faint">Not found yet</dd></div>`; return; }
+  if (!j) { $("jdOverview").innerHTML = `<div><dt>Status</dt><dd class="faint">Waiting for the job to appear on chain…</dd></div>`; return; }
   const ev = jobEvents(id).sort((a, b) => a.time - b.time || a.seq - b.seq), find = (n) => ev.find((e) => e.event === n), t0 = ev.length ? ev[0].time : 0;
-  $("jdCrumb").textContent = `#${id}`; $("jdTitle").textContent = `Job #${id}`; $("jdStatus").innerHTML = `<span class="st ${j.status}">${j.status}</span>`;
+  $("jdStatus").innerHTML = `<span class="st ${j.status}">${j.status}</span>`;
   const created = find("JobCreated"), settled = find("JobSettled"), slash = S.timeline.find((e) => e.event === "ProviderSlashed" && e.args.jobId == id);
   const rows = [["Status", `<span class="st ${j.status}">${j.status}</span>`], ["Buyer", who(j.buyer)], ["Payment", `<span class="mono">${eth(j.payment)}</span> escrowed in LoomEscrow`],
-    ["Posted", created ? `${txl("base", created.tx)} <span class="faint">· ${ago(created.time)}</span>` : "–"],
-    ["Settled", settled ? `${txl("base", settled.tx)} <span class="faint">· after ${dur(settled.time - created.time)}</span>` : `<span class="faint">pending</span>`],
+    ["Posted", created ? `${txl("base", created.tx)} <span class="faint">· ${ago(created.time)}</span>` : "–"], ["Settled", settled ? `${txl("base", settled.tx)} <span class="faint">· after ${dur(settled.time - created.time)}</span>` : `<span class="faint">pending</span>`],
     ["Payouts", Object.keys(j.payouts).length ? Object.entries(j.payouts).map(([p, v]) => `${who(p)} <span class="mono">${eth(v)}</span>`).join(" · ") : `<span class="faint">on settlement</span>`]];
   if (slash) rows.push(["Slashed", `${who(slash.args.provider)} <span class="mono bad">${eth(slash.args.amount)}</span> on Unichain · ${txl("unichain", slash.tx)}`]);
   if ((j.labels || []).length) rows.push(["Result", `<div class="answers">${j.labels.map((l) => `<span class="${l}">${l}</span>`).join("")}</div>`]);
   $("jdOverview").innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
-
   const re = {}; ev.filter((e) => e.event === "StageReassigned").forEach((e) => (re[e.args.stage] = [...(re[e.args.stage] || []), e.args.oldProvider]));
   $("jdStages").innerHTML = `<tr><th>Stage</th><th>Layers</th><th>GPU</th><th class="hide-sm">Output hash</th><th>Commit tx</th><th class="r">State</th></tr>` + Array.from({ length: j.nStages }, (_, s) => {
     const c = j.commits[String(s)], st = S.stages[s], commit = ev.filter((e) => e.event === "StageCommitted" && e.args.stage == s).pop();
     const state = j.status === "Disputed" && j.disputedStage === s ? `<span class="bad">disputed</span>` : c ? `<span class="ok">committed</span>` : j.status === "Running" && j.nextStage === s ? `<span class="pulse" style="color:var(--base)">computing</span>` : `<span class="faint">waiting</span>`;
     const gone = (re[s] || []).map((p) => `<s class="bad">${esc(nm(p) || short(p))}</s> → `).join("");
-    return `<tr><td class="mono">${s}</td><td class="mono mut">${st ? `${s === 0 ? "emb+" : ""}${st.first}–${st.last}${s === j.nStages - 1 ? "+head" : ""}` : "–"}</td><td>${gone}${j.providers[s] ? who(j.providers[s]) : "–"}</td>
-      <td class="hide-sm"><span class="addr">${c ? short(c.outHash) : "–"}</span></td><td>${commit ? txl("base", commit.tx) : "–"}</td><td class="r">${state}</td></tr>`; }).join("");
-
+    return `<tr><td class="mono">${s}</td><td class="mono mut">${st ? `${s === 0 ? "emb+" : ""}${st.first}–${st.last}${s === j.nStages - 1 ? "+head" : ""}` : "–"}</td><td>${gone}${j.providers[s] ? who(j.providers[s]) : "–"}</td><td class="hide-sm"><span class="addr">${c ? short(c.outHash) : "–"}</span></td><td>${commit ? txl("base", commit.tx) : "–"}</td><td class="r">${state}</td></tr>`; }).join("");
   const ch = find("Challenged"), votes = ev.filter((e) => e.event === "VerdictVote"), q = find("QuorumReached");
   $("jdDisputeWrap").hidden = !ch;
   if (ch) {
     $("jdDisputeLbl").textContent = q ? (q.args.faulty ? "fault confirmed" : "challenge rejected") : "voting";
-    $("jdDispute").innerHTML = `<tr><th>Step</th><th>By</th><th class="hide-sm">Detail</th><th>Tx</th></tr>`
-      + `<tr><td>${evPill("Challenged")}</td><td>${who(ch.args.challenger)}</td><td class="hide-sm mut">stage ${ch.args.stage} · accused ${esc(nm(ch.args.accused) || short(ch.args.accused))}</td><td>${txl("base", ch.tx)}</td></tr>`
+    $("jdDispute").innerHTML = `<tr><th>Step</th><th>By</th><th class="hide-sm">Detail</th><th>Tx</th></tr><tr><td>${evPill("Challenged")}</td><td>${who(ch.args.challenger)}</td><td class="hide-sm mut">stage ${ch.args.stage} · accused ${esc(nm(ch.args.accused) || short(ch.args.accused))}</td><td>${txl("base", ch.tx)}</td></tr>`
       + votes.map((v) => `<tr><td>${evPill("VerdictVote")}</td><td>${who(v.args.verifier)}</td><td class="hide-sm"><span class="${v.args.faulty ? "bad" : "ok"}">${v.args.faulty ? "faulty" : "honest"}</span></td><td>${txl("base", v.tx)}</td></tr>`).join("")
       + (q ? `<tr><td>${evPill("QuorumReached")}</td><td>referee</td><td class="hide-sm mut">${q.args.faulty ? `reroute to ${esc(nm(q.args.replacement) || short(q.args.replacement))}` : "challenge rejected"}</td><td>${txl("lasna", q.tx)}</td></tr>` : "")
       + (slash ? `<tr><td>${evPill("ProviderSlashed")}</td><td>referee</td><td class="hide-sm mut">${eth(slash.args.amount)} · bounty ${eth(slash.args.bounty)}</td><td>${txl("unichain", slash.tx)}</td></tr>` : "");
@@ -541,65 +789,37 @@ function renderJob(id) {
   $("jdTxCount").textContent = `${ev.length} events`;
   $("jdTx").innerHTML = `<tr><th>Tx</th><th>Event</th><th>Chain</th><th class="r">+Time</th></tr>` + ev.map((e) => `<tr><td>${txl(e.chain, e.tx)}</td><td>${evPill(e.event)}</td><td>${chainCell(e.chain)}</td><td class="r mono faint">+${e.time - t0}s</td></tr>`).join("");
   const local = !S.chains.base.explorer; $("jdNote").hidden = !local;
-  if (local) $("jdNote").innerHTML = `Local devnet: hashes are not on a public explorer. <a class="hash" href="/transactions?net=testnet" data-link>See the testnet run ›</a>`;
+  if (local) $("jdNote").innerHTML = `Local devnet hashes are not on a public explorer. <a href="/proof" data-link>See the same flow on testnet →</a>`;
 }
 
-/* ============ gpus ============ */
+/* ============ gpus / provide ============ */
 function renderGpus() {
-  const G = gpus(), paid = G.reduce((a, g) => a + g.earned, 0n);
-  $("gpuStats").innerHTML = [["Available", G.filter((g) => g.state === "available").length, `${G.length} registered`], ["Total bonded", eth(G.reduce((a, g) => a + wei(g.bond), 0n)), "LoomBonds"],
-    ["Paid to GPUs", eth(paid), "by layers served"], ["Slashed", G.filter((g) => g.slashed).length, "barred addresses"]]
-    .map(([l, n, d]) => `<div class="panel stat"><div><div class="lbl">${l}</div><div class="n">${n}</div><div class="d">${d}</div></div></div>`).join("");
+  const G = gpus();
+  $("gpuStats").innerHTML = [["Available", G.filter((g) => g.state === "available").length, `${G.length} registered`], ["Total bonded", eth(G.reduce((a, g) => a + wei(g.bond), 0n)), "LoomBonds on Unichain"], ["Paid to GPUs", eth(G.reduce((a, g) => a + g.earned, 0n)), "by layers served"], ["Slashed", G.filter((g) => g.slashed).length, "barred addresses"]].map(([l, n, d]) => statCard(l, n, d)).join("");
   const counts = { all: G.length, available: 0, busy: 0, slashed: 0 }; G.forEach((g) => counts[g.state]++);
   $("gpuFilters").innerHTML = [["all", "All"], ["available", "Available"], ["busy", "Busy"], ["slashed", "Slashed"]].map(([k, l]) => `<button data-f="${k}" aria-pressed="${ui.gpuF === k}">${l}<span>${counts[k]}</span></button>`).join("");
   document.querySelectorAll("#gpuFilters button").forEach((b) => (b.onclick = () => { ui.gpuF = b.dataset.f; renderGpus(); }));
-  const ex = S.chains.unichain.explorer;
-  const rows = G.filter((g) => ui.gpuF === "all" || g.state === ui.gpuF).sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+  const ex = S.chains.unichain.explorer, rows = G.filter((g) => ui.gpuF === "all" || g.state === ui.gpuF).sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
   $("gpuTable").innerHTML = `<tr><th>GPU</th><th class="hide-sm">Address</th><th>Status</th><th class="r">Bond</th><th class="r">Reputation</th><th class="r hide-sm">Jobs</th><th class="r hide-sm">Faults</th><th class="r">Earned</th><th class="hide-sm">Right now</th></tr>` + (rows.map((g) =>
-    `<tr><td><b style="font-weight:600">${esc(g.name)}</b></td><td class="hide-sm">${ex ? `<a class="hash" href="${ex}/address/${g.address}" target="_blank" rel="noopener">${short(g.address)}</a>` : `<span class="addr">${short(g.address)}</span>`}</td>
-      <td><span class="st ${g.state}">${g.state}</span></td><td class="r mono">${eth(g.bond)}</td><td class="r mono ${g.score < 0 ? "bad" : ""}">${g.score}</td><td class="r mono hide-sm">${g.jobsDone}</td>
-      <td class="r mono hide-sm ${g.faults ? "bad" : ""}">${g.faults}${g.timeouts ? `<span class="warn"> +${g.timeouts}t</span>` : ""}</td><td class="r mono">${eth(g.earned)}</td><td class="hide-sm mut">${esc(g.now)}</td></tr>`).join("")
-    || `<tr><td colspan="9" class="empty">No GPUs</td></tr>`);
-}
-function payParts() {
-  const pay = wei(S.params ? S.params.jobPayment : 0), st = S.stages.length ? S.stages : [{ first: 0, last: 3 }, { first: 4, last: 7 }, { first: 8, last: 11 }];
-  const L = st.map((s) => BigInt(s.last - s.first + 1)), tot = L.reduce((a, b) => a + b, 0n), parts = L.map((l) => (pay * l) / tot);
-  parts[parts.length - 1] += pay - parts.reduce((a, b) => a + b, 0n); return { pay, st, parts };
+    `<tr><td><b style="font-weight:600">${esc(g.name)}</b></td><td class="hide-sm">${ex ? `<a class="hash" href="${ex}/address/${g.address}" target="_blank" rel="noopener">${short(g.address)}</a>` : `<span class="addr">${short(g.address)}</span>`}</td><td><span class="st ${g.state}">${g.state}</span></td><td class="r mono">${eth(g.bond)}</td><td class="r mono ${g.score < 0 ? "bad" : ""}">${g.score}</td><td class="r mono hide-sm">${g.jobsDone}</td><td class="r mono hide-sm ${g.faults ? "bad" : ""}">${g.faults}${g.timeouts ? `<span class="warn"> +${g.timeouts}t</span>` : ""}</td><td class="r mono">${eth(g.earned)}</td><td class="hide-sm mut">${esc(g.now)}</td></tr>`).join("") || `<tr><td colspan="9" class="empty">No GPUs</td></tr>`);
 }
 function renderProvide() {
   const p = S.params || {}, { st, parts } = payParts(), G = gpus();
-  $("pvRules").innerHTML = [["Minimum bond", eth(p.minBond)], ["Stage deadline", `${p.stageTimeout ?? "–"} s`], ["Timeout penalty", eth(p.timeoutPenalty)], ["Tolerance", (S.policy || {}).tolerance ?? "–"],
-    ["Cheating", "whole bond · 50% challenger / 50% buyer"], ["Scheduling", "jobs − 10·faults − 3·timeouts"]].map(([k, v]) => `<div><span>${k}</span><span>${esc(String(v))}</span></div>`).join("");
+  $("pvRules").innerHTML = [["Minimum bond", eth(p.minBond)], ["Stage deadline", `${p.stageTimeout ?? "–"} s`], ["Timeout penalty", eth(p.timeoutPenalty)], ["Tolerance", (S.policy || {}).tolerance ?? "–"], ["Cheating", "whole bond · 50% challenger / 50% buyer"], ["Scheduling", "jobs − 10·faults − 3·timeouts"]].map(([k, v]) => `<div><span>${k}</span><span>${esc(String(v))}</span></div>`).join("");
   $("pvEarn").innerHTML = `<tr><th>Stage</th><th>Layers</th><th class="r">Pays</th></tr>` + st.map((s, i) => `<tr><td class="mono">${i}</td><td class="mono mut">${i === 0 ? "emb+" : ""}${s.first}–${s.last}${i === st.length - 1 ? "+head" : ""}</td><td class="r mono">${eth(parts[i])}</td></tr>`).join("");
-  $("pvNet").innerHTML = [["GPUs bonded", G.filter((g) => wei(g.bond) > 0n).length], ["Paid so far", eth(G.reduce((a, g) => a + g.earned, 0n))], ["Bond contract", S.chains.unichain.explorer ? `<a class="hash" href="${S.chains.unichain.explorer}/address/${S.contracts.bonds}" target="_blank" rel="noopener">${short(S.contracts.bonds)}</a>` : `<span class="addr">${short(S.contracts.bonds)}</span>`]]
-    .map(([k, v]) => `<div><span>${k}</span><span>${v}</span></div>`).join("");
+  $("pvNet").innerHTML = [["GPUs bonded", G.filter((g) => wei(g.bond) > 0n).length], ["Paid so far", eth(G.reduce((a, g) => a + g.earned, 0n))], ["Bond contract", S.chains.unichain.explorer ? `<a class="hash" href="${S.chains.unichain.explorer}/address/${S.contracts.bonds}" target="_blank" rel="noopener">${short(S.contracts.bonds)}</a>` : `<span class="addr">${short(S.contracts.bonds)}</span>`]].map(([k, v]) => `<div><span>${k}</span><span>${v}</span></div>`).join("");
 }
 
 /* ============ agents ============ */
-function agents() {
-  const out = [], seen = new Set(), add = (a, n, kind) => { if (!a || seen.has(a.toLowerCase())) return; seen.add(a.toLowerCase()); out.push({ a, n, kind }); };
-  Object.entries(S.names).forEach(([a, x]) => x.name === "watcher" && add(a, "watcher", "watcher"));
-  Object.entries(S.names).filter(([, x]) => /^verifier/.test(x.name)).sort((p, q) => p[1].name.localeCompare(q[1].name)).forEach(([a, x]) => add(a, x.name, "verifier"));
-  S.timeline.filter((e) => e.event === "Challenged").forEach((e) => add(e.args.challenger, nm(e.args.challenger) || "watcher", "watcher"));
-  S.timeline.filter((e) => e.event === "VerdictVote").forEach((e) => add(e.args.verifier, nm(e.args.verifier) || short(e.args.verifier), "verifier"));
-  return out;
-}
 function renderAgents() {
   const R = S.reports || [], W = R.filter((r) => r.role === "watcher"), V = R.filter((r) => r.role.startsWith("verifier") && r.faulty !== undefined), Q = S.timeline.filter((e) => e.event === "QuorumReached");
-  const decided = V.filter((v) => Q.some((q) => q.args.jobId == v.job)), agreed = decided.filter((v) => Q.find((q) => q.args.jobId == v.job).args.faulty === v.faulty);
-  const A = agents(); $("agCount").textContent = `${A.length} online`;
-  $("agStats").innerHTML = [["Audits", W.filter((r) => r.action !== "skip audit").length, "watcher re-runs"], ["Challenges", W.filter((r) => r.action === "challenge").length, "with a bond"],
-    ["Votes", V.filter((v) => v.tx).length, "on Base"], ["Agreement", decided.length ? `${Math.round((agreed.length / decided.length) * 100)}%` : "–", "with final quorum"]]
-    .map(([l, n, d]) => `<div class="panel stat"><div><div class="lbl">${l}</div><div class="n">${n}</div><div class="d">${d}</div></div></div>`).join("");
-  const pol = S.policy || {}; $("agPolicy").textContent = `tolerance ${pol.tolerance ?? "–"} · quorum ${(S.params || {}).quorum ?? 2}/3${pol.trustedAfter ? ` · trust after ${pol.trustedAfter} jobs` : ""}`;
+  const decided = V.filter((v) => Q.some((q) => q.args.jobId == v.job)), agreed = decided.filter((v) => Q.find((q) => q.args.jobId == v.job).args.faulty === v.faulty), A = agents();
+  $("agStats").innerHTML = [["Audits", W.filter((r) => r.action !== "skip audit").length, "watcher re-runs"], ["Challenges", W.filter((r) => r.action === "challenge").length, "posted with a bond"], ["Votes", V.filter((v) => v.tx).length, "on Base"], ["Agreement", decided.length ? `${Math.round((agreed.length / decided.length) * 100)}%` : "–", "with final quorum"]].map(([l, n, d]) => statCard(l, n, d)).join("");
+  const pol = S.policy || {}; $("agPolicy").textContent = `tolerance ${pol.tolerance ?? "–"} · quorum ${(S.params || {}).quorum ?? 2}/3${pol.trustedAfter ? ` · trusted after ${pol.trustedAfter} jobs` : ""}`;
   $("agTable").innerHTML = `<tr><th>Agent</th><th>Role</th><th class="hide-sm">Address</th><th class="r">Checks</th><th class="r">Flagged</th><th class="hide-sm">Last action</th><th class="r">Status</th></tr>` + (A.map((x) => {
-    const mine = R.filter((r) => r.role === x.n), last = mine[mine.length - 1];
-    const checks = x.kind === "watcher" ? mine.filter((r) => r.action && r.action !== "skip audit").length : mine.filter((r) => r.faulty !== undefined).length;
-    const flagged = x.kind === "watcher" ? mine.filter((r) => r.action === "challenge").length : mine.filter((r) => r.faulty).length;
-    const lt = !last ? "–" : x.kind === "watcher" ? `${last.action} · job ${last.job}` : `job ${last.job} s${last.stage}: ${last.faulty ? "faulty" : "honest"}`;
-    return `<tr><td><b style="font-weight:600">${esc(x.n)}</b></td><td class="mut">${x.kind === "watcher" ? "Watcher" : "Verifier"}</td><td class="hide-sm"><span class="addr">${short(x.a)}</span></td><td class="r mono">${checks}</td><td class="r mono ${flagged ? "bad" : ""}">${flagged}</td><td class="hide-sm mut">${esc(lt)}${last ? ` <span class="faint">· ${ago(last.at)}</span>` : ""}</td><td class="r"><span class="st online">online</span></td></tr>`;
-  }).join("") || `<tr><td colspan="7" class="empty">No agents attached</td></tr>`);
-
+    const mine = R.filter((r) => r.role === x.n), last = mine[mine.length - 1], checks = x.kind === "watcher" ? mine.filter((r) => r.action && r.action !== "skip audit").length : mine.filter((r) => r.faulty !== undefined).length, flagged = x.kind === "watcher" ? mine.filter((r) => r.action === "challenge").length : mine.filter((r) => r.faulty).length;
+    const lt = !last ? "–" : x.kind === "watcher" ? `${last.action} · job ${last.job}` : `job ${last.job} stage ${last.stage}: ${last.faulty ? "faulty" : "honest"}`;
+    return `<tr><td><b style="font-weight:600">${esc(x.n)}</b></td><td class="mut">${x.kind === "watcher" ? "Watcher" : "Verifier"}</td><td class="hide-sm"><span class="addr">${short(x.a)}</span></td><td class="r mono">${checks}</td><td class="r mono ${flagged ? "bad" : ""}">${flagged}</td><td class="hide-sm mut">${esc(lt)}${last ? ` <span class="faint">· ${ago(last.at)}</span>` : ""}</td><td class="r"><span class="st online">online</span></td></tr>`; }).join("") || `<tr><td colspan="7" class="empty">No agents attached</td></tr>`);
   const items = [];
   R.forEach((r) => {
     if (r.role === "watcher" && r.action === "challenge") items.push({ t: r.at, k: "challenge", ev: "Challenged", who: "watcher", what: `job #${r.job} · stage ${r.stage} · |Δ| ${Number(r.divergence).toPrecision(3)}`, job: r.job, tx: r.tx, c: "base" });
@@ -613,41 +833,86 @@ function renderAgents() {
   $("agFilters").innerHTML = [["all", "All"], ["audit", "Audits"], ["challenge", "Challenges"], ["vote", "Votes"], ["fault", "Faults"]].map(([k, l]) => `<button data-f="${k}" aria-pressed="${ui.agF === k}">${l}<span>${cnt[k]}</span></button>`).join("");
   document.querySelectorAll("#agFilters button").forEach((b) => (b.onclick = () => { ui.agF = b.dataset.f; renderAgents(); }));
   const tone = { Challenged: "bad", VoteFaulty: "bad", ProviderSlashed: "bad", Misbehaved: "warn", Offline: "warn", AuditPassed: "ok", VoteHonest: "ok" };
-  $("agActivity").innerHTML = `<tr><th>Event</th><th>Agent</th><th class="hide-sm">Detail</th><th>Tx</th><th class="r">Age</th></tr>` + (items.filter((i) => ui.agF === "all" || i.k === ui.agF).slice(0, 50).map((i) =>
-    `<tr class="click" data-href="/jobs/${i.job}"><td><span class="ev ${tone[i.ev] || ""}">${i.ev}</span></td><td>${esc(i.who)}</td><td class="hide-sm mut">${i.what}</td><td>${i.tx ? txl(i.c, i.tx) : `<span class="faint">off-chain</span>`}</td><td class="r faint mono">${ago(i.t)}</td></tr>`).join("")
-    || `<tr><td colspan="5" class="empty">No activity yet</td></tr>`);
+  $("agActivity").innerHTML = `<tr><th>Event</th><th>Agent</th><th class="hide-sm">Detail</th><th>Tx</th><th class="r">Age</th></tr>` + (items.filter((i) => ui.agF === "all" || i.k === ui.agF).slice(0, 50).map((i) => `<tr class="click" data-href="/jobs/${i.job}"><td><span class="ev ${tone[i.ev] || ""}">${i.ev}</span></td><td>${esc(i.who)}</td><td class="hide-sm mut">${i.what}</td><td>${i.tx ? txl(i.c, i.tx) : `<span class="faint">off-chain</span>`}</td><td class="r faint mono">${ago(i.t)}</td></tr>`).join("") || `<tr><td colspan="5" class="empty">No activity yet</td></tr>`);
 }
 
 /* ============ transactions ============ */
 const PER = 25;
-function txRows() {
-  const q = new URLSearchParams(location.search), net = q.get("net") === "testnet" ? "testnet" : "local", job = q.get("job");
-  if (net === "testnet") {
-    if (!PROOF) return { net, rows: null };
-    if (PROOF.error) return { net, rows: [], explorers: {} };
-    const rows = PROOF.jobs.flatMap((j) => j.events.map((e) => ({ ...e, job: j.jobId }))).filter((e) => !job || e.job == job).sort((a, b) => b.time - a.time);
-    return { net, rows, explorers: PROOF.chains, job };
-  }
-  const rows = S.timeline.map((e) => ({ ...e, job: e.args && e.args.jobId })).filter((e) => !job || e.job == job).sort((a, b) => b.time - a.time || b.seq - a.seq);
-  return { net, rows, explorers: S.chains, job };
-}
 function renderTx() {
-  const { net, rows, explorers, job } = txRows();
+  const q = new URLSearchParams(location.search), net = q.get("net") === "testnet" ? "testnet" : "local", job = q.get("job");
   document.querySelectorAll("#netSeg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.n === net)));
-  if (rows === null) { $("txTable").innerHTML = `<tr><td class="empty">Loading testnet run…</td></tr>`; loadProof().then(() => page.view === "transactions" && renderTx()); return; }
+  let rows, explorers;
+  if (net === "testnet") {
+    if (!PROOF) { $("txTable").innerHTML = `<tr><td class="empty">Loading the testnet run…</td></tr>`; loadProof().then(() => page.page === "transactions" && renderTx()); return; }
+    rows = PROOF.error ? [] : PROOF.jobs.flatMap((j) => j.events.map((e) => ({ ...e, job: j.jobId }))); explorers = PROOF.chains || {};
+  } else { rows = S.timeline.map((e) => ({ ...e, job: e.args && e.args.jobId })); explorers = S.chains; }
+  rows = rows.filter((e) => !job || e.job == job).sort((a, b) => b.time - a.time || (b.seq || 0) - (a.seq || 0));
   const cnt = { all: rows.length, lasna: 0, base: 0, unichain: 0 }; rows.forEach((r) => cnt[r.chain]++);
   $("txFilters").innerHTML = [["all", "All chains"], ["lasna", "Reactive Lasna"], ["base", "Base Sepolia"], ["unichain", "Unichain Sepolia"]].map(([k, l]) => `<button data-f="${k}" aria-pressed="${ui.txChain === k}">${l}<span>${cnt[k]}</span></button>`).join("");
   document.querySelectorAll("#txFilters button").forEach((b) => (b.onclick = () => { ui.txChain = b.dataset.f; ui.txPage = 0; renderTx(); }));
   const f = rows.filter((r) => ui.txChain === "all" || r.chain === ui.txChain), pages = Math.max(1, Math.ceil(f.length / PER)); ui.txPage = Math.min(ui.txPage, pages - 1);
-  $("txInfo").innerHTML = net === "testnet" ? `recorded run · explorer-linked${job ? ` · job #${job} <a class="hash" href="/transactions?net=testnet" data-link>clear</a>` : ""}` : `local devnet${job ? ` · job #${job} <a class="hash" href="/transactions" data-link>clear</a>` : ""}`;
-  $("txTable").innerHTML = `<tr><th>Tx hash</th><th>Event</th><th>Chain</th><th>Job</th><th class="r">${net === "testnet" ? "Time" : "Age"}</th></tr>` + (f.slice(ui.txPage * PER, ui.txPage * PER + PER).map((e) =>
-    `<tr><td>${txl(e.chain, e.tx, explorers)}</td><td>${evPill(e.event)}</td><td>${chainCell(e.chain)}</td><td>${e.job != null ? (net === "local" ? `<a class="hash" href="/jobs/${e.job}" data-link>#${e.job}</a>` : `<span class="mono">#${e.job}</span>`) : `<span class="faint">–</span>`}</td>
-     <td class="r faint mono">${net === "testnet" ? new Date(e.time * 1000).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" }) : ago(e.time)}</td></tr>`).join("")
-    || `<tr><td colspan="5" class="empty">No transactions</td></tr>`);
-  $("txPager").innerHTML = `<span>${f.length} transactions${net === "local" && !S.chains.base.explorer ? " · local hashes have no public explorer" : ""}</span><span><button class="btn" id="pgPrev" ${ui.txPage ? "" : "disabled"}>‹</button> ${ui.txPage + 1} / ${pages} <button class="btn" id="pgNext" ${ui.txPage < pages - 1 ? "" : "disabled"}>›</button></span>`;
+  $("txTable").innerHTML = `<tr><th>Tx hash</th><th>Event</th><th>Chain</th><th>Job</th><th class="r">${net === "testnet" ? "Time" : "Age"}</th></tr>` + (f.slice(ui.txPage * PER, ui.txPage * PER + PER).map((e) => `<tr><td>${txl(e.chain, e.tx, explorers)}</td><td>${evPill(e.event)}</td><td>${chainCell(e.chain)}</td><td>${e.job != null ? (net === "local" ? `<a class="hash" href="/jobs/${e.job}" data-link>#${e.job}</a>` : `<span class="mono">#${e.job}</span>`) : `<span class="faint">–</span>`}</td><td class="r faint mono">${net === "testnet" ? new Date(e.time * 1000).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" }) : ago(e.time)}</td></tr>`).join("") || `<tr><td colspan="5" class="empty">No transactions</td></tr>`);
+  const filt = job ? ` · job #${job} <a class="hash" href="/transactions${net === "testnet" ? "?net=testnet" : ""}" data-link>clear</a>` : "";
+  $("txPager").innerHTML = `<span>${f.length} transactions${filt}${net === "local" && !S.chains.base.explorer ? " · local hashes have no public explorer" : net === "testnet" ? " · recorded testnet run, explorer-linked" : ""}</span><span><button class="btn line sm" id="pgPrev" ${ui.txPage ? "" : "disabled"}>‹</button> ${ui.txPage + 1} / ${pages} <button class="btn line sm" id="pgNext" ${ui.txPage < pages - 1 ? "" : "disabled"}>›</button></span>`;
   $("pgPrev").onclick = () => { ui.txPage--; renderTx(); }; $("pgNext").onclick = () => { ui.txPage++; renderTx(); };
 }
 $("netSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; ui.txChain = "all"; ui.txPage = 0; go(b.dataset.n === "testnet" ? "/transactions?net=testnet" : "/transactions"); });
+
+/* ============ proof ============ */
+let proofDrawn = false;
+function renderProof() {
+  if (!PROOF) { loadProof().then(() => page.page === "proof" && renderProof()); return; }
+  if (PROOF.error) { $("pfRuns").innerHTML = `<div class="empty">No testnet run recorded yet</div>`; return; }
+  if (proofDrawn) return; proofDrawn = true;
+  const P = proofNums(), ex = PROOF.chains, C = PROOF.contracts;
+  $("pfStats").innerHTML = [["Scenarios passed", `${P.passed}/${P.total}`, "fraud · honest · timeout"], ["Challenge to slash", `${P.catchS ?? "–"}s`, "Base → Lasna → Unichain"], ["Reactive txs", P.reactive, `${P.callbacks} callbacks delivered`], ["Transactions", P.txs, "every one explorer-linked"]].map(([l, n, d]) => statCard(l, n, d)).join("");
+  $("pfContracts").innerHTML = [["lasna", "LoomReferee", "Reactive contract", C.referee], ["base", "LoomEscrow", "Buyer chain", C.escrow], ["unichain", "LoomBonds", "Provider chain", C.bonds]]
+    .map(([k, n, d, a]) => `<a class="panel" href="${ex[k].explorer}/address/${a}" target="_blank" rel="noopener" style="display:block"><div class="pb"><div style="display:flex;align-items:center;gap:8px;font-weight:600"><i class="dot ${k}"></i>${n}</div><div class="faint" style="font-size:13.5px;margin:4px 0 10px">${d} · ${CHAIN[k]}</div><span class="hash">${short(a)} ↗</span></div></a>`).join("");
+  $("pfRuns").innerHTML = PROOF.jobs.map((j, i) => {
+    const t0 = j.events.length ? j.events[0].time : 0, d = j.events.length ? j.events[j.events.length - 1].time - t0 : 0;
+    return `<div class="panel run"><div class="rh"><div><h3>${esc((j.scenario || `Job ${j.jobId}`).replace(/^./, (c) => c.toUpperCase()))}</h3><div class="faint" style="font-size:13.5px">Job ${j.jobId} · ${j.events.length} transactions · ${dur(d)} end to end</div></div><span class="st ${j.passed ? "Settled" : "Disputed"}">${j.passed ? "passed" : "failed"}</span></div>
+      <div class="rb"><div><div class="tag" style="margin-bottom:10px">Checks</div><ul class="clist">${(j.checks || []).map(([c]) => `<li>${esc(c)}</li>`).join("")}</ul></div>
+      <div><div class="tag" style="margin-bottom:6px">Cross-chain legs</div><table class="legs">${(j.legs || []).map((l) => `<tr><td>${esc(l.leg)}<br>${txl(l.from_chain, l.from_tx, ex)} → ${txl(l.to_chain, l.to_tx, ex)}</td><td class="s">${l.seconds}s</td></tr>`).join("")}</table></div></div>
+      <details ${i === 0 ? "open" : ""}><summary>All ${j.events.length} transactions</summary><div class="tw"><table class="t"><tr><th>Time</th><th>Event</th><th>Chain</th><th class="r">Tx</th></tr>${j.events.map((e) => `<tr><td class="mono faint">+${e.time - t0}s</td><td>${evPill(e.event)}</td><td>${chainCell(e.chain)}</td><td class="r">${txl(e.chain, e.tx, ex)}</td></tr>`).join("")}</table></div></details></div>`; }).join("");
+}
+
+/* ============ post a job ============ */
+function texts() { return ui.data === "own" ? $("ownText").value.split("\n").map((t) => t.trim()).filter(Boolean).slice(0, 12) : null; }
+function renderPost() {
+  const { pay, st, parts } = payParts(), p = S.params || {}, G = gpus(), online = G.filter((g) => g.state !== "slashed" && wei(g.bond) > 0n).length;
+  $("stageChips").innerHTML = st.map((s, i) => `<span class="chip">stage ${i} · ${i === 0 ? "emb+" : ""}${s.first}–${s.last}${i === st.length - 1 ? "+head" : ""}</span>`).join("");
+  if (!$("samples").dataset.done) { $("samples").innerHTML = (S.sampleTexts || []).map((t) => `<li>${esc(t)}</li>`).join(""); $("samples").dataset.done = 1; }
+  const n = ui.data === "own" ? texts().length : (S.sampleTexts || []).length;
+  $("inputHint").textContent = `${n} review${n === 1 ? "" : "s"} · labels: positive / negative`;
+  $("estGpus").textContent = `${online} GPUs online`;
+  $("est").innerHTML = `<div><span>Payment</span><span>${eth(pay)}</span></div>` + st.map((s, i) => `<div><span>Stage ${i} GPU</span><span>${eth(parts[i])}</span></div>`).join("") + `<div><span>Challenge window</span><span>${p.challengeWindow ?? "–"} s</span></div><div><span>Watcher audit</span><span>included</span></div>`;
+  $("advField").hidden = !S.interactive; $("submitJob").disabled = !S.interactive || n === 0;
+  $("postNote").textContent = S.interactive ? "Escrowed on Base Sepolia · paid when the window closes" : "Read-only dashboard";
+  renderCode();
+  $("myJobs").innerHTML = S.jobs.slice(0, 5).map((j) => `<a href="/jobs/${j.id}" data-link><span class="k"><span class="mono">#${j.id}</span><span class="st ${j.status}">${j.status}</span></span><span class="v">${eth(j.payment)}</span></a>`).join("") || `<div class="row faint">No jobs yet</div>`;
+}
+function renderCode() {
+  const body = {}; const t = texts(); if (t && t.length) body.texts = t; const f = $("fault").value; if (f) { const [s, m] = f.split(":"); body.faultStage = Number(s); body.faultMode = m; }
+  const js = JSON.stringify(body), url = `${location.origin}/api/jobs`;
+  $("codeBox").innerHTML = ui.code === "curl"
+    ? `<span class="k">curl</span> -X POST ${url} \\\n  -H <span class="s">'content-type: application/json'</span> \\\n  -d <span class="s">'${esc(js)}'</span>`
+    : `<span class="k">import</span> requests\n\nr = requests.post(\n    <span class="s">"${url}"</span>,\n    json=${esc(JSON.stringify(body, null, 0)) || "{}"},\n)\n<span class="k">print</span>(r.json())  <span class="c"># {"ok": true}</span>`;
+}
+$("codeTabs").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; ui.code = b.dataset.c; document.querySelectorAll("#codeTabs button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); renderCode(); });
+$("dataSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; ui.data = b.dataset.d; document.querySelectorAll("#dataSeg button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); $("samples").hidden = ui.data !== "sample"; $("ownText").hidden = ui.data !== "own"; if (S) renderPost(); });
+$("ownText").addEventListener("input", () => S && renderPost());
+$("fault").addEventListener("change", renderCode);
+$("submitJob").onclick = async () => {
+  const body = {}, btn = $("submitJob"), t = texts();
+  if (t) { if (!t.length) { toast("Add at least one review"); return; } body.texts = t; }
+  const f = $("fault").value; if (f) { const [s, m] = f.split(":"); body.faultStage = Number(s); body.faultMode = m; }
+  btn.disabled = true; btn.textContent = "Posting…";
+  try {
+    const r = await fetch("/api/jobs", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    ui.awaitJob = S.jobs.length ? S.jobs[0].id : 0; $("fault").value = ""; toast("Job posted · the referee is choosing GPUs"); go("/jobs");
+  } catch (err) { toast(`Couldn't post: ${err.message}`); } finally { btn.disabled = false; btn.textContent = "Post job"; }
+};
 
 /* ============ search ============ */
 function searchHits(q) {
@@ -657,68 +922,60 @@ function searchHits(q) {
   if (q.length >= 3) {
     gpus().filter((g) => g.name.toLowerCase().includes(q) || g.k.includes(q)).forEach((g) => hits.push(["/gpus", g.name, short(g.address)]));
     agents().filter((a) => a.n.toLowerCase().includes(q) || a.a.toLowerCase().includes(q)).forEach((a) => hits.push(["/agents", a.n, short(a.a)]));
-    S.timeline.filter((e) => e.tx && hx(e.tx).toLowerCase().includes(q)).slice(0, 5).forEach((e) => hits.push([e.args && e.args.jobId != null ? `/jobs/${e.args.jobId}` : "/transactions", `${e.event}`, short(hx(e.tx))]));
-    if (PROOF && !PROOF.error) PROOF.jobs.forEach((j) => j.events.filter((e) => hx(e.tx).toLowerCase().includes(q)).slice(0, 3).forEach((e) => hits.push([`/transactions?net=testnet&job=${j.jobId}`, `${e.event} (testnet)`, short(hx(e.tx))])));
+    S.timeline.filter((e) => e.tx && hx(e.tx).toLowerCase().includes(q)).slice(0, 5).forEach((e) => hits.push([e.args && e.args.jobId != null ? `/jobs/${e.args.jobId}` : "/transactions", e.event, short(hx(e.tx))]));
+    if (PROOF && !PROOF.error) PROOF.jobs.forEach((j) => j.events.filter((e) => hx(e.tx).toLowerCase().includes(q)).slice(0, 3).forEach((e) => hits.push([`/transactions?net=testnet&job=${j.jobId}`, `${e.event} · testnet`, short(hx(e.tx))])));
   }
   return hits.slice(0, 8);
 }
-$("q").addEventListener("input", () => {
-  const h = searchHits($("q").value), box = $("results");
-  box.hidden = !$("q").value.trim();
-  box.innerHTML = h.map(([href, a, b], i) => `<a href="${href}" data-link class="${i ? "" : "sel"}"><span>${esc(a)}</span><span class="faint mono">${esc(b)}</span></a>`).join("") || `<div class="none">No match for “${esc($("q").value)}”</div>`;
-});
-$("q").addEventListener("keydown", (e) => { if (e.key === "Enter") { const a = $("results").querySelector("a"); if (a) { go(a.getAttribute("href")); } } if (e.key === "Escape") $("q").blur(); });
+$("q").addEventListener("input", () => { const h = searchHits($("q").value), box = $("results"); box.hidden = !$("q").value.trim(); box.innerHTML = h.map(([href, a, b]) => `<a href="${href}" data-link><span>${esc(a)}</span><span class="faint mono">${esc(b)}</span></a>`).join("") || `<div class="none">No match for “${esc($("q").value)}”</div>`; });
+$("q").addEventListener("keydown", (e) => { if (e.key === "Enter") { const a = $("results").querySelector("a"); if (a) go(a.getAttribute("href")); } if (e.key === "Escape") $("q").blur(); });
 $("q").addEventListener("blur", () => setTimeout(() => ($("results").hidden = true), 150));
-document.addEventListener("keydown", (e) => { if (e.key === "/" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") { e.preventDefault(); $("q").focus(); } });
+document.addEventListener("keydown", (e) => { if (e.key === "/" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName) && page.view === "app") { e.preventDefault(); $("q").focus(); } });
 
-/* ============ post job modal ============ */
-function openModal() {
-  if (!S) return;
-  $("samples").innerHTML = (S.sampleTexts || []).map((t) => `<li>${esc(t)}</li>`).join("");
-  const { pay, st, parts } = payParts();
-  $("est").innerHTML = `<div><span>Payment</span><span>${eth(pay)}</span></div>` + st.map((s, i) => `<div><span class="mut">Stage ${i} GPU</span><span>${eth(parts[i])}</span></div>`).join("") + `<div><span class="mut">Challenge window</span><span>${(S.params || {}).challengeWindow ?? "–"} s</span></div>`;
-  $("adv").hidden = !S.interactive; $("submitJob").disabled = !S.interactive;
-  $("mNote").textContent = S.interactive ? "Escrowed on Base Sepolia" : "Read-only dashboard";
-  $("modal").hidden = false;
-}
-const closeModal = () => ($("modal").hidden = true);
-$("postBtn").onclick = openModal; $("mClose").onclick = closeModal;
-$("modal").addEventListener("click", (e) => { if (e.target === $("modal")) closeModal(); });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("modal").hidden) closeModal(); });
-$("dataSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; ui.data = b.dataset.d;
-  document.querySelectorAll("#dataSeg button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); $("samples").hidden = ui.data !== "sample"; $("ownText").hidden = ui.data !== "own"; });
-$("submitJob").onclick = async () => {
-  const body = {}, btn = $("submitJob");
-  if (ui.data === "own") { body.texts = $("ownText").value.split("\n").map((t) => t.trim()).filter(Boolean).slice(0, 12); if (!body.texts.length) { toast("Add at least one review"); return; } }
-  const f = $("fault").value; if (f) { const [s, m] = f.split(":"); body.faultStage = Number(s); body.faultMode = m; }
-  btn.disabled = true; btn.textContent = "Posting…";
-  try {
-    const r = await fetch("/api/jobs", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
-    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
-    ui.awaitJob = S.jobs.length ? S.jobs[0].id : 0; $("fault").value = ""; closeModal(); toast("Job posted · waiting for the referee to assign GPUs"); go("/jobs");
-  } catch (err) { toast(`Couldn't post: ${err.message}`); }
-  finally { btn.disabled = false; btn.textContent = "Post job"; }
-};
+/* ============ nav menus ============ */
+function closeMenus() { document.querySelectorAll(".menu .item.open").forEach((i) => { i.classList.remove("open"); i.querySelector("button")?.setAttribute("aria-expanded", "false"); }); }
+document.querySelectorAll(".menu .item > button").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const it = b.parentElement, was = it.classList.contains("open"); closeMenus(); if (!was) { it.classList.add("open"); b.setAttribute("aria-expanded", "true"); } }));
+document.addEventListener("click", (e) => { if (!e.target.closest(".menu")) closeMenus(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeMenus(); $("sheet").hidden = true; } });
+$("burger").onclick = () => ($("sheet").hidden = false); $("sheetClose").onclick = () => ($("sheet").hidden = true);
 
 /* ============ router ============ */
-const REDIRECT = { "/marketplace": "/gpus", "/ledger": "/transactions", "/proof": "/transactions?net=testnet", "/post": "/" };
-let page = { view: "overview" };
-function parse(path) {
-  const p = path.split("?")[0];
-  if (p === "/" || p === "") return { view: "overview", tab: "/" };
-  const m = p.match(/^\/jobs\/(\d+)$/); if (m) return { view: "job", id: Number(m[1]), tab: "/jobs" };
-  const v = { "/jobs": "jobs", "/gpus": "gpus", "/provide": "provide", "/agents": "agents", "/transactions": "transactions" }[p];
-  return v ? { view: v, tab: v === "provide" ? "/gpus" : p } : { view: "overview", tab: "/" };
-}
+const PAGES = {
+  "/explorer": ["explorer", "Network overview", "Live state of the LOOM network across three chains.", "Explorer", "explorer"],
+  "/jobs": ["jobs", "Jobs", "Every job, its stages and what it paid.", "Explorer", "explorer"],
+  "/gpus": ["gpus", "GPUs", "Community GPUs bonded on Unichain.", "Explorer", "explorer"],
+  "/provide": ["provide", "Rent out a GPU", "Bond on Unichain, serve stages, get paid by layers.", "Product", "product"],
+  "/agents": ["agents", "Agents", "The watcher re-runs every result. Verifiers settle disputes by vote.", "Explorer", "explorer"],
+  "/transactions": ["transactions", "Transactions", "Every event across Reactive Lasna, Base Sepolia and Unichain Sepolia.", "Explorer", "explorer"],
+  "/proof": ["proof", "Proof on testnet", "The three scenarios on public chains, every transaction linked.", "Product", "product"],
+  "/post": ["post", "Post a job", "Run GPT-2 across three bonded GPUs. Paid from escrow when the window closes.", "Product", "product"],
+};
+const REDIRECT = { "/marketplace": "/gpus", "/ledger": "/transactions" };
+let page = { view: "home" };
 function go(path, push = true) {
-  if (REDIRECT[path.split("?")[0]]) { path = REDIRECT[path.split("?")[0]]; if (path === "/") setTimeout(openModal, 300); push = true; }
+  const base = path.split("?")[0]; if (REDIRECT[base]) { path = REDIRECT[base]; push = true; }
   if (push && location.pathname + location.search !== path) history.pushState({}, "", path);
-  else if (!push && REDIRECT[location.pathname]) history.replaceState({}, "", path);
-  page = parse(path);
+  const p = path.split("?")[0], m = p.match(/^\/jobs\/(\d+)$/);
+  if (p === "/" || p === "") page = { view: "home" };
+  else if (m) page = { view: "app", page: "job", id: Number(m[1]), sec: "explorer" };
+  else if (PAGES[p]) page = { view: "app", page: PAGES[p][0], sec: PAGES[p][4] };
+  else page = { view: "home" };
   document.querySelectorAll("[data-view]").forEach((s) => (s.hidden = s.dataset.view !== page.view));
-  document.querySelectorAll("#tabs a").forEach((a) => a.classList.toggle("on", a.getAttribute("href") === page.tab));
-  document.title = { overview: "LOOM Explorer", job: `Job #${page.id} · LOOM`, jobs: "Jobs · LOOM", gpus: "GPUs · LOOM", provide: "Rent out a GPU · LOOM", agents: "Agents · LOOM", transactions: "Transactions · LOOM" }[page.view];
-  $("results").hidden = true; window.scrollTo(0, 0); render();
+  $("announce").hidden = page.view !== "home";
+  if (page.view === "app") {
+    document.querySelectorAll("[data-page]").forEach((s) => (s.hidden = s.dataset.page !== page.page));
+    const info = page.page === "job" ? ["job", `Job #${page.id}`, "Pipeline, dispute and every transaction for this job.", "Explorer"] : PAGES[p];
+    $("appTitle").textContent = info[1]; $("appSub").textContent = info[2];
+    $("crumbs").innerHTML = page.page === "job" ? `<a href="/explorer" data-link>Explorer</a><span>/</span><a href="/jobs" data-link>Jobs</a><span>/</span><span>#${page.id}</span>` : `<a href="/" data-link>Home</a><span>/</span><span>${info[3]}</span><span>/</span><span>${info[1]}</span>`;
+    const tab = page.page === "job" ? "/jobs" : p;
+    document.querySelectorAll("#subnav a").forEach((a) => a.classList.toggle("on", a.getAttribute("href") === tab));
+    $("subnav").hidden = page.sec !== "explorer" && page.page !== "proof";
+    $("searchBox").hidden = page.page === "post";
+    document.title = `${info[1]} · LOOM`;
+  } else document.title = "LOOM · Verifiable inference on community GPUs";
+  document.querySelectorAll(".menu .item > button").forEach((b) => b.classList.toggle("on", page.view === "app" && b.dataset.m === page.sec));
+  document.querySelectorAll(".menu [data-top]").forEach((a) => a.classList.toggle("on", page.page === "proof"));
+  closeMenus(); $("sheet").hidden = true; $("results").hidden = true; window.scrollTo(0, 0); render();
 }
 document.addEventListener("click", (e) => {
   const a = e.target.closest("a[data-link]");
@@ -726,20 +983,17 @@ document.addEventListener("click", (e) => {
   const tr = e.target.closest("tr[data-href]"); if (tr && !e.target.closest("a")) go(tr.dataset.href);
 });
 window.addEventListener("popstate", () => go(location.pathname + location.search, false));
-$("chartSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; ui.chart = b.dataset.k; document.querySelectorAll("#chartSeg button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); renderOverview(); });
+$("chartSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; ui.chart = b.dataset.k; document.querySelectorAll("#chartSeg button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); renderExplorer(); });
 
 /* ============ loop ============ */
 function render() {
-  if (!S) return;
-  $("liveN").textContent = `${S.timeline.length} TXS`;
-  $("live").classList.toggle("on", true);
-  $("updated").textContent = `UPDATED ${Math.max(0, Math.round((Date.now() - lastFetch) / 1000))}S AGO`;
-  if (ui.awaitJob !== null && S.jobs.length && S.jobs[0].id > ui.awaitJob) { const id = S.jobs[0].id; ui.awaitJob = null; if (page.view === "jobs") return go(`/jobs/${id}`); }
-  ({ overview: renderOverview, jobs: renderJobs, job: () => renderJob(page.id), gpus: renderGpus, provide: renderProvide, agents: renderAgents, transactions: renderTx })[page.view]();
+  if (!S) { if (page.view === "home") renderPlatform(); return; }
+  if (ui.awaitJob !== null && S.jobs.length && S.jobs[0].id > ui.awaitJob) { const id = S.jobs[0].id; ui.awaitJob = null; if (page.page === "jobs") return go(`/jobs/${id}`); }
+  if (page.view === "home") return renderHome();
+  ({ explorer: renderExplorer, jobs: renderJobs, job: () => renderJob(page.id), gpus: renderGpus, provide: renderProvide, agents: renderAgents, transactions: renderTx, proof: renderProof, post: renderPost })[page.page]();
 }
 async function tick() {
-  try { const r = await fetch("/api/state"); if (r.ok) { S = await r.json(); lastFetch = Date.now(); const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement && document.activeElement.tagName) || !$("modal").hidden; if (!typing) render(); } }
-  catch (e) { $("live").classList.remove("on"); }
+  try { const r = await fetch("/api/state"); if (r.ok) { S = await r.json(); lastFetch = Date.now(); const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement && document.activeElement.tagName); if (!typing && !document.querySelector(".menu .item.open")) render(); } } catch (e) { /* server restarting */ }
   setTimeout(tick, 2000);
 }
 loadProof();

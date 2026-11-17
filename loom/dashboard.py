@@ -63,6 +63,7 @@ def make_app(net: Network, idx: Indexer, actors=None) -> FastAPI:
 
     # One page app: every page path returns the same file, which renders the page from the URL.
     @app.get("/")
+    @app.get("/explorer")
     @app.get("/jobs")
     @app.get("/jobs/{job_id}")
     @app.get("/gpus")
