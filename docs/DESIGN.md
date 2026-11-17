@@ -54,18 +54,19 @@ The theme is dark.
   Buttons are square-cornered, mono and uppercase: the primary one is white
   with dark text, the secondary one dark grey. Headlines are two-tone: the
   claim in near-white, the qualifier in grey.
-- **Hero art:** a diagram of LOOM's own mechanism, not a decorative shape:
-  - three GPU cards (one per stage, with their blocks and output hashes)
-    joined by hash-chain arrows;
-  - GPU 1 marked faulty (Δ 92.16 > 0.01) and slashed;
-  - event lines up to LoomReferee on Reactive Lasna;
-  - callbacks down to LoomEscrow on Base (`resolveFault()`) and LoomBonds on
-    Unichain (`slash()`).
+- **Hero art:** a product visual, not a diagram. It is drawn in SVG at load
+  time:
+  - a glossy isometric GPU die with pins and a 3×3 tile grid, its diagonal
+    lit in the three stage colours (blue, purple, orange);
+  - silk-like threads in the same colours weaving behind and over the die,
+    which is the "loom": compute woven across GPUs;
+  - three mono callouts with leader lines: Bonded GPUs, Verified layers,
+    Refereed on-chain.
 
-  Dashes flow along the lines, and the motion stops under
+  Light shimmers along the threads and the lit tiles breathe. Both stop under
   `prefers-reduced-motion`. There is no announcement bar and no status line
   under the buttons: the hero is the headline, one sentence, two buttons and
-  the diagram.
+  the artwork.
 - **Showing, not telling:**
   - live cards for the model, GPUs and agents;
   - platform tabs that pair a short accordion with live tables and the real

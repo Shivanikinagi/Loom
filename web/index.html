@@ -82,10 +82,11 @@ button { font: inherit; color: inherit; }
 .hero .cta { display: flex; gap: 10px; flex-wrap: wrap; }
 .hero .live { display: inline-flex; align-items: center; gap: 8px; margin-top: 28px; font: 12.5px var(--mono); color: var(--mut); }
 .art { width: 100%; height: auto; }
-.art .flow { stroke-dasharray: 5 6; animation: flow 1.1s linear infinite; } .art .flow.slow { animation-duration: 2.2s; }
-@keyframes flow { to { stroke-dashoffset: -22; } }
-.art .pl { stroke-dasharray: 16 320; animation: pl 2.6s linear infinite; } .art .pl.b { animation-delay: -1.3s; }
-@keyframes pl { from { stroke-dashoffset: 16; } to { stroke-dashoffset: -320; } }
+.art .shim { stroke-dasharray: 70 900; animation: shim 5.5s linear infinite; }
+.art .shim.d1 { animation-delay: -1.8s; } .art .shim.d2 { animation-delay: -3.6s; }
+@keyframes shim { from { stroke-dashoffset: 970; } to { stroke-dashoffset: 0; } }
+.art .lit { animation: lit 3.6s ease-in-out infinite; } .art .lit.d1 { animation-delay: -1.2s; } .art .lit.d2 { animation-delay: -2.4s; }
+@keyframes lit { 50% { opacity: .55; } }
 @keyframes floaty { 50% { transform: translateY(-10px); } }
 .trust { display: flex; align-items: center; gap: 44px; padding: 26px 0 8px; overflow-x: auto; scrollbar-width: none; }
 .trust .tag { flex: none; }
@@ -285,7 +286,7 @@ h6.tag { font-size: 11.5px; }
   .shot { padding: 16px; min-height: 0; } .shot .code { margin: -20px 0 0 10px; } .acc .ab { padding-left: 8px; } .acc button.ah { font-size: 18px; }
   .metric .n { font-size: 42px; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .pulse, .st::before, .sq i.a, .art .flow, .art .pl { animation: none !important; } .art .pl { stroke-dasharray: none; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .pulse, .st::before, .sq i.a, .art .shim, .art .lit { animation: none !important; } .art .shim { display: none; } }
 </style>
 </head>
 <body>
@@ -343,57 +344,7 @@ h6.tag { font-size: 11.5px; }
           <p>One model, split across bonded GPUs. Every layer is committed on chain, and a Reactive contract slashes any GPU that cheats.</p>
           <div class="cta"><a class="btn black" href="/post" data-link>Post a job</a><a class="btn grey" href="/proof" data-link>View proof</a></div>
         </div>
-        <svg class="art" viewBox="0 0 620 500" role="img" aria-label="GPT-2 split across three GPUs with hash-chained outputs; GPU 1 is caught faking its layers, and the Reactive referee sends resolveFault to Base and slash to Unichain">
-          <g font-family="Geist Mono, monospace" letter-spacing=".4">
-            <text x="20" y="30" font-size="11" fill="#6f7680">GPT-2 · 3 STAGES · OUTPUTS HASH-CHAINED ON BASE</text>
-            <!-- stage arrows (hash chain) -->
-            <path class="flow" d="M190 122 H222" stroke="#4ade9a" stroke-width="1.6" fill="none"/><path d="M219 117 L225 122 L219 127" stroke="#4ade9a" stroke-width="1.6" fill="none"/>
-            <path class="flow" d="M395 122 H427" stroke="#4ade9a" stroke-width="1.6" fill="none"/><path d="M424 117 L430 122 L424 127" stroke="#4ade9a" stroke-width="1.6" fill="none"/>
-            <!-- GPU 0 -->
-            <rect x="20" y="52" width="170" height="140" rx="10" fill="#111317" stroke="#2e333b"/><rect x="20" y="52" width="170" height="4" rx="2" fill="#3b6cff"/>
-            <text x="36" y="84" font-size="15" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">GPU 0</text>
-            <text x="36" y="104" font-size="10.5" fill="#6f7680">EMBED + BLOCKS 0–3</text>
-            <line x1="36" x2="174" y1="122" y2="122" stroke="#22262d"/>
-            <text x="36" y="146" font-size="11" fill="#a1a7b1">out 0x8e2b…61bc</text>
-            <text x="36" y="174" font-size="11" fill="#34d399">✓ committed</text>
-            <!-- GPU 1 (caught) -->
-            <rect x="225" y="52" width="170" height="140" rx="10" fill="#1a1215" stroke="#f87171" stroke-opacity=".7"/><rect x="225" y="52" width="170" height="4" rx="2" fill="#7b5cff"/>
-            <text x="241" y="84" font-size="15" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">GPU 1</text>
-            <rect x="321" y="70" width="62" height="20" rx="4" fill="#f87171" fill-opacity=".14"/><text x="352" y="84" font-size="10" fill="#f87171" text-anchor="middle">SLASHED</text>
-            <text x="241" y="104" font-size="10.5" fill="#6f7680">BLOCKS 4–7</text>
-            <line x1="241" x2="379" y1="122" y2="122" stroke="#2e2226"/>
-            <text x="241" y="146" font-size="11" fill="#a1a7b1">out 0x9489…6967</text>
-            <text x="241" y="174" font-size="11" fill="#f87171">✗ Δ 92.16 &gt; 0.01</text>
-            <!-- GPU 2 -->
-            <rect x="430" y="52" width="170" height="140" rx="10" fill="#111317" stroke="#2e333b"/><rect x="430" y="52" width="170" height="4" rx="2" fill="#ff6a3d"/>
-            <text x="446" y="84" font-size="15" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">GPU 2</text>
-            <text x="446" y="104" font-size="10.5" fill="#6f7680">BLOCKS 8–11 + HEAD</text>
-            <line x1="446" x2="584" y1="122" y2="122" stroke="#22262d"/>
-            <text x="446" y="146" font-size="11" fill="#a1a7b1">out 0x9b83…77b6</text>
-            <text x="446" y="174" font-size="11" fill="#34d399">✓ committed</text>
-            <!-- events up to the referee -->
-            <path class="flow slow" d="M310 192 V292" stroke="#6f7680" stroke-width="1.2" fill="none"/>
-            <path class="flow slow" d="M105 192 V232 Q105 246 119 246 H296 Q310 246 310 260" stroke="#6f7680" stroke-width="1.2" fill="none"/>
-            <path class="flow slow" d="M515 192 V232 Q515 246 501 246 H324 Q310 246 310 260" stroke="#6f7680" stroke-width="1.2" fill="none"/>
-            <text x="322" y="276" font-size="10.5" fill="#6f7680">Challenged · VerdictVote ×2</text>
-            <!-- referee -->
-            <rect x="190" y="292" width="240" height="72" rx="12" fill="#111317" stroke="#34d399" stroke-opacity=".55"/>
-            <rect x="210" y="310" width="18" height="5" rx="1.5" fill="#3b6cff"/><rect x="210" y="318" width="13" height="5" rx="1.5" fill="#7b5cff"/><rect x="210" y="326" width="8" height="5" rx="1.5" fill="#ff6a3d"/>
-            <text x="240" y="324" font-size="15" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">LoomReferee</text>
-            <text x="240" y="346" font-size="10.5" fill="#34d399">REACTIVE LASNA · QUORUM 2/3</text>
-            <!-- callbacks down to the chains -->
-            <path d="M250 364 V392 Q250 404 238 404 H157 Q145 404 145 416 V424" stroke="#2e333b" stroke-width="1.4" fill="none"/>
-            <path class="pl" d="M250 364 V392 Q250 404 238 404 H157 Q145 404 145 416 V424" stroke="#6f9bff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-            <path d="M370 364 V392 Q370 404 382 404 H463 Q475 404 475 416 V424" stroke="#2e333b" stroke-width="1.4" fill="none"/>
-            <path class="pl b" d="M370 364 V392 Q370 404 382 404 H463 Q475 404 475 416 V424" stroke="#ff7ab8" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-            <text x="160" y="396" font-size="10.5" fill="#6f9bff">resolveFault()</text>
-            <text x="388" y="396" font-size="10.5" fill="#ff7ab8">slash()</text>
-            <rect x="40" y="424" width="210" height="56" rx="10" fill="#111317" stroke="#2e333b"/><circle cx="60" cy="452" r="4" fill="#6f9bff"/>
-            <text x="74" y="449" font-size="13" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">LoomEscrow</text><text x="74" y="467" font-size="10" fill="#6f7680">BASE SEPOLIA · REROUTE</text>
-            <rect x="370" y="424" width="210" height="56" rx="10" fill="#111317" stroke="#2e333b"/><circle cx="390" cy="452" r="4" fill="#ff7ab8"/>
-            <text x="404" y="449" font-size="13" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">LoomBonds</text><text x="404" y="467" font-size="10" fill="#6f7680">UNICHAIN · −0.05 ETH BOND</text>
-          </g>
-        </svg>
+        <svg class="art" id="art" viewBox="0 0 640 520" role="img" aria-label="A GPU chip with three glowing stage tiles, woven through by threads in the three stage colours"></svg>
       </div>
       <div class="wrap"><div class="trust"><span class="tag">Secured by</span><b><i class="dot lasna"></i>Reactive Network</b><b><i class="dot base"></i>Base</b><b><i class="dot unichain"></i>Unichain</b><b>GPT-2</b><b>Foundry</b><b>keccak256</b></div></div>
     </section>
@@ -588,6 +539,66 @@ python -m loom register --network testnet  # bonds each GPU</pre></div></div>
 </footer>
 
 <script>
+/* ============ hero artwork: a GPU die woven through by the three stage threads ============ */
+(function buildArt() {
+  const svg = document.getElementById("art"); if (!svg) return;
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, a, parent = svg) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); parent.appendChild(e); return e; };
+  const C = [["#3b6cff", "#8fb4ff"], ["#7b5cff", "#c4b3ff"], ["#ff6a3d", "#ffb48f"]];
+  const defs = el("defs", {});
+  defs.innerHTML = `
+    <radialGradient id="bgGlow" cx=".5" cy=".46" r=".55"><stop offset="0" stop-color="#3b6cff" stop-opacity=".22"/><stop offset=".55" stop-color="#7b5cff" stop-opacity=".08"/><stop offset="1" stop-color="#0b0c0f" stop-opacity="0"/></radialGradient>
+    <linearGradient id="dieTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#262b35"/><stop offset=".5" stop-color="#161a21"/><stop offset="1" stop-color="#0e1116"/></linearGradient>
+    <linearGradient id="dieRim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fb4ff"/><stop offset=".5" stop-color="#c4b3ff"/><stop offset="1" stop-color="#ffb48f"/></linearGradient>
+    <linearGradient id="sideL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1e26"/><stop offset="1" stop-color="#0b0d11"/></linearGradient>
+    <linearGradient id="sideR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12151b"/><stop offset="1" stop-color="#08090c"/></linearGradient>
+    <radialGradient id="shadow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <filter id="blur8" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="blur3" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+    ${C.map(([a, b], i) => `<linearGradient id="th${i}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="640" y2="0"><stop offset="0" stop-color="${a}" stop-opacity="0"/><stop offset=".25" stop-color="${a}" stop-opacity=".9"/><stop offset=".6" stop-color="${b}"/><stop offset="1" stop-color="${a}" stop-opacity="0"/></linearGradient>
+      <linearGradient id="tile${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${b}"/><stop offset="1" stop-color="${a}"/></linearGradient>`).join("")}`;
+  el("rect", { width: 640, height: 520, fill: "url(#bgGlow)" });
+
+  // threads: three behind the die (wide, glowing), three over it (fine)
+  const back = ["M-20 392 C 150 392, 250 168, 660 150", "M-20 420 C 170 420, 300 200, 660 200", "M-20 448 C 190 448, 340 232, 660 250"];
+  const front = ["M-20 118 C 200 106, 370 336, 660 352", "M-20 148 C 220 136, 390 356, 660 392", "M-20 178 C 240 166, 410 376, 660 432"];
+  back.forEach((d, i) => { el("path", { d, stroke: `url(#th${i})`, "stroke-width": 10, fill: "none", opacity: .4, filter: "url(#blur8)" }); el("path", { d, stroke: `url(#th${i})`, "stroke-width": 2.6, fill: "none" }); el("path", { d, class: `shim d${i}`, stroke: "#fff", "stroke-width": 2.6, fill: "none", opacity: .7, "stroke-linecap": "round" }); });
+
+  // isometric die
+  const T = [320, 132], R = [490, 217], L = [150, 217], B = [320, 302], H = 24;
+  const P = (u, v) => [T[0] + u * (R[0] - T[0]) + v * (L[0] - T[0]), T[1] + u * (R[1] - T[1]) + v * (L[1] - T[1])];
+  const pts = (a) => a.map((p) => p.map((n) => n.toFixed(1)).join(",")).join(" ");
+  const dn = (p, h = H) => [p[0], p[1] + h];
+  el("ellipse", { cx: 320, cy: 352, rx: 210, ry: 40, fill: "url(#shadow)" });
+  el("polygon", { points: pts([L, B, dn(B), dn(L)]), fill: "url(#sideL)" });
+  el("polygon", { points: pts([B, R, dn(R), dn(B)]), fill: "url(#sideR)" });
+  for (let k = 1; k < 14; k++) {  // pins along the two visible sides
+    const t = k / 14, a = [L[0] + t * (B[0] - L[0]), L[1] + t * (B[1] - L[1])], b = [B[0] + t * (R[0] - B[0]), B[1] + t * (R[1] - B[1])];
+    el("line", { x1: a[0], y1: a[1] + 6, x2: a[0], y2: a[1] + H - 5, stroke: "#c4c8cf", "stroke-opacity": .22, "stroke-width": 1.4 });
+    el("line", { x1: b[0], y1: b[1] + 6, x2: b[0], y2: b[1] + H - 5, stroke: "#c4c8cf", "stroke-opacity": .14, "stroke-width": 1.4 });
+  }
+  el("polygon", { points: pts([T, R, B, L]), fill: "url(#dieTop)", stroke: "url(#dieRim)", "stroke-opacity": .55, "stroke-width": 1.2 });
+  el("polyline", { points: pts([L, B, R]), fill: "none", stroke: "#fff", "stroke-opacity": .18 });
+  el("polygon", { points: pts([P(.14, .14), P(.86, .14), P(.86, .86), P(.14, .86)]), fill: "#0b0d11", stroke: "#fff", "stroke-opacity": .07 });
+  // 3x3 tiles; the diagonal glows in the three stage colours
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+    const u0 = .19 + i * .21, v0 = .19 + j * .21, u1 = u0 + .19, v1 = v0 + .19, quad = pts([P(u0, v0), P(u1, v0), P(u1, v1), P(u0, v1)]);
+    if (i === j) { el("polygon", { points: quad, fill: C[i][0], opacity: .8, filter: "url(#blur8)", class: `lit d${i}` }); el("polygon", { points: quad, fill: `url(#tile${i})` }); }
+    else el("polygon", { points: quad, fill: "#151921", stroke: "#fff", "stroke-opacity": .05 });
+  }
+
+  front.forEach((d, i) => { el("path", { d, stroke: `url(#th${i})`, "stroke-width": 1.3, fill: "none", opacity: .75 }); el("path", { d, class: `shim d${(i + 1) % 3}`, stroke: "#fff", "stroke-width": 1.3, fill: "none", opacity: .55, "stroke-linecap": "round" }); });
+
+  // three callouts, mono, with leader lines
+  const g = el("g", { "font-family": "Geist Mono, monospace", "font-size": 11.5, fill: "#a1a7b1", "letter-spacing": ".6" });
+  const mark = (x, y, round) => round ? el("circle", { cx: x, cy: y, r: 4, fill: "#c4c8cf" }, g) : el("rect", { x: x - 4, y: y - 4, width: 8, height: 8, fill: "#c4c8cf" }, g);
+  const line = (d) => el("path", { d, stroke: "#5b616b", "stroke-width": 1, fill: "none" }, g);
+  const text = (x, y, t, anchor = "start") => { const e = el("text", { x, y, "text-anchor": anchor }, g); e.textContent = t; };
+  line("M490 217 H566 V92"); mark(566, 88); text(620, 72, "BONDED GPUs", "end");
+  const tc = P(.505, .505); line(`M${tc[0]} ${tc[1]} L 214 ${tc[1] + 6} H 74 V 330`); mark(74, 334); text(20, 362, "VERIFIED LAYERS");
+  line("M520 404 H578 V458"); mark(578, 462, true); text(620, 494, "REFEREED ON-CHAIN", "end");
+})();
+
 /* ============ state & helpers ============ */
 let S = null, PROOF = null, lastFetch = 0;
 const ui = { chart: "paid", jobF: "all", gpuF: "all", agF: "all", txChain: "all", txPage: 0, data: "sample", code: "curl", tab: "buy", acc: { buy: 0, rent: 0, verify: 0 }, awaitJob: null };
