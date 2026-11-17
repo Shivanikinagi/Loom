@@ -15,7 +15,7 @@ Home /                      what LOOM is, live cards, platform tabs, research, p
 Product
   Post a job /post          playground: input, estimate, the API call, your jobs
   Rent out a GPU /provide   CLI steps, rules, pay per stage
-  Proof /proof              the testnet run: contracts, scenarios, checks, legs, every tx
+  Proof /proof              key numbers, the three contracts, one row per scenario with its proving tx
 Explorer
   Overview /explorer        chart, network right now, stat cards, latest jobs / txs, testnet panel
   Jobs /jobs, /jobs/:id     table; detail with overview rows, pipeline, dispute trail, txs
@@ -54,9 +54,18 @@ The theme is dark.
   Buttons are square-cornered, mono and uppercase: the primary one is white
   with dark text, the secondary one dark grey. Headlines are two-tone: the
   claim in near-white, the qualifier in grey.
-- **Hero art:** an original isometric illustration of the three stages as
-  stacked slabs, with mono callouts for the blocks each stage runs. It floats
-  gently and stops under `prefers-reduced-motion`.
+- **Hero art:** a diagram of LOOM's own mechanism, not a decorative shape:
+  - three GPU cards (one per stage, with their blocks and output hashes)
+    joined by hash-chain arrows;
+  - GPU 1 marked faulty (Δ 92.16 > 0.01) and slashed;
+  - event lines up to LoomReferee on Reactive Lasna;
+  - callbacks down to LoomEscrow on Base (`resolveFault()`) and LoomBonds on
+    Unichain (`slash()`).
+
+  Dashes flow along the lines, and the motion stops under
+  `prefers-reduced-motion`. There is no announcement bar and no status line
+  under the buttons: the hero is the headline, one sentence, two buttons and
+  the diagram.
 - **Showing, not telling:**
   - live cards for the model, GPUs and agents;
   - platform tabs that pair a short accordion with live tables and the real
@@ -78,8 +87,11 @@ After posting, the job's page opens as soon as the referee assigns it.
 
 Every transaction hash links to its explorer when the chain has one. Local
 devnet hashes have no public explorer, so they show as text, with a pointer to
-`/proof` and to the Testnet view on Transactions. Both show the recorded run on
-Reactive Lasna, Base Sepolia and Unichain Sepolia with every hash linked.
+`/proof` and to the Testnet view on Transactions. `/proof` is deliberately
+short: four numbers, the three contracts, and a table with one row per
+scenario. Each row shows the transaction that proves its outcome (the slash on
+Unichain, the settlement on Base, the timeout on Base) and an "All txs" link to
+the full list on the Transactions page.
 
 ## Responsiveness
 

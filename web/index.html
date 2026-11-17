@@ -82,7 +82,10 @@ button { font: inherit; color: inherit; }
 .hero .cta { display: flex; gap: 10px; flex-wrap: wrap; }
 .hero .live { display: inline-flex; align-items: center; gap: 8px; margin-top: 28px; font: 12.5px var(--mono); color: var(--mut); }
 .art { width: 100%; height: auto; }
-.art .floaty { animation: floaty 7s ease-in-out infinite; } .art .floaty.b { animation-delay: -2.3s; } .art .floaty.c { animation-delay: -4.6s; }
+.art .flow { stroke-dasharray: 5 6; animation: flow 1.1s linear infinite; } .art .flow.slow { animation-duration: 2.2s; }
+@keyframes flow { to { stroke-dashoffset: -22; } }
+.art .pl { stroke-dasharray: 16 320; animation: pl 2.6s linear infinite; } .art .pl.b { animation-delay: -1.3s; }
+@keyframes pl { from { stroke-dashoffset: 16; } to { stroke-dashoffset: -320; } }
 @keyframes floaty { 50% { transform: translateY(-10px); } }
 .trust { display: flex; align-items: center; gap: 44px; padding: 26px 0 8px; overflow-x: auto; scrollbar-width: none; }
 .trust .tag { flex: none; }
@@ -282,11 +285,10 @@ h6.tag { font-size: 11.5px; }
   .shot { padding: 16px; min-height: 0; } .shot .code { margin: -20px 0 0 10px; } .acc .ab { padding-left: 8px; } .acc button.ah { font-size: 18px; }
   .metric .n { font-size: 42px; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .pulse, .st::before, .sq i.a, .art .floaty { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .pulse, .st::before, .sq i.a, .art .flow, .art .pl { animation: none !important; } .art .pl { stroke-dasharray: none; } }
 </style>
 </head>
 <body>
-<div class="announce" id="announce"><a href="/proof" data-link>LOOM is live on Reactive Lasna, Base Sepolia and Unichain Sepolia · see the proof →</a></div>
 
 <div class="navwrap">
   <div class="nav">
@@ -340,25 +342,56 @@ h6.tag { font-size: 11.5px; }
           <h1>Verifiable inference <span>on community GPUs</span></h1>
           <p>One model, split across bonded GPUs. Every layer is committed on chain, and a Reactive contract slashes any GPU that cheats.</p>
           <div class="cta"><a class="btn black" href="/post" data-link>Post a job</a><a class="btn grey" href="/proof" data-link>View proof</a></div>
-          <div class="live"><i class="dot lasna pulse"></i><span id="heroLive">Connecting to the network…</span></div>
         </div>
-        <svg class="art" viewBox="0 0 620 520" role="img" aria-label="Three model stages stacked as slabs, refereed by a Reactive contract">
-          <defs>
-            <linearGradient id="s0" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fb4ff"/><stop offset="1" stop-color="#3b6cff"/></linearGradient>
-            <linearGradient id="s1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c8b6ff"/><stop offset="1" stop-color="#7b5cff"/></linearGradient>
-            <linearGradient id="s2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb48f"/><stop offset="1" stop-color="#ff5a2a"/></linearGradient>
-            <linearGradient id="ed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset="1" stop-color="#000" stop-opacity=".32"/></linearGradient>
-            <radialGradient id="sh" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
-          </defs>
-          <ellipse cx="320" cy="470" rx="220" ry="26" fill="url(#sh)"/>
-          <g class="floaty c"><path d="M150 360 L330 270 L510 360 L330 450 Z" fill="url(#s2)"/><path d="M150 360 L330 450 L330 470 L150 380 Z" fill="#c2401a"/><path d="M330 450 L510 360 L510 380 L330 470 Z" fill="#e0532a"/></g>
-          <g class="floaty b"><path d="M150 260 L330 170 L510 260 L330 350 Z" fill="url(#s1)" opacity=".95"/><path d="M150 260 L330 350 L330 370 L150 280 Z" fill="#5a3fd6"/><path d="M330 350 L510 260 L510 280 L330 370 Z" fill="#6c4ff0"/></g>
-          <g class="floaty"><path d="M150 160 L330 70 L510 160 L330 250 Z" fill="url(#s0)" opacity=".95"/><path d="M150 160 L330 250 L330 270 L150 180 Z" fill="#2a52d4"/><path d="M330 250 L510 160 L510 180 L330 270 Z" fill="#3561f0"/>
-            <g opacity=".5" stroke="#fff" stroke-width="1"><path d="M195 160 L330 92.5 L465 160"/><path d="M240 160 L330 115 L420 160"/></g></g>
-          <g font-family="Geist Mono, monospace" font-size="12" fill="#c4c8cf" letter-spacing=".5">
-            <path d="M510 160 H560 V60" stroke="#c4c8cf" stroke-width="1" fill="none"/><rect x="556" y="44" width="8" height="8" fill="#c4c8cf"/><text x="606" y="34" text-anchor="end">STAGE 0 · EMBED + BLOCKS 0–3</text>
-            <path d="M150 262 H60 V316" stroke="#c4c8cf" stroke-width="1" fill="none"/><rect x="56" y="316" width="8" height="8" fill="#c4c8cf"/><text x="10" y="344">STAGE 1 · BLOCKS 4–7</text>
-            <path d="M510 360 H570 V440" stroke="#c4c8cf" stroke-width="1" fill="none"/><circle cx="570" cy="450" r="4.5" fill="#c4c8cf"/><text x="606" y="478" text-anchor="end">STAGE 2 · BLOCKS 8–11 + HEAD</text>
+        <svg class="art" viewBox="0 0 620 500" role="img" aria-label="GPT-2 split across three GPUs with hash-chained outputs; GPU 1 is caught faking its layers, and the Reactive referee sends resolveFault to Base and slash to Unichain">
+          <g font-family="Geist Mono, monospace" letter-spacing=".4">
+            <text x="20" y="30" font-size="11" fill="#6f7680">GPT-2 · 3 STAGES · OUTPUTS HASH-CHAINED ON BASE</text>
+            <!-- stage arrows (hash chain) -->
+            <path class="flow" d="M190 122 H222" stroke="#4ade9a" stroke-width="1.6" fill="none"/><path d="M219 117 L225 122 L219 127" stroke="#4ade9a" stroke-width="1.6" fill="none"/>
+            <path class="flow" d="M395 122 H427" stroke="#4ade9a" stroke-width="1.6" fill="none"/><path d="M424 117 L430 122 L424 127" stroke="#4ade9a" stroke-width="1.6" fill="none"/>
+            <!-- GPU 0 -->
+            <rect x="20" y="52" width="170" height="140" rx="10" fill="#111317" stroke="#2e333b"/><rect x="20" y="52" width="170" height="4" rx="2" fill="#3b6cff"/>
+            <text x="36" y="84" font-size="15" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">GPU 0</text>
+            <text x="36" y="104" font-size="10.5" fill="#6f7680">EMBED + BLOCKS 0–3</text>
+            <line x1="36" x2="174" y1="122" y2="122" stroke="#22262d"/>
+            <text x="36" y="146" font-size="11" fill="#a1a7b1">out 0x8e2b…61bc</text>
+            <text x="36" y="174" font-size="11" fill="#34d399">✓ committed</text>
+            <!-- GPU 1 (caught) -->
+            <rect x="225" y="52" width="170" height="140" rx="10" fill="#1a1215" stroke="#f87171" stroke-opacity=".7"/><rect x="225" y="52" width="170" height="4" rx="2" fill="#7b5cff"/>
+            <text x="241" y="84" font-size="15" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">GPU 1</text>
+            <rect x="321" y="70" width="62" height="20" rx="4" fill="#f87171" fill-opacity=".14"/><text x="352" y="84" font-size="10" fill="#f87171" text-anchor="middle">SLASHED</text>
+            <text x="241" y="104" font-size="10.5" fill="#6f7680">BLOCKS 4–7</text>
+            <line x1="241" x2="379" y1="122" y2="122" stroke="#2e2226"/>
+            <text x="241" y="146" font-size="11" fill="#a1a7b1">out 0x9489…6967</text>
+            <text x="241" y="174" font-size="11" fill="#f87171">✗ Δ 92.16 &gt; 0.01</text>
+            <!-- GPU 2 -->
+            <rect x="430" y="52" width="170" height="140" rx="10" fill="#111317" stroke="#2e333b"/><rect x="430" y="52" width="170" height="4" rx="2" fill="#ff6a3d"/>
+            <text x="446" y="84" font-size="15" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">GPU 2</text>
+            <text x="446" y="104" font-size="10.5" fill="#6f7680">BLOCKS 8–11 + HEAD</text>
+            <line x1="446" x2="584" y1="122" y2="122" stroke="#22262d"/>
+            <text x="446" y="146" font-size="11" fill="#a1a7b1">out 0x9b83…77b6</text>
+            <text x="446" y="174" font-size="11" fill="#34d399">✓ committed</text>
+            <!-- events up to the referee -->
+            <path class="flow slow" d="M310 192 V292" stroke="#6f7680" stroke-width="1.2" fill="none"/>
+            <path class="flow slow" d="M105 192 V232 Q105 246 119 246 H296 Q310 246 310 260" stroke="#6f7680" stroke-width="1.2" fill="none"/>
+            <path class="flow slow" d="M515 192 V232 Q515 246 501 246 H324 Q310 246 310 260" stroke="#6f7680" stroke-width="1.2" fill="none"/>
+            <text x="322" y="276" font-size="10.5" fill="#6f7680">Challenged · VerdictVote ×2</text>
+            <!-- referee -->
+            <rect x="190" y="292" width="240" height="72" rx="12" fill="#111317" stroke="#34d399" stroke-opacity=".55"/>
+            <rect x="210" y="310" width="18" height="5" rx="1.5" fill="#3b6cff"/><rect x="210" y="318" width="13" height="5" rx="1.5" fill="#7b5cff"/><rect x="210" y="326" width="8" height="5" rx="1.5" fill="#ff6a3d"/>
+            <text x="240" y="324" font-size="15" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">LoomReferee</text>
+            <text x="240" y="346" font-size="10.5" fill="#34d399">REACTIVE LASNA · QUORUM 2/3</text>
+            <!-- callbacks down to the chains -->
+            <path d="M250 364 V392 Q250 404 238 404 H157 Q145 404 145 416 V424" stroke="#2e333b" stroke-width="1.4" fill="none"/>
+            <path class="pl" d="M250 364 V392 Q250 404 238 404 H157 Q145 404 145 416 V424" stroke="#6f9bff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <path d="M370 364 V392 Q370 404 382 404 H463 Q475 404 475 416 V424" stroke="#2e333b" stroke-width="1.4" fill="none"/>
+            <path class="pl b" d="M370 364 V392 Q370 404 382 404 H463 Q475 404 475 416 V424" stroke="#ff7ab8" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <text x="160" y="396" font-size="10.5" fill="#6f9bff">resolveFault()</text>
+            <text x="388" y="396" font-size="10.5" fill="#ff7ab8">slash()</text>
+            <rect x="40" y="424" width="210" height="56" rx="10" fill="#111317" stroke="#2e333b"/><circle cx="60" cy="452" r="4" fill="#6f9bff"/>
+            <text x="74" y="449" font-size="13" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">LoomEscrow</text><text x="74" y="467" font-size="10" fill="#6f7680">BASE SEPOLIA · REROUTE</text>
+            <rect x="370" y="424" width="210" height="56" rx="10" fill="#111317" stroke="#2e333b"/><circle cx="390" cy="452" r="4" fill="#ff7ab8"/>
+            <text x="404" y="449" font-size="13" fill="#eceef1" font-family="Geist, sans-serif" font-weight="600" letter-spacing="0">LoomBonds</text><text x="404" y="467" font-size="10" fill="#6f7680">UNICHAIN · −0.05 ETH BOND</text>
           </g>
         </svg>
       </div>
@@ -509,7 +542,7 @@ python -m loom register --network testnet  # bonds each GPU</pre></div></div>
       <section data-page="proof" hidden>
         <div class="grid g-4" id="pfStats"></div><div class="gap"></div>
         <div class="grid g-3" id="pfContracts"></div><div class="gap"></div>
-        <div id="pfRuns" style="display:flex;flex-direction:column;gap:16px"><div class="empty">Loading the testnet run…</div></div>
+        <div class="panel"><div class="ph"><h2>Scenarios</h2><a class="more" href="/transactions?net=testnet" data-link>All transactions</a></div><div class="tw"><table class="t" id="pfRuns"><tr><td class="empty">Loading the testnet run…</td></tr></table></div></div>
       </section>
 
       <!-- post -->
@@ -711,7 +744,6 @@ $("ptabs").addEventListener("click", (e) => { const b = e.target.closest("button
 function renderHome() {
   if (!S) return;
   const G = gpus(), A = agents(), bonded = G.filter((g) => wei(g.bond) > 0n).length;
-  $("heroLive").textContent = `${bonded} GPUs bonded · ${S.jobs.length} jobs · ${S.timeline.length} transactions on ${S.network === "local" ? "the local devnet" : "testnet"}`;
   const cards = [[`/jobs`, "MODEL", "GPT-2 · 3 stages", ICON.model, `<span class="badge">124M</span>`]]
     .concat(G.sort((a, b) => b.score - a.score).slice(0, 5).map((g) => ["/gpus", "GPU", g.name, ICON.gpu, g.slashed ? `<span class="badge bad">SLASHED</span>` : g.state === "busy" ? `<span class="badge">BUSY</span>` : `<span class="badge ok">LIVE</span>`]))
     .concat(A.slice(0, 4).map((a) => ["/agents", a.kind === "watcher" ? "AGENT · WATCHER" : "AGENT · VERIFIER", a.n, a.kind === "watcher" ? ICON.eye : ICON.agent, `<span class="badge ok">ONLINE</span>`]));
@@ -863,18 +895,21 @@ $("netSeg").addEventListener("click", (e) => { const b = e.target.closest("butto
 let proofDrawn = false;
 function renderProof() {
   if (!PROOF) { loadProof().then(() => page.page === "proof" && renderProof()); return; }
-  if (PROOF.error) { $("pfRuns").innerHTML = `<div class="empty">No testnet run recorded yet</div>`; return; }
+  if (PROOF.error) { $("pfRuns").innerHTML = `<tr><td class="empty">No testnet run recorded yet</td></tr>`; return; }
   if (proofDrawn) return; proofDrawn = true;
   const P = proofNums(), ex = PROOF.chains, C = PROOF.contracts;
   $("pfStats").innerHTML = [["Scenarios passed", `${P.passed}/${P.total}`, "fraud · honest · timeout"], ["Challenge to slash", `${P.catchS ?? "–"}s`, "Base → Lasna → Unichain"], ["Reactive txs", P.reactive, `${P.callbacks} callbacks delivered`], ["Transactions", P.txs, "every one explorer-linked"]].map(([l, n, d]) => statCard(l, n, d)).join("");
   $("pfContracts").innerHTML = [["lasna", "LoomReferee", "Reactive contract", C.referee], ["base", "LoomEscrow", "Buyer chain", C.escrow], ["unichain", "LoomBonds", "Provider chain", C.bonds]]
     .map(([k, n, d, a]) => `<a class="panel" href="${ex[k].explorer}/address/${a}" target="_blank" rel="noopener" style="display:block"><div class="pb"><div style="display:flex;align-items:center;gap:8px;font-weight:600"><i class="dot ${k}"></i>${n}</div><div class="faint" style="font-size:13.5px;margin:4px 0 10px">${d} · ${CHAIN[k]}</div><span class="hash">${short(a)} ↗</span></div></a>`).join("");
-  $("pfRuns").innerHTML = PROOF.jobs.map((j, i) => {
+  // One row per scenario: the outcome, how long it took, and the one transaction that proves it.
+  const KEY = [["ProviderSlashed", "Slashed on Unichain"], ["StageTimedOut", "Stage timed out"], ["JobSettled", "Settled on Base"]];
+  $("pfRuns").innerHTML = `<tr><th>Scenario</th><th>Result</th><th class="r hide-sm">Txs</th><th class="r hide-sm">Duration</th><th>Proof</th><th class="r"></th></tr>` + PROOF.jobs.map((j) => {
     const t0 = j.events.length ? j.events[0].time : 0, d = j.events.length ? j.events[j.events.length - 1].time - t0 : 0;
-    return `<div class="panel run"><div class="rh"><div><h3>${esc((j.scenario || `Job ${j.jobId}`).replace(/^./, (c) => c.toUpperCase()))}</h3><div class="faint" style="font-size:13.5px">Job ${j.jobId} · ${j.events.length} transactions · ${dur(d)} end to end</div></div><span class="st ${j.passed ? "Settled" : "Disputed"}">${j.passed ? "passed" : "failed"}</span></div>
-      <div class="rb"><div><div class="tag" style="margin-bottom:10px">Checks</div><ul class="clist">${(j.checks || []).map(([c]) => `<li>${esc(c)}</li>`).join("")}</ul></div>
-      <div><div class="tag" style="margin-bottom:6px">Cross-chain legs</div><table class="legs">${(j.legs || []).map((l) => `<tr><td>${esc(l.leg)}<br>${txl(l.from_chain, l.from_tx, ex)} → ${txl(l.to_chain, l.to_tx, ex)}</td><td class="s">${l.seconds}s</td></tr>`).join("")}</table></div></div>
-      <details ${i === 0 ? "open" : ""}><summary>All ${j.events.length} transactions</summary><div class="tw"><table class="t"><tr><th>Time</th><th>Event</th><th>Chain</th><th class="r">Tx</th></tr>${j.events.map((e) => `<tr><td class="mono faint">+${e.time - t0}s</td><td>${evPill(e.event)}</td><td>${chainCell(e.chain)}</td><td class="r">${txl(e.chain, e.tx, ex)}</td></tr>`).join("")}</table></div></details></div>`; }).join("");
+    const [ev, label] = KEY.find(([e]) => j.events.some((x) => x.event === e)) || [];
+    const key = ev && j.events.find((x) => x.event === ev);
+    return `<tr><td><b style="font-weight:600">${esc((j.scenario || `Job ${j.jobId}`).replace(/^./, (c) => c.toUpperCase()))}</b></td><td><span class="st ${j.passed ? "Settled" : "Disputed"}">${j.passed ? "passed" : "failed"}</span></td>
+      <td class="r mono hide-sm">${j.events.length}</td><td class="r mono hide-sm">${dur(d)}</td><td>${key ? `<span class="mut" style="margin-right:8px">${label}</span>${txl(key.chain, key.tx, ex)}` : "–"}</td>
+      <td class="r"><a class="more" href="/transactions?net=testnet&job=${j.jobId}" data-link>All txs ›</a></td></tr>`; }).join("");
 }
 
 /* ============ post a job ============ */
@@ -962,7 +997,6 @@ function go(path, push = true) {
   else if (PAGES[p]) page = { view: "app", page: PAGES[p][0], sec: PAGES[p][4] };
   else page = { view: "home" };
   document.querySelectorAll("[data-view]").forEach((s) => (s.hidden = s.dataset.view !== page.view));
-  $("announce").hidden = page.view !== "home";
   if (page.view === "app") {
     document.querySelectorAll("[data-page]").forEach((s) => (s.hidden = s.dataset.page !== page.page));
     const info = page.page === "job" ? ["job", `Job #${page.id}`, "Pipeline, dispute and every transaction for this job.", "Explorer"] : PAGES[p];
