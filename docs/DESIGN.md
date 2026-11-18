@@ -25,8 +25,10 @@ Explorer
 Docs → GitHub README
 ```
 
-Navigation is the same everywhere: a floating nav card (logo, Product ▾,
-Explorer ▾, Proof, Docs) with GitHub and **Post a job** beside it. Dropdown
+Navigation is the same everywhere: a full-width header bar pinned to the top
+of the window (translucent, blurred, hairline bottom border). It holds the
+logo, Product ▾, Explorer ▾, Proof and Docs, with GitHub and **Post a job** on
+the right. Dropdown
 entries carry an icon, a name and a one-line description. App pages add a
 breadcrumb, a title with one line underneath, search (`/` focuses it) and an
 underlined sub-nav for the explorer pages. On phones the nav collapses to a
@@ -96,7 +98,8 @@ the full list on the Transactions page.
 
 ## Responsiveness
 
-The content width is 1360px on marketing pages. Below 1180px, side columns
-stack. Below 1040px, the nav collapses to the menu button. Below 900px, the
+Every page uses the full window width, with 40px side gutters (16px on
+phones), and the header spans edge to edge. Charts are drawn at their real
+pixel width, so text never stretches. Below 1180px, side columns stack. Below 1040px, the nav collapses to the menu button. Below 900px, the
 hero and platform panels stack. Below 640px, secondary table columns hide and
 the page never scrolls sideways (checked at 390px on every page).

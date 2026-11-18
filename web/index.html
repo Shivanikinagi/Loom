@@ -32,7 +32,7 @@ button { font: inherit; color: inherit; }
 .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex: none; background: var(--faint); }
 .dot.base { background: var(--base); } .dot.unichain { background: var(--uni); } .dot.lasna { background: var(--lasna); }
 .pulse { animation: pulse 1.6s infinite; } @keyframes pulse { 50% { opacity: .35; } }
-.wrap { width: 100%; max-width: 1360px; margin: 0 auto; padding: 0 32px; }
+.wrap { width: 100%; margin: 0; padding: 0 40px; }
 
 /* ---------- buttons ---------- */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; border-radius: 4px; padding: 12px 16px; font: 500 12.5px/1 var(--mono); text-transform: uppercase; letter-spacing: .06em; cursor: pointer; white-space: nowrap; transition: background .15s, border-color .15s; }
@@ -46,10 +46,11 @@ button { font: inherit; color: inherit; }
 /* ---------- announcement + nav ---------- */
 .announce { background: #111318; color: var(--ink); border-bottom: 1px solid var(--line); text-align: center; font-size: 13.5px; padding: 10px 16px; }
 .announce a { color: var(--ink); } .announce a:hover { text-decoration: underline; }
-.navwrap { position: sticky; top: 0; z-index: 40; padding: 12px 16px; background: linear-gradient(var(--bg) 70%, rgba(11,12,15,0)); }
-.nav { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; gap: 8px; }
-.navcard { flex: 1; display: flex; align-items: center; gap: 24px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px 10px 18px; box-shadow: 0 1px 2px rgba(11,12,14,.04); min-width: 0; }
-.navside { display: flex; align-items: center; gap: 6px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px; box-shadow: 0 1px 2px rgba(11,12,14,.04); }
+/* full-width header bar */
+.navwrap { position: sticky; top: 0; z-index: 40; background: rgba(11,12,15,.86); backdrop-filter: saturate(140%) blur(12px); -webkit-backdrop-filter: saturate(140%) blur(12px); border-bottom: 1px solid var(--line); }
+.nav { width: 100%; height: 64px; padding: 0 40px; display: flex; align-items: center; gap: 16px; }
+.navcard { flex: 1; display: flex; align-items: center; gap: 24px; min-width: 0; height: 100%; }
+.navside { display: flex; align-items: center; gap: 6px; }
 .logo { display: flex; align-items: center; gap: 9px; font: 600 19px/1 var(--sans); letter-spacing: -.01em; flex: none; }
 .logo svg { flex: none; }
 .menu { display: flex; align-items: center; gap: 2px; margin: 0 auto; }
@@ -245,7 +246,7 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 details.adv summary { cursor: pointer; font-weight: 500; }
 details.adv[open] summary { margin-bottom: 10px; }
 .hint { font-size: 13px; color: var(--faint); margin-top: 8px; }
-.sticky { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 16px; }
+.sticky { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 16px; }
 .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 70; background: var(--inv); color: var(--inv-ink); padding: 11px 15px; border-radius: 8px; font-size: 14px; box-shadow: 0 14px 40px rgba(0,0,0,.25); }
 
 /* proof */
@@ -279,7 +280,7 @@ h6.tag { font-size: 11.5px; }
   footer .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
-  .wrap { padding: 0 16px; } .navwrap { padding: 10px; } .navside { display: none; }
+  .wrap { padding: 0 16px; } .nav { padding: 0 16px; height: 58px; } .navside { display: none; }
   .cards-row, .rcards, .metrics, .g-4, .g-3 { grid-template-columns: minmax(0, 1fr); }
   .hero p { font-size: 17px; } .search { width: 100%; } .titlerow .act { width: 100%; }
   .t th, .t td { padding-left: 12px; padding-right: 12px; } .hide-sm { display: none; }
@@ -670,8 +671,8 @@ function payParts() {
 const squares = (j) => `<span class="sq">${Array.from({ length: j.nStages }, (_, s) => { const c = j.commits[String(s)]; const cls = j.status === "Disputed" && j.disputedStage === s ? "x" : c ? "c" : j.status === "Running" && j.nextStage === s ? "a" : ""; return `<i class="${cls}" title="stage ${s}"></i>`; }).join("")}</span>`;
 
 /* ============ charts ============ */
-function chartSvg(pts, fmt) {
-  const W = 900, H = 250, L = 6, R = 56, T = 12, B = 24;
+function chartSvg(pts, fmt, W = 900) {
+  const H = 250, L = 6, R = 56, T = 12, B = 24;
   if (!pts.length) return `<text x="${W / 2}" y="${H / 2}" fill="#8b929d" text-anchor="middle" font-family="Geist Mono" font-size="13">No data yet · post a job</text>`;
   const t0 = pts[0].t, t1 = Math.max(pts[pts.length - 1].t, t0 + 1), top = Math.max(...pts.map((p) => p.v)), vmax = top * 1.12 || 1;
   const x = (t) => L + ((t - t0) / (t1 - t0)) * (W - L - R), y = (v) => T + (1 - v / vmax) * (H - T - B);
@@ -773,7 +774,10 @@ function renderExplorer() {
   $("chartBig").textContent = ui.chart === "paid" ? `${+last.toFixed(3)} ETH` : `${last}`;
   $("chartCap").textContent = { paid: "Paid to GPUs from escrow, settled on Base", jobs: "Jobs posted to LoomEscrow", txs: "Events across Base, Unichain and Reactive Lasna" }[ui.chart];
   $("chartRange").textContent = pts.length ? `since ${new Date(pts[0].t * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "";
-  $("chart").innerHTML = chartSvg(pts, fmt);
+  // draw at the real pixel width so text and lines are never stretched
+  const cw = Math.max(320, Math.round($("chart").getBoundingClientRect().width) || 900);
+  $("chart").setAttribute("viewBox", `0 0 ${cw} 250`);
+  $("chart").innerHTML = chartSvg(pts, fmt, cw);
   const G = gpus(), bonded = G.filter((g) => wei(g.bond) > 0n), busyN = G.filter((g) => g.state === "busy").length, cron = S.timeline.filter((e) => e.event === "CronToggled").pop();
   $("updated").textContent = `updated ${Math.max(0, Math.round((Date.now() - lastFetch) / 1000))}s ago`;
   $("nowKv").innerHTML = [["GPUs bonded", bonded.length], ["GPUs busy", `${busyN} / ${bonded.length}`], ["Jobs running", S.jobs.filter((j) => ["Running", "Proposed", "Disputed"].includes(j.status)).length],
