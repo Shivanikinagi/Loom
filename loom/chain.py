@@ -138,25 +138,65 @@ def _canonical(inp: dict) -> str:
     return t
 
 
-_LOG_STEP: dict[int, int] = {}  # chain id -> largest block range its RPC accepts
+# RPC URL -> largest block range it accepts for eth_getLogs, learnt as we go. Known caps: PublicNode
+# 50,000, sepolia.unichain.org 1,000 (said only in a 400 response's body), sepolia.base.org 200.
+_LOG_STEP: dict[str, int] = {"https://sepolia.unichain.org": 1000, "https://sepolia.base.org": 200}
+_SMALLER = (50_000, 10_000, 2_000, 1_000, 200, 100)
 
 
-def get_logs(chain: Chain, addresses: Iterable[str], start: int, end: int, step: int = 2000) -> list[LogReceipt]:
-    """Fetch logs in windows, shrinking the window when an RPC caps the range
-    (sepolia.base.org allows 200 blocks per eth_getLogs)."""
+# Explorer APIs (Blockscout, no key) that list an address's logs over any range in one request. Every
+# free Unichain Sepolia RPC caps eth_getLogs at 1,000 blocks, and PublicNode has pruned old history, so
+# a week-old deployment would take ~1,000 RPC calls to read; the explorer says which blocks to fetch.
+_LOG_INDEX = {1301: "https://unichain-sepolia.blockscout.com/api"}
+_INDEX_LAG = 2_000  # blocks near the head are always scanned over RPC, in case the explorer lags
+
+
+def _blocks_with_logs(chain: Chain, addrs: list[str], start: int, end: int) -> list[int] | None:
+    url = _LOG_INDEX.get(chain.chain_id)
+    if not url or end - start < 20_000 or "127.0.0.1" in chain.rpc or "localhost" in chain.rpc:
+        return None
+    import requests
+
+    blocks: set[int] = set()
+    try:
+        for a in addrs:
+            frm = start
+            while True:
+                r = requests.get(url, timeout=30, params={"module": "logs", "action": "getLogs", "address": a,
+                                                          "fromBlock": frm, "toBlock": end})
+                res = r.json().get("result")
+                if not isinstance(res, list):
+                    return None
+                got = {int(x["blockNumber"], 16) for x in res}
+                blocks |= got
+                if len(res) < 1000 or not got or max(got) <= frm:
+                    break
+                frm = max(got)  # a full page: continue from its last block (fetched by block, so overlap is harmless)
+    except Exception:
+        return None
+    return sorted(blocks)
+
+
+def get_logs(chain: Chain, addresses: Iterable[str], start: int, end: int, step: int = 50_000) -> list[LogReceipt]:
+    """Fetch logs in windows, shrinking the window whenever an RPC caps the range."""
     out: list[LogReceipt] = []
     addrs = [Web3.to_checksum_address(a) for a in addresses]
-    step = _LOG_STEP.get(chain.chain_id, step)
+    indexed = _blocks_with_logs(chain, addrs, start, end - _INDEX_LAG)
+    if indexed is not None:
+        for b in indexed:
+            out.extend(chain.w3.eth.get_logs({"address": addrs, "fromBlock": b, "toBlock": b}))
+        start = end - _INDEX_LAG + 1
+    step = _LOG_STEP.get(chain.rpc.rstrip("/"), step)
     s = start
     while s <= end:
         e = min(end, s + step - 1)
         try:
             out.extend(chain.w3.eth.get_logs({"address": addrs, "fromBlock": s, "toBlock": e}))
         except Exception as exc:
-            if step <= 100 or not any(k in str(exc).lower() for k in ("range", "413", "too large", "limit")):
+            if step <= 100 or not any(k in str(exc).lower() for k in ("range", "400", "413", "too large", "limit")):
                 raise
-            step = 200 if step > 200 else 100
-            _LOG_STEP[chain.chain_id] = step
+            step = next(n for n in _SMALLER if n < step)
+            _LOG_STEP[chain.rpc.rstrip("/")] = step
             continue
         s = e + 1
     out.sort(key=lambda l: (l["blockNumber"], l["logIndex"]))

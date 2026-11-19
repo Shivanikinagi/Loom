@@ -18,12 +18,15 @@ DEPLOYMENTS = ROOT / "deployments"
 TESTNET = {
     "base": {
         "chainId": 84532,
-        "rpc": os.environ.get("BASE_SEPOLIA_RPC", "https://sepolia.base.org"),
+        # PublicNode serves 50,000 blocks per eth_getLogs; sepolia.base.org only 200.
+        "rpc": os.environ.get("BASE_SEPOLIA_RPC", "https://base-sepolia-rpc.publicnode.com"),
         "explorer": "https://sepolia.basescan.org",
         "callbackProxy": "0x476F44b11F5C942c58f4c8E3d0300E5710743585",
     },
     "unichain": {
         "chainId": 1301,
+        # Caps eth_getLogs at 1,000 blocks, so old history is found through Blockscout (chain._LOG_INDEX);
+        # PublicNode would allow 50,000 but has pruned the deployment's blocks.
         "rpc": os.environ.get("UNICHAIN_SEPOLIA_RPC", "https://sepolia.unichain.org"),
         "explorer": "https://sepolia.uniscan.xyz",
         "callbackProxy": "0x775c9B990ADe401060B78D0e98684eEf8d2466C1",
