@@ -94,7 +94,7 @@ def cmd_deploy(args) -> int:
 def cmd_fund(args) -> int:
     from .deploy import default_funding, fund_roles
 
-    fund_roles(args.network, *default_funding(args.network))
+    fund_roles(args.network, *default_funding(args.network, args.gpus))
     return 0
 
 
@@ -102,7 +102,7 @@ def cmd_register(args) -> int:
     from .deploy import register_providers
 
     net = config.load(args.network)
-    register_providers(net, net.blobd)
+    register_providers(net, net.blobd, args.gpus)
     return 0
 
 
@@ -115,7 +115,7 @@ def cmd_run(args) -> int:
     net = config.load(args.network)
     blobd = BlobServer(args.blob_port).start() if args.serve_blobs else None
     pipe = load_pipeline(args.tiny)
-    actors = start_actors(net, pipe, BEHAVIOURS if args.scenarios else None)
+    actors = start_actors(net, pipe, BEHAVIOURS if args.scenarios else None, n_providers=args.gpus)
     for name in ("base", "unichain", "lasna"):
         actors.idx.sync_once(name)
     if args.dashboard:
@@ -190,6 +190,8 @@ def main(argv: list[str] | None = None) -> int:
         p = sub.add_parser(name)
         p.add_argument("--network", default="testnet", choices=["testnet", "local"])
         p.add_argument("--blobd", default="http://127.0.0.1:8700")
+        if name in ("fund", "register"):
+            p.add_argument("--gpus", type=int, default=5, help="GPU provider accounts gpu0..gpuN-1")
         p.set_defaults(fn=fn)
 
     p = sub.add_parser("run", help="run providers, verifiers and the watcher against a deployment")
@@ -198,6 +200,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--payment", type=int, default=None, help="wei per job (default: the network's jobPayment)")
     p.add_argument("--timeout", type=float, default=600)
     p.add_argument("--tiny", action="store_true")
+    p.add_argument("--gpus", type=int, default=5, help="GPU providers to run (gpu0..gpuN-1)")
     p.add_argument("--serve-blobs", action="store_true", default=True)
     p.add_argument("--blob-port", type=int, default=8700)
     p.add_argument("--dashboard", action="store_true")

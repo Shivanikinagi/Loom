@@ -114,14 +114,14 @@ def fund_roles(network: str, base_eth: dict[str, int], uni_eth: dict[str, int]) 
                 log.info("funded %-10s on %-8s %.4f ETH", role, chain_name, (amount - have) / ETH)
 
 
-def default_funding(network: str) -> tuple[dict[str, int], dict[str, int]]:
+def default_funding(network: str, gpus: int = 5) -> tuple[dict[str, int], dict[str, int]]:
     p = PARAMS[network]
     # Base/Unichain Sepolia gas is ~0.001-0.01 gwei: 0.0003 ETH is ~300 txs of 150k gas.
     gas = 3 * ETH // 10000 if network == "testnet" else ETH
-    base = {r: gas for r in ROLES}
+    base = {r: gas for r in ROLES if not r.startswith("gpu")} | {f"gpu{i}": gas for i in range(gpus)}
     base["buyer"] = gas + 8 * p["jobPayment"]  # three scenarios plus a few dashboard jobs
     base["challenger"] = gas + 4 * p["minChallengeBond"]
-    uni = {f"gpu{i}": p["minBond"] + gas for i in range(5)}
+    uni = {f"gpu{i}": p["minBond"] + gas for i in range(gpus)}
     return base, uni
 
 
