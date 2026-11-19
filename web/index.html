@@ -812,26 +812,37 @@ function renderJob(id) {
   if (!j) { $("jdOverview").innerHTML = `<div><dt>Status</dt><dd class="faint">Waiting for the job to appear on chain…</dd></div>`; return; }
   const ev = jobEvents(id).sort((a, b) => a.time - b.time || a.seq - b.seq), find = (n) => ev.find((e) => e.event === n), t0 = ev.length ? ev[0].time : 0;
   $("jdStatus").innerHTML = `<span class="st ${j.status}">${j.status}</span>`;
-  const created = find("JobCreated"), settled = find("JobSettled"), slash = S.timeline.find((e) => e.event === "ProviderSlashed" && e.args.jobId == id);
+  const created = find("JobCreated"), settled = find("JobSettled"), refunded = find("JobRefunded"), slash = S.timeline.find((e) => e.event === "ProviderSlashed" && e.args.jobId == id);
   const rows = [["Status", `<span class="st ${j.status}">${j.status}</span>`], ["Buyer", who(j.buyer)], ["Payment", `<span class="mono">${eth(j.payment)}</span> escrowed in LoomEscrow`],
-    ["Posted", created ? `${txl("base", created.tx)} <span class="faint">· ${ago(created.time)}</span>` : "–"], ["Settled", settled ? `${txl("base", settled.tx)} <span class="faint">· after ${dur(settled.time - created.time)}</span>` : `<span class="faint">pending</span>`],
-    ["Payouts", Object.keys(j.payouts).length ? Object.entries(j.payouts).map(([p, v]) => `${who(p)} <span class="mono">${eth(v)}</span>`).join(" · ") : `<span class="faint">on settlement</span>`]];
-  if (slash) rows.push(["Slashed", `${who(slash.args.provider)} <span class="mono bad">${eth(slash.args.amount)}</span> on Unichain · ${txl("unichain", slash.tx)}`]);
+    ["Posted", created ? `${txl("base", created.tx)} <span class="faint">· ${ago(created.time)}</span>` : "–"]];
+  if (refunded) {
+    // A fault with no eligible standby GPU: the buyer gets the escrow back, and nobody is paid for the job.
+    rows.push(["Refunded", `<span class="mono">${eth(refunded.args.amount)}</span> back to the buyer · ${txl("base", refunded.tx)} <span class="faint">· after ${dur(refunded.time - created.time)}</span>`]);
+    rows.push(["Payouts", `<span class="faint">none: no standby GPU was eligible, so the job was refunded</span>`]);
+  } else {
+    rows.push(["Settled", settled ? `${txl("base", settled.tx)} <span class="faint">· after ${dur(settled.time - created.time)}</span>` : `<span class="faint">pending</span>`]);
+    rows.push(["Payouts", Object.keys(j.payouts).length ? Object.entries(j.payouts).map(([p, v]) => `${who(p)} <span class="mono">${eth(v)}</span>`).join(" · ") : `<span class="faint">on settlement</span>`]);
+  }
+  if (slash) rows.push(["Slashed", `${who(slash.args.provider)} <span class="mono bad">${eth(slash.args.amount)}</span> on Unichain · ${txl("unichain", slash.tx)}`
+    + (slash.args.compensation ? ` <span class="faint">· ${eth(slash.args.compensation)} to the buyer, ${eth(slash.args.bounty)} to the challenger</span>` : "")]);
   if ((j.labels || []).length) rows.push(["Result", `<div class="answers">${j.labels.map((l) => `<span class="${l}">${l}</span>`).join("")}</div>`]);
   $("jdOverview").innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
   const re = {}; ev.filter((e) => e.event === "StageReassigned").forEach((e) => (re[e.args.stage] = [...(re[e.args.stage] || []), e.args.oldProvider]));
   $("jdStages").innerHTML = `<tr><th>Stage</th><th>Layers</th><th>GPU</th><th class="hide-sm">Output hash</th><th>Commit tx</th><th class="r">State</th></tr>` + Array.from({ length: j.nStages }, (_, s) => {
     const c = j.commits[String(s)], st = S.stages[s], commit = ev.filter((e) => e.event === "StageCommitted" && e.args.stage == s).pop();
-    const state = j.status === "Disputed" && j.disputedStage === s ? `<span class="bad">disputed</span>` : c ? `<span class="ok">committed</span>` : j.status === "Running" && j.nextStage === s ? `<span class="pulse" style="color:var(--base)">computing</span>` : `<span class="faint">waiting</span>`;
+    const voided = j.status === "Refunded" && j.disputedStage >= 0 && s >= j.disputedStage;  // refunded after a fault: the faulty stage and everything after it
+    const state = voided ? (s === j.disputedStage ? `<span class="bad">faulty</span>` : `<span class="faint">discarded</span>`)
+      : j.status === "Disputed" && j.disputedStage === s ? `<span class="bad">disputed</span>` : c ? `<span class="ok">committed</span>` : j.status === "Running" && j.nextStage === s ? `<span class="pulse" style="color:var(--base)">computing</span>` : `<span class="faint">waiting</span>`;
     const gone = (re[s] || []).map((p) => `<s class="bad">${esc(nm(p) || short(p))}</s> → `).join("");
-    return `<tr><td class="mono">${s}</td><td class="mono mut">${st ? `${s === 0 ? "emb+" : ""}${st.first}–${st.last}${s === j.nStages - 1 ? "+head" : ""}` : "–"}</td><td>${gone}${j.providers[s] ? who(j.providers[s]) : "–"}</td><td class="hide-sm"><span class="addr">${c ? short(c.outHash) : "–"}</span></td><td>${commit ? txl("base", commit.tx) : "–"}</td><td class="r">${state}</td></tr>`; }).join("");
+    const gpu = j.providers[s] ? (voided && s === j.disputedStage ? `<s class="bad">${esc(nm(j.providers[s]) || short(j.providers[s]))}</s>` : who(j.providers[s])) : "–";
+    return `<tr><td class="mono">${s}</td><td class="mono mut">${st ? `${s === 0 ? "emb+" : ""}${st.first}–${st.last}${s === j.nStages - 1 ? "+head" : ""}` : "–"}</td><td>${gone}${gpu}</td><td class="hide-sm"><span class="addr">${c ? short(c.outHash) : "–"}</span></td><td>${commit ? txl("base", commit.tx) : "–"}</td><td class="r">${state}</td></tr>`; }).join("");
   const ch = find("Challenged"), votes = ev.filter((e) => e.event === "VerdictVote"), q = find("QuorumReached");
   $("jdDisputeWrap").hidden = !ch;
   if (ch) {
     $("jdDisputeLbl").textContent = q ? (q.args.faulty ? "fault confirmed" : "challenge rejected") : "voting";
     $("jdDispute").innerHTML = `<tr><th>Step</th><th>By</th><th class="hide-sm">Detail</th><th>Tx</th></tr><tr><td>${evPill("Challenged")}</td><td>${who(ch.args.challenger)}</td><td class="hide-sm mut">stage ${ch.args.stage} · accused ${esc(nm(ch.args.accused) || short(ch.args.accused))}</td><td>${txl("base", ch.tx)}</td></tr>`
       + votes.map((v) => `<tr><td>${evPill("VerdictVote")}</td><td>${who(v.args.verifier)}</td><td class="hide-sm"><span class="${v.args.faulty ? "bad" : "ok"}">${v.args.faulty ? "faulty" : "honest"}</span></td><td>${txl("base", v.tx)}</td></tr>`).join("")
-      + (q ? `<tr><td>${evPill("QuorumReached")}</td><td>referee</td><td class="hide-sm mut">${q.args.faulty ? `reroute to ${esc(nm(q.args.replacement) || short(q.args.replacement))}` : "challenge rejected"}</td><td>${txl("lasna", q.tx)}</td></tr>` : "")
+      + (q ? `<tr><td>${evPill("QuorumReached")}</td><td>referee</td><td class="hide-sm mut">${!q.args.faulty ? "challenge rejected" : /^0x0+$/.test(q.args.replacement) ? "fault confirmed · no eligible standby, buyer refunded" : `reroute to ${esc(nm(q.args.replacement) || short(q.args.replacement))}`}</td><td>${txl("lasna", q.tx)}</td></tr>` : "")
       + (slash ? `<tr><td>${evPill("ProviderSlashed")}</td><td>referee</td><td class="hide-sm mut">${eth(slash.args.amount)} · bounty ${eth(slash.args.bounty)}</td><td>${txl("unichain", slash.tx)}</td></tr>` : "");
   }
   $("jdTxCount").textContent = `${ev.length} events`;
