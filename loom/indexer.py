@@ -79,6 +79,7 @@ class Indexer:
         self._stop = threading.Event()
         self._block_ts: dict[tuple[str, int], int] = {}
         self.cursor: dict[str, int] = {}
+        self._applied: set[tuple[str, str, int]] = set()
         self.sources = {
             "base": (net.contracts["escrow"], {"escrow": abi("LoomEscrow")}),
             "unichain": (net.contracts["bonds"], {"bonds": abi("LoomBonds")}),
@@ -144,6 +145,12 @@ class Indexer:
     def _apply(self, chain: str, ev: dict) -> None:
         a, name = ev["args"], ev["event"]
         with self.lock:
+            # Two syncs of one chain can overlap (the polling thread and an explicit sync_once read the same
+            # range before either moves the cursor); applying a log twice would double every count.
+            key = (chain, ev["tx"], ev["logIndex"])
+            if key in self._applied:
+                return
+            self._applied.add(key)
             ev["seq"] = len(self.timeline)  # arrival order: causal across chains within a second
             self.timeline.append(ev)
             if chain == "base":
