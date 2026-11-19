@@ -638,7 +638,7 @@ function earnings() { const o = {}; S.timeline.filter((e) => e.event === "JobSet
 function busy() { const m = {}; S.jobs.filter((j) => ["Running", "Proposed", "Disputed"].includes(j.status)).forEach((j) => j.providers.forEach((p, s) => { if (!j.commits[String(s)] || j.status !== "Running") m[p.toLowerCase()] = m[p.toLowerCase()] || `job ${j.id} · stage ${s}`; })); return m; }
 function gpus() {
   const e = earnings(), b = busy();
-  return S.providers.map((p) => { const k = p.address.toLowerCase(), slashed = p.faults > 0 && wei(p.bond) === 0n;
+  return S.providers.map((p) => { const k = p.address.toLowerCase(), slashed = p.faults > 0; // the referee bars a proven-faulty address for good, even if it bonds again
     return { ...p, k, name: nm(p.address) || short(p.address), slashed, state: slashed ? "slashed" : b[k] ? "busy" : "available", now: b[k] || (slashed ? "barred" : "idle"), earned: e[k] || 0n, score: p.jobsDone - 10 * p.faults - 3 * (p.timeouts || 0) }; });
 }
 function agents() {
